@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
 import frc.robot.commands.RunPathCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;

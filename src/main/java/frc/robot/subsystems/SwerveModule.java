@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
@@ -51,6 +52,7 @@ public class SwerveModule {
         m_driveMotor = new CANSparkMax(driveMotor, CANSparkMax.MotorType.kBrushless);
         m_turnMotor = new CANSparkMax(turnMotor, CANSparkMax.MotorType.kBrushless);
         m_driveMotor.restoreFactoryDefaults();
+        m_turnMotor.restoreFactoryDefaults();
 
         m_driveMotor.setSmartCurrentLimit((int) kDriveCurrentLimitAmps);
         m_turnMotor.setSmartCurrentLimit((int) kTurnCurrentLimitAmps);
@@ -110,8 +112,8 @@ public class SwerveModule {
         return m_driveEncoder.getVelocity();
     }
 
-    public SwerveModuleState getState() {
-        return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(m_turnEncoder.getPosition()));
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(m_driveEncoder.getVelocity(), new Rotation2d(m_turnEncoder.getPosition()));
     }
 
     public void setDesiredState(SwerveModuleState referenceState) {

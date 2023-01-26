@@ -6,8 +6,11 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -21,7 +24,7 @@ public class DriveSubsystem extends SubsystemBase {
   private AHRS m_navX;
 
   private SwerveDriveKinematics m_kinematics;
-  // private SwerveDriveOdometry m_odometry;
+  private SwerveDriveOdometry m_odometry;
 
   public static final double kMaxSpeedMetersPerSecond = 4;
   public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;// kMaxSpeedMetersPerSecond / Math.hypot(0.381, 0.381);
@@ -49,10 +52,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // var swerveStates = new SwerveModulePosition[4] = {m_frontLeft.getState(), m_frontRight.getState(),
-    //   m_backLeft.getState(), m_backRight.getState()};
-    // m_odometry.update(m_navX.getRotation2d(), swerveStates);
+    SwerveModulePosition[] swerveStates = {m_frontLeft.getPosition(), m_frontRight.getPosition(),
+      m_backLeft.getPosition(), m_backRight.getPosition()};
+    m_odometry.update(m_navX.getRotation2d(), swerveStates);
   }
 
   public void drive(double xMetersPerSecond, double yMetersPerSecond,
@@ -69,5 +71,29 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(states[1]);
     m_backLeft.setDesiredState(states[2]);
     m_backRight.setDesiredState(states[3]);
+  }
+
+  public SwerveDriveKinematics getKinematics() {
+    return m_kinematics;
+  }
+
+  public Pose2d getPose() {
+    return m_odometry.getPoseMeters();
+  }
+
+  public void setDesiredState(SwerveModuleState[] states) {
+    m_frontLeft.setDesiredState(states[0]);
+    m_frontRight.setDesiredState(states[1]);
+    m_backLeft.setDesiredState(states[2]);
+    m_backRight.setDesiredState(states[3]);
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    m_odometry.resetPosition(m_navX.getRotation2d(), getPositions(), pose);
+  }
+  private SwerveModulePosition[] getPositions() {
+    SwerveModulePosition[] swerveStates = {m_frontLeft.getPosition(), m_frontRight.getPosition(),
+      m_backLeft.getPosition(), m_backRight.getPosition()};
+      return swerveStates;
   }
 }

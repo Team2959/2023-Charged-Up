@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.nio.file.Path;
+
 // import com.pathplanner.lib.PathPlanner;
 // import com.pathplanner.lib.PathPlannerTrajectory;
 // import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -29,10 +31,10 @@ public class RunPathCommand extends SequentialCommandGroup {
     int m_ticks = 0;
 
     public RunPathCommand(DriveSubsystem driveSubsystem, String path) {
-        // PathPlannerTrajectory trajectory = PathPlanner.loadPath(path, 1, 0.5);
-        // Trajectory trajectory = PathPlanner.loadPath(path, 1, 0.5);
         try {
-            Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve("pathweaver/output/" + path + ".wpilib.json"));
+            m_driveSubsystem = driveSubsystem;
+            Path path2 = Filesystem.getDeployDirectory().toPath().resolve("pathweaver/output/" + path + ".wpilib.json");
+            Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(path2);
             SwerveControllerCommand command = new SwerveControllerCommand(trajectory,
                     () -> m_driveSubsystem.getPose(),
                     m_driveSubsystem.getKinematics(),
@@ -55,7 +57,7 @@ public class RunPathCommand extends SequentialCommandGroup {
             );
         }
         catch(Exception e) {
-            DriverStation.reportError("Failed to load path", e.getStackTrace());
+            DriverStation.reportError(e.getMessage(), e.getStackTrace());
         }
     }
 

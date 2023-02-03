@@ -2,10 +2,6 @@ package frc.robot.commands;
 
 import java.nio.file.Path;
 
-// import com.pathplanner.lib.PathPlanner;
-// import com.pathplanner.lib.PathPlannerTrajectory;
-// import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,6 +26,11 @@ public class RunPathCommand extends SequentialCommandGroup {
     Pose2d m_pose;
     int m_ticks = 0;
 
+    public Rotation2d desiredRotation() {
+        m_ticks += 1;
+        return Rotation2d.fromDegrees(90);
+    }
+
     public RunPathCommand(DriveSubsystem driveSubsystem, String path) {
         try {
             m_driveSubsystem = driveSubsystem;
@@ -41,7 +42,7 @@ public class RunPathCommand extends SequentialCommandGroup {
                     new PIDController(0.1,  0.0001, 0.0),
                     new PIDController(0.2, 0.0001, 0),
                     new ProfiledPIDController(0.1, 0, 0, new Constraints(Math.PI, Math.PI)),
-                    () -> new Rotation2d(0),
+                    // () -> desiredRotation(),
                     (SwerveModuleState[] states) -> m_driveSubsystem.setDesiredState(states),
                     m_driveSubsystem);
             m_pathCommand = command;
@@ -70,3 +71,4 @@ public class RunPathCommand extends SequentialCommandGroup {
         m_driveSubsystem.drive(0, 0, 0, false);
     }
 }
+

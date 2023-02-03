@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -67,15 +68,22 @@ public class DriveSubsystem extends SubsystemBase {
         m_frontRight.setInitalPosition();
         m_backLeft.setInitalPosition();
         m_backRight.setInitalPosition();
-        m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(), getPositions());
+        //m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(), getPositions());
         m_initalized = true;
+    }
+
+    public void offsetNavX(Rotation2d offset) {
+        m_navX.setAngleAdjustment(offset.getDegrees());
     }
 
     @Override
     public void periodic() {
-        if (m_odometry != null) {
+        SmartDashboard.putNumber(getName() + "/Gyro Angle", m_navX.getRotation2d().getDegrees());
+        if (m_odometry == null) {
             m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(), getPositions());
         }
+        SmartDashboard.putNumber(getName() + "Position/X", m_odometry.getPoseMeters().getX());
+        SmartDashboard.putNumber(getName() + "Position/Y", m_odometry.getPoseMeters().getY());
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,

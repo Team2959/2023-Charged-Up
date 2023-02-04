@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.commands.Autos;
 import frc.robot.commands.RunPathCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -56,6 +57,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new RunPathCommand(m_driveSubsystem, "basic");
+        return Autos.runPath(m_driveSubsystem);
     }
 }

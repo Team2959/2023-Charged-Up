@@ -64,10 +64,10 @@ public class DriveSubsystem extends SubsystemBase {
     public void initalize() {
         if(m_initalized) return;
         m_navX.reset();
-        m_frontLeft.setInitalPosition();
-        m_frontRight.setInitalPosition();
-        m_backLeft.setInitalPosition();
-        m_backRight.setInitalPosition();
+        m_frontLeft.resetAngleEncoderToAbsolute();
+        m_frontRight.resetAngleEncoderToAbsolute();
+        m_backLeft.resetAngleEncoderToAbsolute();
+        m_backRight.resetAngleEncoderToAbsolute();
         //m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(), getPositions());
         m_initalized = true;
     }
@@ -78,19 +78,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber(getName() + "/Gyro Angle", m_navX.getRotation2d().getDegrees());
         if (m_odometry == null) {
             m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(), getPositions());
         }
-        SmartDashboard.putNumber(getName() + "Position/X", m_odometry.getPoseMeters().getX());
-        SmartDashboard.putNumber(getName() + "Position/Y", m_odometry.getPoseMeters().getY());
+        SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,
             double rotationRadiansPerSecond, boolean fieldRelative) {
-        SmartDashboard.putNumber(getName() + "/X Speed", xMetersPerSecond);
-        SmartDashboard.putNumber(getName() + "/Y Speed", yMetersPerSecond);
-        SmartDashboard.putNumber(getName() + "/R Speed", rotationRadiansPerSecond);
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, rotationRadiansPerSecond,
                         m_navX.getRotation2d())
@@ -119,8 +114,16 @@ public class DriveSubsystem extends SubsystemBase {
         m_backRight.setDesiredState(states[3]);
     }
 
+    public Rotation2d getAngle() {
+        // We negate this value because the FRC field follows opposite rotation to the navX
+        // https://github.com/mjansen4857/pathplanner/issues/66
+        var degrees = m_navX.getRotation2d().getDegrees();
+        degrees = -degrees;
+        return Rotation2d.fromDegrees(degrees);
+    }
+
     public void resetOdometry(Pose2d pose) {
-        m_odometry.resetPosition(m_navX.getRotation2d(), getPositions(), pose);
+        m_odometry.resetPosition(getAngle(), getPositions(), pose);
     }
 
     private SwerveModulePosition[] getPositions() {

@@ -49,8 +49,8 @@ public class SwerveModule {
         m_driveMotor.restoreFactoryDefaults();
         m_turnMotor.restoreFactoryDefaults();
 
-        m_driveMotor.setSmartCurrentLimit((int) kDriveCurrentLimitAmps);
-        m_turnMotor.setSmartCurrentLimit((int) kTurnCurrentLimitAmps);
+        // m_driveMotor.setSmartCurrentLimit((int) kDriveCurrentLimitAmps);
+        // m_turnMotor.setSmartCurrentLimit((int) kTurnCurrentLimitAmps);
 
         m_name = name;
 
@@ -99,16 +99,17 @@ public class SwerveModule {
         return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_turnEncoder.getPosition()));
     }
 
+    /*
+     * Sets this modules 
+     */
     public void setDesiredState(SwerveModuleState referenceState) {
         SwerveModuleState state = SwerveModuleState.optimize(referenceState, new Rotation2d(m_turnEncoder.getPosition()));
 
-        SmartDashboard.putNumber(m_name + "/Drive Speed", state.speedMetersPerSecond);
-        SmartDashboard.putNumber(m_name + "/Drive Reference", state.speedMetersPerSecond / kDrivePositionFactor);
         m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
 
         if(Math.abs(state.speedMetersPerSecond - 0) < 0.001) {
             // Leave because we don't want wheel to go back to zero, because we are stopped
-            return;
+            // return;
         }
 
         Rotation2d delta = state.angle.minus(new Rotation2d(m_turnEncoder.getPosition()));
@@ -118,7 +119,11 @@ public class SwerveModule {
         m_turnPIDController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
     }
 
-    public void setInitalPosition() {
+    /*
+     * Resets the SparkMax Alternative Encoder to match the absolute Mag encoder,
+     * setting the position of the Mag Encoder to the SparkMax Alternative Encoder 
+     */
+    public void resetAngleEncoderToAbsolute() {
         m_turnEncoder.setPosition(getAbsoluteEncoderPosition());
     }
 }

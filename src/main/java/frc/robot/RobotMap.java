@@ -8,13 +8,13 @@ public final class RobotMap {
 
     // CAN motor addresses
     public static final int kFrontLeftDriveCANSparkMaxMotor = 1;
-    public static final int kFrontRightDriveCANSparkMaxMotor = 2;
+    public static final int kFrontRightDriveCANSparkMaxMotor = 4;
     public static final int kBackRightDriveCANSparkMaxMotor = 3;
-    public static final int kBackLeftDriveCANSparkMaxMotor = 4;
+    public static final int kBackLeftDriveCANSparkMaxMotor = 2;
     public static final int kFrontLeftTurnCANSparkMaxMotor = 11;
-    public static final int kFrontRightTurnCANSparkMaxMotor = 12;
+    public static final int kFrontRightTurnCANSparkMaxMotor = 14;
     public static final int kBackRightTurnCANSparkMaxMotor = 13;
-    public static final int kBackLeftTurnCANSparkMaxMotor = 14;
+    public static final int kBackLeftTurnCANSparkMaxMotor = 12;
     public static final int kExteriorFeederVictorSpxMotor = 5;
     public static final int kArmRotatorSparkMaxMotor = 7;
     public static final int kArmExtensionSparkMaxMotor = 8;

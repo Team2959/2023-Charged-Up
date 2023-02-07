@@ -34,6 +34,11 @@ public class IntakeSubsystem extends SubsystemBase
   
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
+   
+  }
+
+
+  public void toggleIntakeSubsystem() {
     if (m_intakeArm.get()) {
       //retracting the intake and deactivating the motors
       m_intakeArm.set(false);
@@ -52,13 +57,6 @@ public class IntakeSubsystem extends SubsystemBase
       m_coneOrientor.set(false);
 
     }
-  }
-
-
-  public void toggleIntakeSubsystem() {
-
-  
-
   }
   @Override
   public void periodic() {

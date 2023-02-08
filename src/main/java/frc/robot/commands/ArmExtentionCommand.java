@@ -5,24 +5,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.PlacementArmSubsystem;
 
-public class PlacementArmCommand extends CommandBase {
-  /** Creates a new PlacementArmCommand. */
-
-  private PlacementArmSubsystem m_PlacementArmSubsystem;
-
-  public PlacementArmCommand(PlacementArmSubsystem placementArmSubsystem) {
+public class ArmExtentionCommand extends CommandBase {
+  /** Creates a new ArmExtentionCommand. */
+  public ArmExtentionCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_PlacementArmSubsystem = placementArmSubsystem;
-    addRequirements(placementArmSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void initialize() {}
 
-  }
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {}

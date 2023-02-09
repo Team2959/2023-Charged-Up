@@ -49,8 +49,8 @@ public class SwerveModule {
         m_driveMotor.restoreFactoryDefaults();
         m_turnMotor.restoreFactoryDefaults();
 
-        // m_driveMotor.setSmartCurrentLimit((int) kDriveCurrentLimitAmps);
-        // m_turnMotor.setSmartCurrentLimit((int) kTurnCurrentLimitAmps);
+        m_driveMotor.setSmartCurrentLimit((int) kDriveCurrentLimitAmps);
+        m_turnMotor.setSmartCurrentLimit((int) kTurnCurrentLimitAmps);
 
         m_name = name;
 
@@ -95,7 +95,6 @@ public class SwerveModule {
     }
 
     public SwerveModulePosition getPosition() {
-        SmartDashboard.putNumber(m_name + "/Turn Encoder", m_turnEncoder.getPosition());
         return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_turnEncoder.getPosition()));
     }
 
@@ -112,10 +111,11 @@ public class SwerveModule {
             // return;
         }
 
-        Rotation2d delta = state.angle.minus(new Rotation2d(m_turnEncoder.getPosition()));
-        double setpoint = m_turnEncoder.getPosition() + delta.getRadians();
-        SmartDashboard.putNumber(m_name + "/Turn Position", setpoint);
-
+        var currentPosition = m_turnEncoder.getPosition();
+        Rotation2d delta = state.angle.minus(new Rotation2d(currentPosition));
+        double setpoint = currentPosition + delta.getRadians();
+        SmartDashboard.putNumber(m_name + "/Setpoint", setpoint);
+        SmartDashboard.putNumber(m_name + "/State Angle", state.angle.getRadians());
         m_turnPIDController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
     }
 

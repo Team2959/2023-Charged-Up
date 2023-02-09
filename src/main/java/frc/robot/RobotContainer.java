@@ -11,6 +11,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class RobotContainer {
@@ -40,6 +41,7 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
+      LiveWindow.enableAllTelemetry();
         // Setup of conditioning calculations
         m_driveXConditioning.setDeadband(0.18);
         m_driveXConditioning.setExponent(1.7);

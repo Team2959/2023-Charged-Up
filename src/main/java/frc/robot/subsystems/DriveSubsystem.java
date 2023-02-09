@@ -44,8 +44,12 @@ public class DriveSubsystem extends SubsystemBase {
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
         m_navX = new AHRS(Port.kMXP);
+
         m_kinematics = new SwerveDriveKinematics(kFrontLeftLocation, kFrontRightLocation, kBackLeftLocation,
                 kBackRightLocation);
+
+        m_odometry = new SwerveDriveOdometry(m_kinematics, getAngle(), getPositions());
+
         m_frontLeft = new SwerveModule(RobotMap.kFrontLeftDriveCANSparkMaxMotor,
                 RobotMap.kFrontLeftTurnCANSparkMaxMotor, RobotMap.kFrontLeftTurnPulseWidthDigIO,
                 RobotMap.kZeroedFrontLeft, "Front Left");
@@ -62,13 +66,15 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void initalize() {
-        if(m_initalized) return;
+        if (m_initalized)
+            return;
         m_navX.reset();
         m_frontLeft.resetAngleEncoderToAbsolute();
         m_frontRight.resetAngleEncoderToAbsolute();
         m_backLeft.resetAngleEncoderToAbsolute();
         m_backRight.resetAngleEncoderToAbsolute();
-        //m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(), getPositions());
+        // m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(),
+        // getPositions());
         m_initalized = true;
     }
 
@@ -78,9 +84,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (m_odometry == null) {
-            m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(), getPositions());
-        }
+
+        m_odometry.update(getAngle(), getPositions());
+
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
     }
 
@@ -115,7 +121,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getAngle() {
-        // We negate this value because the FRC field follows opposite rotation to the navX
+        // We negate this value because the FRC field follows opposite rotation to the
+        // navX
         // https://github.com/mjansen4857/pathplanner/issues/66
         var degrees = m_navX.getRotation2d().getDegrees();
         degrees = -degrees;

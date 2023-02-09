@@ -4,6 +4,6 @@
   "maxVelocity": 2.0,
   "maxAcceleration": 0.5,
   "trackWidth": 1.2,
-  "gameName": "Rapid React",
+  "gameName": "Charged Up",
   "outputDir": "../src/main/deploy/pathweaver"
 }

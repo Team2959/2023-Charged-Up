@@ -6,17 +6,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import frc.robot.DashboardMap;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
 
-import cwtech.telemetry.Observable;
-import cwtech.telemetry.Telemetry;
-
-@Telemetry
 public class SwerveModule {
     public static final double kDriveKp = 0.05;
     public static final double kDriveKi = 0.0;
@@ -42,7 +37,7 @@ public class SwerveModule {
 
     private static final double kWheelRadius = 2.0 * 0.0254; // 2" * 0.0254 m / inch
     private static final int kEncoderResolution = 4096;
-    private static final double kGearboxRatio = 1.0 / 6.12; // One turn of the wheel is 6.12 turns of the motor : Swervedrivespecialties, MkIV L3 gearing
+    private static final double kGearboxRatio = 1.0 / 6.86; // One turn of the wheel is 6.86 turns of the motor
     private static final double kDrivePositionFactor = (2.0 * Math.PI * kWheelRadius * kGearboxRatio);
     private static final double kDriveCurrentLimitAmps = 80.0;
     private static final double kTurnCurrentLimitAmps = 20.0; 
@@ -88,18 +83,6 @@ public class SwerveModule {
         m_turnEncoder.setPositionConversionFactor(2.0 * Math.PI);
     }
 
-    public void onDisabledInit() {
-        // m_drivePIDController.setP(SmartDashboard.getNumber(DashboardMap.kDrivetrainDriveP, kDriveKp));
-        // m_drivePIDController.setI(SmartDashboard.getNumber(DashboardMap.kDrivetrainDriveI, kDriveKi));
-        // m_drivePIDController.setD(SmartDashboard.getNumber(DashboardMap.kDrivetrainDriveD, kDriveKd));
-        // m_drivePIDController.setFF(SmartDashboard.getNumber(DashboardMap.kDrivetrainDriveFF, kDriveFf));
-        // m_turnPIDController.setP(SmartDashboard.getNumber(DashboardMap.kDrivetrainTurnP, kTurnKp));
-        // m_turnPIDController.setI(SmartDashboard.getNumber(DashboardMap.kDrivetrainTurnI, kTurnKi));
-        // m_turnPIDController.setD(SmartDashboard.getNumber(DashboardMap.kDrivetrainTurnD, kTurnKd));
-        // m_turnPIDController.setFF(SmartDashboard.getNumber(DashboardMap.kDrivetrainTurnFF, kTurnFf));
-    }
-
-    @Observable(key = "Absolute Encoder")
     public double getAbsoluteEncoderPosition() {
         double initalPosition = m_dutyCycleEncoder.getOutput();
         double initalPositionInRadians = initalPosition * 2.0 * Math.PI;
@@ -107,29 +90,40 @@ public class SwerveModule {
         return initalPositionInRadiansScaled;
     }
 
-    @Observable(key = "Velocity")
     public double getVelocity() {
         return m_driveEncoder.getVelocity();
     }
 
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(m_driveEncoder.getVelocity(), new Rotation2d(m_turnEncoder.getPosition()));
+        return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_turnEncoder.getPosition()));
     }
 
+    /*
+     * Sets this modules 
+     */
     public void setDesiredState(SwerveModuleState referenceState) {
         SwerveModuleState state = SwerveModuleState.optimize(referenceState, new Rotation2d(m_turnEncoder.getPosition()));
-        
-        SmartDashboard.putNumber(m_name + "/Drive Speed", state.speedMetersPerSecond);
-        SmartDashboard.putNumber(m_name + "/Drive Reference", state.speedMetersPerSecond / kDrivePositionFactor);
-        m_drivePIDController.setReference(state.speedMetersPerSecond * 4, CANSparkMax.ControlType.kVelocity);
 
-        Rotation2d delta = state.angle.minus(new Rotation2d(m_turnEncoder.getPosition()));
-        double setpoint = m_turnEncoder.getPosition() + delta.getRadians();
+        m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
 
+        if(Math.abs(state.speedMetersPerSecond - 0) < 0.001) {
+            // Leave because we don't want wheel to go back to zero, because we are stopped
+            // return;
+        }
+
+        var currentPosition = m_turnEncoder.getPosition();
+        Rotation2d delta = state.angle.minus(new Rotation2d(currentPosition));
+        double setpoint = currentPosition + delta.getRadians();
+        SmartDashboard.putNumber(m_name + "/Setpoint", setpoint);
+        SmartDashboard.putNumber(m_name + "/State Angle", state.angle.getRadians());
         m_turnPIDController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
     }
 
-    public void setInitalPosition() {
+    /*
+     * Resets the SparkMax Alternative Encoder to match the absolute Mag encoder,
+     * setting the position of the Mag Encoder to the SparkMax Alternative Encoder 
+     */
+    public void resetAngleEncoderToAbsolute() {
         m_turnEncoder.setPosition(getAbsoluteEncoderPosition());
     }
 }

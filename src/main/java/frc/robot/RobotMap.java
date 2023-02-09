@@ -26,16 +26,12 @@ public final class RobotMap {
     public static final int kGripVacuum2SparkMotor = 3;
     public static final int kGripVacuum3SparkMotor = 4;
 
-    // Servos
-
     // REV Pneumatic Hub solenoid addresses
     public static final int kIntakeArm = 0;
     public static final int kConeOrientator = 1;
     public static final int kFlipperArm = 2;
     public static final int kIntakeVacuumRelease = 3;
     public static final int kArmVacuumRelease = 4;
-
-    // String Pot
 
     // Digital IO addresses
     public static final int kFrontLeftTurnPulseWidthDigIO = 1;
@@ -49,16 +45,15 @@ public final class RobotMap {
     public static final int kLeftJoystick = 0;
     public static final int kRightJoystick = 1;
     public static final int kButtonBox = 2;
-
-    // Co-Pilot Buttons
-    public static final int kFireButton = 1;
+    public static final int kXBoxController = 3;
 
     // Driver Buttons
     public static final int kToggleIntakeButton = 2;
 
     // Zeroed values, should be in radians
+    //private static final double kOffsetZeroed = Math.PI / 2;
     public static final double kZeroedFrontLeft = 3.082 + Math.toRadians(90);
-    public static final double kZeroedFrontRight = 0 + Math.toRadians(90);
+    public static final double kZeroedFrontRight = 0 + Math.toRadians(90); // -3.12;
     public static final double kZeroedBackLeft = 0.520 + Math.toRadians(90);
     public static final double kZeroedBackRight = -0.230 + Math.toRadians(90);
 }

@@ -4,71 +4,79 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.RunPathCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.ToggleIntakeCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
+import cwtech.util.Conditioning;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-  private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
-  private final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
+    // The robot's subsystems and commands are defined here...
+    private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
+    private final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
+    public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    private Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
+    private Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
+    JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
 
-  private Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
-  private Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);    
-  JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
+    /**
+     * The container form the robot. Contains subsystems, OI devices, and commands.
+     */
+    private Conditioning m_driveXConditioning = new Conditioning();
+    private Conditioning m_driveYConditioning = new Conditioning();
+    private Conditioning m_turnConditioning = new Conditioning();
+    private double m_governer = 0.5;
 
-  /** The container form the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
-  }
+    public double getDriveXInput() {
+        // We getY() here because of the FRC coordinate system being turned 90 degrees
+        return m_driveXConditioning.condition(m_leftJoystick.getY()) * DriveSubsystem.kMaxSpeedMetersPerSecond
+                * m_governer;
+    }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    public double getDriveYInput() {
+        // We getX() here becasuse of the FRC coordinate system being turned 90 degrees
+        return m_driveYConditioning.condition(m_leftJoystick.getX()) * DriveSubsystem.kMaxSpeedMetersPerSecond
+                * m_governer;
+    }
 
-    m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
+    // Schedule `exampleMethodCommand` when the Xbox controller's B button is
+    // pressed,
     // cancelling on release.
+    public double getTurnInput() {
+        return m_turnConditioning.condition(m_rightJoystick.getX()) * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
+    }
 
-    m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem, m_leftJoystick, m_rightJoystick));
-  }
+    public RobotContainer() {
+        LiveWindow.enableAllTelemetry();
+        // Setup of conditioning calculations
+        m_driveXConditioning.setDeadband(0.18);
+        m_driveXConditioning.setExponent(1.7);
+        m_driveYConditioning.setDeadband(0.15);
+        m_driveYConditioning.setExponent(1.4);
+        m_turnConditioning.setDeadband(0.2);
+        m_turnConditioning.setExponent(1.4);
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return new RunPathCommand(m_driveSubsystem, "basic");
-  }
+        configureBindings();
+    }
+
+    private void configureBindings() {
+        m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem, () -> getDriveXInput(),
+                () -> getDriveYInput(), () -> getTurnInput()));
+        m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
+
+    }
+
+    public Command getAutonomousCommand() {
+        return Autos.runPath("Basic", m_driveSubsystem);
+    }
 }

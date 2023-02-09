@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.robot.commands.Autos;
-import frc.robot.commands.RunPathCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import cwtech.util.Conditioning;
@@ -59,6 +58,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Autos.runPath(m_driveSubsystem);
+        return Autos.runPath("Basic", m_driveSubsystem);
     }
 }

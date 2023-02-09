@@ -21,8 +21,8 @@ public final class Autos {
     return null;
   }
 
-  public static Command runPath(DriveSubsystem driveSubsystem) {
-    var trajectory = PathPlanner.loadPath("Basic", new PathConstraints(4, 1));
+  public static Command runPath(String name, DriveSubsystem driveSubsystem) {
+    var trajectory = PathPlanner.loadPath(name, new PathConstraints(4, 1));
     SwerveAutoBuilder builder = new SwerveAutoBuilder(
         driveSubsystem::getPose,
         driveSubsystem::resetOdometry,

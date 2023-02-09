@@ -48,8 +48,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_kinematics = new SwerveDriveKinematics(kFrontLeftLocation, kFrontRightLocation, kBackLeftLocation,
                 kBackRightLocation);
 
-        m_odometry = new SwerveDriveOdometry(m_kinematics, getAngle(), getPositions());
-
         m_frontLeft = new SwerveModule(RobotMap.kFrontLeftDriveCANSparkMaxMotor,
                 RobotMap.kFrontLeftTurnCANSparkMaxMotor, RobotMap.kFrontLeftTurnPulseWidthDigIO,
                 RobotMap.kZeroedFrontLeft, "Front Left");
@@ -62,6 +60,8 @@ public class DriveSubsystem extends SubsystemBase {
         m_backRight = new SwerveModule(RobotMap.kBackRightDriveCANSparkMaxMotor,
                 RobotMap.kBackRightTurnCANSparkMaxMotor, RobotMap.kBackRightTurnPulseWidthDigIO,
                 RobotMap.kZeroedBackRight, "Back Right");
+
+        m_odometry = new SwerveDriveOdometry(m_kinematics, getAngle(), getPositions());
 
     }
 
@@ -121,12 +121,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getAngle() {
-        // We negate this value because the FRC field follows opposite rotation to the
-        // navX
-        // https://github.com/mjansen4857/pathplanner/issues/66
-        var degrees = m_navX.getRotation2d().getDegrees();
-        degrees = -degrees;
-        return Rotation2d.fromDegrees(degrees);
+        return m_navX.getRotation2d();
     }
 
     public void resetOdometry(Pose2d pose) {

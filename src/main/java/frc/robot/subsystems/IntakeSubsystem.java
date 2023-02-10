@@ -18,7 +18,6 @@ import frc.robot.RobotMap;
 
 public class IntakeSubsystem extends SubsystemBase
 {
-
   VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
   Spark m_interiorFeederMotor = new Spark(RobotMap.kInteriorFeederSparkMotor);
   Spark m_flipperVacuumMotor = new Spark(RobotMap.kFlipperVacuumSparkMotor);
@@ -27,27 +26,26 @@ public class IntakeSubsystem extends SubsystemBase
   Solenoid m_flipperArm = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kFlipperArm);
   Solenoid m_intakeVacuumRelease = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kIntakeVacuumRelease);
   DigitalInput m_gamePeicePresent = new DigitalInput(RobotMap.kGamePeicePresentSwitch);
-  DigitalInput m_gamePeiceAllIn = new DigitalInput(RobotMap.kGamePeiceAllInSwitch);
+  DigitalInput m_gamePeiceAllIn = new DigitalInput(RobotMap.kConeAllInSwitch);
   ColorSensorV3 m_coneColorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 
-  
-  
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem() {
-   
+  public IntakeSubsystem()
+  {
   }
 
-
-  public void toggleIntakeSubsystem() {
-    if (m_intakeArm.get()) {
+  public void toggleIntakeSubsystem()
+  {
+    if (m_intakeArm.get())
+    {
       //retracting the intake and deactivating the motors
       m_intakeArm.set(false);
       m_exteriorFeederMotors.set(VictorSPXControlMode.PercentOutput, 0);
       m_interiorFeederMotor.set(0);
       m_coneOrientor.set(false);
-
     }
-    else {
+    else
+    {
       //Droping the intake and activating the motors
       m_intakeArm.set(true);
       m_exteriorFeederMotors.set(VictorSPXControlMode.PercentOutput, 0.5);
@@ -55,11 +53,12 @@ public class IntakeSubsystem extends SubsystemBase
       m_intakeVacuumRelease.set(true);
       m_flipperArm.set(true);
       m_coneOrientor.set(false);
-
     }
   }
+
   @Override
-  public void periodic() {
+  public void periodic()
+  {
     // This method will be called once per scheduler run
   }
 }

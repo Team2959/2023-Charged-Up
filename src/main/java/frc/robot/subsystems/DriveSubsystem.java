@@ -42,7 +42,8 @@ public class DriveSubsystem extends SubsystemBase {
     private final Translation2d kBackRightLocation = new Translation2d(-0.381, -0.381);
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem() {
+    public DriveSubsystem()
+    {
         m_navX = new AHRS(Port.kMXP);
 
         m_kinematics = new SwerveDriveKinematics(kFrontLeftLocation, kFrontRightLocation, kBackLeftLocation,
@@ -62,10 +63,10 @@ public class DriveSubsystem extends SubsystemBase {
                 RobotMap.kZeroedBackRight, "Back Right");
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getAngle(), getPositions());
-
     }
 
-    public void initalize() {
+    public void initalize()
+    {
         if (m_initalized)
             return;
         m_navX.reset();
@@ -78,23 +79,24 @@ public class DriveSubsystem extends SubsystemBase {
         m_initalized = true;
     }
 
-    public void offsetNavX(Rotation2d offset) {
+    public void offsetNavX(Rotation2d offset)
+    {
         m_navX.setAngleAdjustment(offset.getDegrees());
     }
 
     @Override
-    public void periodic() {
-
+    public void periodic()
+    {
         m_odometry.update(getAngle(), getPositions());
 
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,
-            double rotationRadiansPerSecond, boolean fieldRelative) {
+            double rotationRadiansPerSecond, boolean fieldRelative)
+    {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, rotationRadiansPerSecond,
-                        m_navX.getRotation2d())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, rotationRadiansPerSecond, getAngle())
                 : new ChassisSpeeds(xMetersPerSecond, yMetersPerSecond, rotationRadiansPerSecond));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(states, kMaxSpeedMetersPerSecond);
@@ -105,30 +107,36 @@ public class DriveSubsystem extends SubsystemBase {
         m_backRight.setDesiredState(states[3]);
     }
 
-    public SwerveDriveKinematics getKinematics() {
+    public SwerveDriveKinematics getKinematics()
+    {
         return m_kinematics;
     }
 
-    public Pose2d getPose() {
+    public Pose2d getPose()
+    {
         return m_odometry.getPoseMeters();
     }
 
-    public void setDesiredState(SwerveModuleState[] states) {
+    public void setDesiredState(SwerveModuleState[] states)
+    {
         m_frontLeft.setDesiredState(states[0]);
         m_frontRight.setDesiredState(states[1]);
         m_backLeft.setDesiredState(states[2]);
         m_backRight.setDesiredState(states[3]);
     }
 
-    public Rotation2d getAngle() {
+    public Rotation2d getAngle()
+    {
         return m_navX.getRotation2d();
     }
 
-    public void resetOdometry(Pose2d pose) {
+    public void resetOdometry(Pose2d pose)
+    {
         m_odometry.resetPosition(getAngle(), getPositions(), pose);
     }
 
-    private SwerveModulePosition[] getPositions() {
+    private SwerveModulePosition[] getPositions()
+    {
         SwerveModulePosition[] swerveStates = { m_frontLeft.getPosition(), m_frontRight.getPosition(),
                 m_backLeft.getPosition(), m_backRight.getPosition() };
         return swerveStates;

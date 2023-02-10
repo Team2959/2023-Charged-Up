@@ -8,13 +8,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
-public class SetRotationPlacementArmCommand extends CommandBase {
+public class SetRotationPlacementArmCommand extends CommandBase
+{
   /** Creates a new PlacementArmCommand. */
 
   private PlacementArmSubsystem m_PlacementArmSubsystem;
   private Rotation2d m_angle;
 
-  public SetRotationPlacementArmCommand(PlacementArmSubsystem placementArmSubsystem, Rotation2d Angle) {
+  public SetRotationPlacementArmCommand(PlacementArmSubsystem placementArmSubsystem, Rotation2d Angle)
+  {
     // Use addRequirements() here to declare subsystem dependencies.
     m_PlacementArmSubsystem = placementArmSubsystem;
     m_angle = Angle;
@@ -24,11 +26,11 @@ public class SetRotationPlacementArmCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void initialize()
+  {
     m_PlacementArmSubsystem.setArmDegrees(m_angle.getDegrees());
-
-
   }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {}
@@ -39,7 +41,8 @@ public class SetRotationPlacementArmCommand extends CommandBase {
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() {
+  public boolean isFinished()
+  {
     return true;
   }
 }

@@ -15,13 +15,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
-public final class Autos {
+public final class Autos
+{
   /** Example static factory for an autonomous command. */
-  public static CommandBase exampleAuto() {
+  public static CommandBase exampleAuto()
+  {
     return null;
   }
 
-  public static Command runPath(String name, DriveSubsystem driveSubsystem) {
+  public static Command runPath(String name, DriveSubsystem driveSubsystem)
+  {
     var trajectory = PathPlanner.loadPath(name, new PathConstraints(4, 1));
     SwerveAutoBuilder builder = new SwerveAutoBuilder(
         driveSubsystem::getPose,
@@ -40,7 +43,8 @@ public final class Autos {
     return fullAuto;
   }
 
-  private Autos() {
+  private Autos()
+  {
     throw new UnsupportedOperationException("This is a utility class!");
   }
 }

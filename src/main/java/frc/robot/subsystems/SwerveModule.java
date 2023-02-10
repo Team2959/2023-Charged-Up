@@ -42,8 +42,8 @@ public class SwerveModule {
     private static final double kDriveCurrentLimitAmps = 80.0;
     private static final double kTurnCurrentLimitAmps = 20.0; 
 
-    public SwerveModule(int driveMotor, int turnMotor, int dutyCycle, double turnOffset, String name) {
-
+    public SwerveModule(int driveMotor, int turnMotor, int dutyCycle, double turnOffset, String name)
+    {
         m_driveMotor = new CANSparkMax(driveMotor, CANSparkMax.MotorType.kBrushless);
         m_turnMotor = new CANSparkMax(turnMotor, CANSparkMax.MotorType.kBrushless);
         m_driveMotor.restoreFactoryDefaults();
@@ -83,30 +83,35 @@ public class SwerveModule {
         m_turnEncoder.setPositionConversionFactor(2.0 * Math.PI);
     }
 
-    public double getAbsoluteEncoderPosition() {
+    public double getAbsoluteEncoderPosition()
+    {
         double initalPosition = m_dutyCycleEncoder.getOutput();
         double initalPositionInRadians = initalPosition * 2.0 * Math.PI;
         double initalPositionInRadiansScaled = new Rotation2d(initalPositionInRadians - m_turnOffset).getRadians();
         return initalPositionInRadiansScaled;
     }
 
-    public double getVelocity() {
+    public double getVelocity()
+    {
         return m_driveEncoder.getVelocity();
     }
 
-    public SwerveModulePosition getPosition() {
+    public SwerveModulePosition getPosition()
+    {
         return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_turnEncoder.getPosition()));
     }
 
     /*
      * Sets this modules 
      */
-    public void setDesiredState(SwerveModuleState referenceState) {
+    public void setDesiredState(SwerveModuleState referenceState)
+    {
         SwerveModuleState state = SwerveModuleState.optimize(referenceState, new Rotation2d(m_turnEncoder.getPosition()));
 
         m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
 
-        if(Math.abs(state.speedMetersPerSecond - 0) < 0.001) {
+        if(Math.abs(state.speedMetersPerSecond - 0) < 0.001)
+        {
             // Leave because we don't want wheel to go back to zero, because we are stopped
             // return;
         }
@@ -123,7 +128,8 @@ public class SwerveModule {
      * Resets the SparkMax Alternative Encoder to match the absolute Mag encoder,
      * setting the position of the Mag Encoder to the SparkMax Alternative Encoder 
      */
-    public void resetAngleEncoderToAbsolute() {
+    public void resetAngleEncoderToAbsolute()
+    {
         m_turnEncoder.setPosition(getAbsoluteEncoderPosition());
     }
 }

@@ -11,9 +11,11 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class LineupArmCommand extends SequentialCommandGroup {
+public class LineupArmCommand extends SequentialCommandGroup
+{
   /** Creates a new LineupArmCommand. */
-  public LineupArmCommand(PlacementArmSubsystem placementArmSubsystem) {
+  public LineupArmCommand(PlacementArmSubsystem placementArmSubsystem)
+  {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new SetRotationPlacementArmCommand(placementArmSubsystem, Rotation2d.fromDegrees(90)));

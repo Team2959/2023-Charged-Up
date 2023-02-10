@@ -7,11 +7,13 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class ToggleIntakeCommand extends CommandBase {
+public class ToggleIntakeCommand extends CommandBase
+{
   /** Creates a new ToggleIntakeCommand. */
   private IntakeSubsystem m_intakeSubsystem;
 
-  public ToggleIntakeCommand(IntakeSubsystem intakeSubsystem) {
+  public ToggleIntakeCommand(IntakeSubsystem intakeSubsystem)
+  {
     // Use addRequirements() here to declare subsystem dependencies.
     m_intakeSubsystem = intakeSubsystem;
     addRequirements(intakeSubsystem);
@@ -19,10 +21,9 @@ public class ToggleIntakeCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void initialize()
+  {
     m_intakeSubsystem.toggleIntakeSubsystem();
-    
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,7 +36,8 @@ public class ToggleIntakeCommand extends CommandBase {
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() {
+  public boolean isFinished()
+  {
     return true;
   }
 }

@@ -35,12 +35,14 @@ public class PlacementArmSubsystem extends SubsystemBase
     Spark m_gripVacuumMotor3 = new Spark(RobotMap.kGripVacuum3SparkMotor);
     Solenoid m_armVacuumRelease = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kArmVacuumRelease);
 
+    static double kDegreesPerRevolution = 360.0 / 4096.0;
+
     // ** Creates a new PlacementArmSubsystem. */
     public PlacementArmSubsystem()
     {
         // TODO Pids for armRotatorMotorPidController and also smart motion stuff
-        
         m_armRotatorMotorPidController.setFeedbackDevice(m_armRotatorAbsoluteEncoder);
+        m_armRotatorAbsoluteEncoder.setPositionConversionFactor(kDegreesPerRevolution);
     }
 
     public void setArmDegrees(double degrees)
@@ -50,7 +52,33 @@ public class PlacementArmSubsystem extends SubsystemBase
     
     public double getArmAngle() {
 
-      
+      return m_armRotatorAbsoluteEncoder.getPosition();
+    }
+
+    public double setArmExtensionPosition(double distance) {
+        // ToDo: Set the arm extension
+        return 0;
+
+    }
+
+    public double getArmExtensionPosition() {
+        // ToDo: Get the actual arm extension
+        return 0;
+    }
+
+    public void ManipulateVacuumRelease(boolean release)
+    {
+        if (release)
+        {
+            m_armVacuumRelease.set(true);
+            m_gripVacuumMotor1.set(0);
+            m_gripVacuumMotor2.set(0);
+            m_gripVacuumMotor3.set(0);
+        }
+        else
+        {
+            m_armVacuumRelease.set(false);
+        }
     }
 
     public void engageVacuum()
@@ -61,17 +89,12 @@ public class PlacementArmSubsystem extends SubsystemBase
         m_gripVacuumMotor3.set(1.0);
     }
 
-    public void disengageVacuum()
-    {
-        m_gripVacuumMotor1.set(0.0);
-        m_gripVacuumMotor2.set(0.0);
-        m_gripVacuumMotor3.set(0.0);
-        m_armVacuumRelease.set(true);
-    }
 
     @Override
     public void periodic()
     {
         // This method will be called once per scheduler run
+
+
     }
 }

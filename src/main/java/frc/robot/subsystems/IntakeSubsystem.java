@@ -18,6 +18,15 @@ import frc.robot.RobotMap;
 
 public class IntakeSubsystem extends SubsystemBase
 {
+  public enum GamePieceType
+  {
+    Unknown,
+    Cone,
+    Cube
+  };
+
+  private GamePieceType m_GamePieceType = GamePieceType.Unknown;
+
   VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
   Spark m_interiorFeederMotor = new Spark(RobotMap.kInteriorFeederSparkMotor);
   Spark m_flipperVacuumMotor = new Spark(RobotMap.kFlipperVacuumSparkMotor);
@@ -54,6 +63,11 @@ public class IntakeSubsystem extends SubsystemBase
       m_flipperArm.set(true);
       m_coneOrientor.set(false);
     }
+  }
+
+  public GamePieceType getGamePieceType(){
+
+    return m_GamePieceType;
   }
 
   @Override

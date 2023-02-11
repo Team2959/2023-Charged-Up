@@ -4,10 +4,13 @@
 
 package frc.robot;
 
-import frc.robot.commands.ArmRotationCommand;
+import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
+import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.TeleOpDriveCommand;
+import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.ToggleIntakeCommand;
+import frc.robot.commands.LineupArmCommand.ArmPositioningType;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
@@ -28,10 +31,11 @@ public class RobotContainer
     private Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
     private Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
-    JoystickButton m_releaseButton = new JoystickButton(m_buttonBox, RobotMap.kGamePeiceReleaseButton);
-    JoystickButton m_highGamePieceButton = new JoystickButton(m_buttonBox, 1);
-    JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, 2);
-    JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, 3);
+    JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
+    JoystickButton m_highGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kHighGamePeiceButton);
+    JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kMidGamePeiceButton);
+    JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePeiceButton);
+    JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
 
     private Conditioning m_driveXConditioning = new Conditioning();
     private Conditioning m_driveYConditioning = new Conditioning();
@@ -60,9 +64,17 @@ public class RobotContainer
         m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem,
             () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput()));
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
-        m_highGamePieceButton.onTrue(new ArmRotationCommand(m_PlacementArmSubsystem, 90));
-        m_midGamePieceButton.onTrue(new ArmRotationCommand(m_PlacementArmSubsystem, 60));
-        m_lowGamePieceButton.onTrue(new ArmRotationCommand(m_PlacementArmSubsystem, 30));
+        m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
+         m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.High));
+        m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, 
+         m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Mid));
+        m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
+         m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Low));
+
+        m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
+    
+         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
+         
     }
     
     public Command getAutonomousCommand()

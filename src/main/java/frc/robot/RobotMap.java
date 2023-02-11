@@ -54,12 +54,14 @@ public final class RobotMap {
     public static final int kHighGamePeiceButton = 1;
     public static final int kMidGamePeiceButton = 2;
     public static final int kLowGamePeiceButton = 3;
-    public static final int kGamePeiceReleaseButton = 4;
+    public static final int kArmReleaseButton = 4;
+    public static final int kReturnArmToLoadingButton = 5;
+    public static final int kIntakeReleaseButton = 6;
 
     // Zeroed values, should be in radians
     //private static final double kOffsetZeroed = Math.PI / 2;
-    public static final double kZeroedFrontLeft = 0 + Math.toRadians(90);
-    public static final double kZeroedFrontRight = 0 + Math.toRadians(90);
-    public static final double kZeroedBackLeft = 0 + Math.toRadians(90);
-    public static final double kZeroedBackRight = 0 + Math.toRadians(90);
+    public static final double kZeroedFrontLeft = 2.672 + Math.toRadians(90);
+    public static final double kZeroedFrontRight = 2.815 + Math.toRadians(90);
+    public static final double kZeroedBackLeft = 0.908 + Math.toRadians(90);
+    public static final double kZeroedBackRight = 1.683 + Math.toRadians(90);
 }

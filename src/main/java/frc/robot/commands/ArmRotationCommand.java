@@ -3,23 +3,21 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
-public class SetRotationPlacementArmCommand extends CommandBase
+public class ArmRotationCommand extends CommandBase
 {
   /** Creates a new PlacementArmCommand. */
 
   private PlacementArmSubsystem m_PlacementArmSubsystem;
-  private Rotation2d m_angle;
+  private double m_angle;
 
-  public SetRotationPlacementArmCommand(PlacementArmSubsystem placementArmSubsystem, Rotation2d Angle)
+  public ArmRotationCommand(PlacementArmSubsystem placementArmSubsystem, double angleInDegrees)
   {
     // Use addRequirements() here to declare subsystem dependencies.
     m_PlacementArmSubsystem = placementArmSubsystem;
-    m_angle = Angle;
+    m_angle = angleInDegrees;
 
     addRequirements(placementArmSubsystem);
   }
@@ -28,7 +26,7 @@ public class SetRotationPlacementArmCommand extends CommandBase
   @Override
   public void initialize()
   {
-    m_PlacementArmSubsystem.setArmDegrees(m_angle.getDegrees());
+    m_PlacementArmSubsystem.setArmDegrees(m_angle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,6 +41,8 @@ public class SetRotationPlacementArmCommand extends CommandBase
   @Override
   public boolean isFinished()
   {
-    return true;
+    double currentAngle = m_PlacementArmSubsystem.getArmAngle();
+    
+    return Math.abs(m_angle - currentAngle) < 0.5;
   }
 }

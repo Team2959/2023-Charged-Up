@@ -50,6 +50,12 @@ public final class RobotMap {
     // Driver Buttons
     public static final int kToggleIntakeButton = 2;
 
+    // Co-Piolet Button board
+    public static final int kHighGamePeiceButton = 1;
+    public static final int kMidGamePeiceButton = 2;
+    public static final int kLowGamePeiceButton = 3;
+    public static final int kGamePeiceReleaseButton = 4;
+
     // Zeroed values, should be in radians
     //private static final double kOffsetZeroed = Math.PI / 2;
     public static final double kZeroedFrontLeft = 0 + Math.toRadians(90);

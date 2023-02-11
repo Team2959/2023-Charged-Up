@@ -3,8 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
@@ -18,6 +16,6 @@ public class LineupArmCommand extends SequentialCommandGroup
   {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new SetRotationPlacementArmCommand(placementArmSubsystem, Rotation2d.fromDegrees(90)));
+    addCommands(new ArmRotationCommand(placementArmSubsystem, 90));
   }
 }

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.commands.ArmRotationCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.ToggleIntakeCommand;
@@ -25,7 +26,12 @@ public class RobotContainer
 
     private Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
     private Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
+    private Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
+    JoystickButton m_releaseButton = new JoystickButton(m_buttonBox, RobotMap.kGamePeiceReleaseButton);
+    JoystickButton m_highGamePieceButton = new JoystickButton(m_buttonBox, 1);
+    JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, 2);
+    JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, 3);
 
     private Conditioning m_driveXConditioning = new Conditioning();
     private Conditioning m_driveYConditioning = new Conditioning();
@@ -54,8 +60,11 @@ public class RobotContainer
         m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem,
             () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput()));
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
+        m_highGamePieceButton.onTrue(new ArmRotationCommand(m_PlacementArmSubsystem, 90));
+        m_midGamePieceButton.onTrue(new ArmRotationCommand(m_PlacementArmSubsystem, 60));
+        m_lowGamePieceButton.onTrue(new ArmRotationCommand(m_PlacementArmSubsystem, 30));
     }
-
+    
     public Command getAutonomousCommand()
     {
         return Autos.runPath("Basic", m_driveSubsystem);

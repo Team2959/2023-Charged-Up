@@ -47,6 +47,11 @@ public class PlacementArmSubsystem extends SubsystemBase
     {
         m_armRotatorMotorPidController.setReference(degrees, ControlType.kSmartMotion);
     }
+    
+    public double getArmAngle() {
+
+      
+    }
 
     public void engageVacuum()
     {

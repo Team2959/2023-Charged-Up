@@ -25,11 +25,16 @@ public class PlacementArmSubsystem extends SubsystemBase
     public static final double kArmRotatorD = 0;
     public static final double kArmRotatorIZone = 0;
     public static final double kArmRotatorFF = 0;
+    public static final double kArmRotatorSmartMotionMaxVelocity = 0;
+    public static final double kArmRotatorSmartMotionMaxAcceleration = 0;
     public static final double kArmExtensionP = 0;
     public static final double kArmExtensionI = 0;
     public static final double kArmExtensionD = 0;
     public static final double kArmExtensionIZone = 0;
     public static final double kArmExtensionFF = 0;
+    public static final double kArmExtensionSmartMotionMaxVelocity = 0;
+    public static final double kArmExtensionSmartMotionMaxAcceleration = 0;
+    
 
     public enum ExtensionPosition
     {
@@ -63,6 +68,17 @@ public class PlacementArmSubsystem extends SubsystemBase
         m_armRotatorMotorPidController.setD(kArmRotatorD);
         m_armRotatorMotorPidController.setIZone(kArmRotatorIZone);
         m_armRotatorMotorPidController.setFF(kArmRotatorFF);
+        m_armRotatorMotorPidController.setSmartMotionMaxVelocity(kArmRotatorSmartMotionMaxVelocity, 0);
+        m_armRotatorMotorPidController.setSmartMotionMaxAccel(kArmRotatorSmartMotionMaxAcceleration, 0);
+        
+        
+        m_armExtensionMotorPidController.setP(kArmExtensionP);
+        m_armExtensionMotorPidController.setI(kArmExtensionI);
+        m_armExtensionMotorPidController.setD(kArmExtensionD);
+        m_armExtensionMotorPidController.setIZone(kArmExtensionIZone);
+        m_armExtensionMotorPidController.setFF(kArmExtensionFF);
+        m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kArmExtensionSmartMotionMaxVelocity, 0);
+        m_armExtensionMotorPidController.setSmartMotionMaxAccel(kArmExtensionSmartMotionMaxAcceleration, 0);
 
     }
 
@@ -72,12 +88,16 @@ public class PlacementArmSubsystem extends SubsystemBase
         SmartDashboard.putNumber(getName() + "/Arm Rotator D", m_armRotatorMotorPidController.getD());
         SmartDashboard.putNumber(getName() + "/Arm Rotator IZone", m_armRotatorMotorPidController.getIZone());
         SmartDashboard.putNumber(getName() + "/Arm Extension FF", m_armRotatorMotorPidController.getFF());
+        SmartDashboard.putNumber(getName() + "/Arm Rotator Smart Motion Max Velocity", m_armRotatorMotorPidController.getSmartMotionMaxVelocity(0));
+        SmartDashboard.putNumber(getName() + "/Arm Rotator Smart Motion Acceleration", m_armRotatorMotorPidController.getSmartMotionMaxAccel(0));
         SmartDashboard.putNumber(getName() + "/Arm Extension P", m_armExtensionMotorPidController.getP());
         SmartDashboard.putNumber(getName() + "/Arm Extension I", m_armExtensionMotorPidController.getI());
         SmartDashboard.putNumber(getName() + "/Arm Extension D", m_armExtensionMotorPidController.getD());
         SmartDashboard.putNumber(getName() + "/Arm Extension IZone", m_armExtensionMotorPidController.getIZone());
         SmartDashboard.putNumber(getName() + "/Arm Extension FF", m_armExtensionMotorPidController.getFF());
-
+        SmartDashboard.putNumber(getName() + "/Arm Extension Smart Motion Max Velocity", m_armExtensionMotorPidController.getSmartMotionMaxVelocity(0));
+        SmartDashboard.putNumber(getName() + "/Arm Extension Smart Motion Acceleration", m_armExtensionMotorPidController.getSmartMotionMaxAccel(0));
+        
     }
 
     public void armSmartDashboardUpdate() {
@@ -86,11 +106,15 @@ public class PlacementArmSubsystem extends SubsystemBase
         m_armRotatorMotorPidController.setD (SmartDashboard.getNumber(getName() + "/Arm Rotator D", kArmRotatorD));
         m_armRotatorMotorPidController.setIZone (SmartDashboard.getNumber(getName() + "/Arm Rotator IZone", kArmRotatorIZone));
         m_armRotatorMotorPidController.setFF (SmartDashboard.getNumber(getName() + "/Arm Rotator FF", kArmRotatorFF));
+        m_armRotatorMotorPidController.setSmartMotionMaxVelocity(SmartDashboard.getNumber(getName() + "/Arm Rotator Smart Motion Velocity", kArmRotatorSmartMotionMaxVelocity), 0);
+        m_armRotatorMotorPidController.setSmartMotionMaxAccel(SmartDashboard.getNumber(getName() + "/Arm Rotator Smart Motion Acceleration", kArmRotatorSmartMotionMaxAcceleration), 0);
         m_armExtensionMotorPidController.setP (SmartDashboard.getNumber(getName() + "/Arm Extension P", kArmExtensionP));
         m_armExtensionMotorPidController.setI (SmartDashboard.getNumber(getName() + "/Arm Extension I", kArmExtensionI));
         m_armExtensionMotorPidController.setD (SmartDashboard.getNumber(getName() + "/Arm Extension", kArmExtensionD));
         m_armExtensionMotorPidController.setIZone (SmartDashboard.getNumber(getName() + "/Arm Extension IZone", kArmExtensionIZone));
         m_armExtensionMotorPidController.setFF (SmartDashboard.getNumber(getName() + "/Arm Extension FF", kArmExtensionFF));
+        m_armExtensionMotorPidController.setSmartMotionMaxVelocity(SmartDashboard.getNumber(getName() + "/Arm Extension Smart Motion Velocity", kArmRotatorSmartMotionMaxVelocity), 0);
+        m_armExtensionMotorPidController.setSmartMotionMaxAccel(SmartDashboard.getNumber(getName() + "/Arm Extension Smart Motion Acceleration", kArmRotatorSmartMotionMaxAcceleration), 0);
     }
 
     public void setArmDegrees(double degrees)
@@ -143,6 +167,6 @@ public class PlacementArmSubsystem extends SubsystemBase
     {
         // This method will be called once per scheduler run
 
-
+        SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", m_armRotatorAbsoluteEncoder.getPosition());
     }
 }

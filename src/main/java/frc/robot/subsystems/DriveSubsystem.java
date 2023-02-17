@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -44,7 +45,7 @@ public class DriveSubsystem extends SubsystemBase {
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem()
     {
-        m_navX = new AHRS(Port.kMXP);
+        m_navX = new AHRS(I2C.Port.kMXP);
 
         m_kinematics = new SwerveDriveKinematics(kFrontLeftLocation, kFrontRightLocation, kBackLeftLocation,
                 kBackRightLocation);
@@ -63,6 +64,11 @@ public class DriveSubsystem extends SubsystemBase {
                 RobotMap.kZeroedBackRight, "Back Right");
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getAngle(), getPositions());
+
+        m_frontLeft.driveSmartDashboardInit();
+        m_frontRight.driveSmartDashboardInit();
+        m_backLeft.driveSmartDashboardInit();
+        m_backRight.driveSmartDashboardInit();
     }
 
     public void initalize()
@@ -90,6 +96,11 @@ public class DriveSubsystem extends SubsystemBase {
         m_odometry.update(getAngle(), getPositions());
 
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
+
+        m_frontLeft.driveSmartDashboardUpdate();
+        m_frontRight.driveSmartDashboardUpdate();
+        m_backLeft.driveSmartDashboardUpdate();
+        m_backRight.driveSmartDashboardUpdate();
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,

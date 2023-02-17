@@ -13,16 +13,16 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
 
 public class SwerveModule {
-    public static final double kDriveKp = 0.05;
-    public static final double kDriveKi = 0.0;
-    public static final double kDriveKd = 0.001;
-    public static final double kDriveFf = 0.02;
-    public static final double kDriveIzone = 600;
-    public static final double kTurnKp = 0.4;
-    public static final double kTurnKi = 0.00001;
-    public static final double kTurnKd = 0.0;
-    public static final double kTurnFf = 0.0;
-    public static final double kTurnIzone = 1.0;
+    public static final double kDriveP = 0.05;
+    public static final double kDriveI = 0.0;
+    public static final double kDriveD = 0.001;
+    public static final double kDriveFF = 0.02;
+    public static final double kDriveIZone = 600;
+    public static final double kTurnP = 0.4;
+    public static final double kTurnI = 0.00001;
+    public static final double kTurnD = 0.0;
+    public static final double kTurnFF = 0.0;
+    public static final double kTurnIZone = 1.0;
 
     private CANSparkMax m_driveMotor;
     private CANSparkMax m_turnMotor;
@@ -68,19 +68,50 @@ public class SwerveModule {
         m_driveEncoder.setPositionConversionFactor(kDrivePositionFactor);
         m_driveEncoder.setVelocityConversionFactor(kDrivePositionFactor / 60.0);
         
-        m_drivePIDController.setP(kDriveKp);
-        m_drivePIDController.setI(kDriveKi);
-        m_drivePIDController.setD(kDriveKd);
-        m_drivePIDController.setFF(kDriveFf);
-        m_drivePIDController.setIZone(kDriveIzone);
+        m_drivePIDController.setP(kDriveP);
+        m_drivePIDController.setI(kDriveI);
+        m_drivePIDController.setD(kDriveD);
+        m_drivePIDController.setFF(kDriveFF);
+        m_drivePIDController.setIZone(kDriveIZone);
 
         m_turnPIDController.setFeedbackDevice(m_turnEncoder);
-        m_turnPIDController.setP(kTurnKp);
-        m_turnPIDController.setI(kTurnKi);
-        m_turnPIDController.setD(kTurnKd);
-        m_turnPIDController.setIZone(kTurnIzone);
+        m_turnPIDController.setP(kTurnP);
+        m_turnPIDController.setI(kTurnI);
+        m_turnPIDController.setD(kTurnD);
+        m_turnPIDController.setIZone(kTurnIZone);
 
         m_turnEncoder.setPositionConversionFactor(2.0 * Math.PI);
+    }
+
+    public void driveSmartDashboardInit() {
+        SmartDashboard.putNumber(m_name + "/Drive P", m_drivePIDController.getP());
+        SmartDashboard.putNumber(m_name + "/Drive I", m_drivePIDController.getI());
+        SmartDashboard.putNumber(m_name + "/Drive D", m_drivePIDController.getD());
+        SmartDashboard.putNumber(m_name + "/Drive IZone", m_drivePIDController.getIZone());
+        SmartDashboard.putNumber(m_name + "/Drive FF", m_drivePIDController.getFF());
+        SmartDashboard.putNumber(m_name + "/Turn P", m_turnPIDController.getP());
+        SmartDashboard.putNumber(m_name + "/Turn I", m_turnPIDController.getI());
+        SmartDashboard.putNumber(m_name + "/Turn D", m_turnPIDController.getD());
+        SmartDashboard.putNumber(m_name + "/Turn IZone", m_turnPIDController.getIZone());
+        SmartDashboard.putNumber(m_name + "/Turn FF", m_turnPIDController.getFF());
+    }
+
+    public void driveSmartDashboardUpdate() {
+        SmartDashboard.putNumber(m_name + "/Drive Encoder Velocity", m_driveEncoder.getVelocity());
+        SmartDashboard.putNumber(m_name + "/Drive Encoder Position", m_driveEncoder.getPosition()); 
+        SmartDashboard.putNumber(m_name + "/Turn Motor Position", m_turnEncoder.getPosition());
+
+       m_drivePIDController.setP (SmartDashboard.getNumber(m_name + "/Drive P", kDriveP));
+       m_drivePIDController.setI (SmartDashboard.getNumber(m_name + "/Drive I", kDriveI));
+       m_drivePIDController.setD (SmartDashboard.getNumber(m_name + "/Drive D", kDriveD));
+       m_drivePIDController.setIZone (SmartDashboard.getNumber(m_name + "/Drive IZone", kDriveIZone));
+       m_drivePIDController.setFF (SmartDashboard.getNumber(m_name + "/Drive FF", kDriveFF));
+
+       m_turnPIDController.setP (SmartDashboard.getNumber(m_name + "/Turn P", kTurnP));
+       m_turnPIDController.setI (SmartDashboard.getNumber(m_name + "/Turn I", kTurnI));
+       m_turnPIDController.setD (SmartDashboard.getNumber(m_name + "/Turn D", kTurnD));
+       m_turnPIDController.setIZone (SmartDashboard.getNumber(m_name + "/Turn IZone", kTurnIZone));
+       m_turnPIDController.setFF (SmartDashboard.getNumber(m_name + "/Turn FF", kTurnFF));
     }
 
     public double getAbsoluteEncoderPosition()

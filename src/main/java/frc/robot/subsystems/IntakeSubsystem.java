@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -13,6 +15,8 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -34,13 +38,36 @@ public class IntakeSubsystem extends SubsystemBase
   Solenoid m_coneOrientor = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kConeOrientator);
   Solenoid m_flipperArm = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kFlipperArm);
   Solenoid m_intakeVacuumRelease = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kIntakeVacuumRelease);
-  DigitalInput m_gamePeicePresent = new DigitalInput(RobotMap.kGamePeicePresentSwitch);
-  DigitalInput m_gamePeiceAllIn = new DigitalInput(RobotMap.kConeAllInSwitch);
-  ColorSensorV3 m_coneColorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+  DigitalInput m_gamePiecePresent = new DigitalInput(RobotMap.kGamePeicePresentSwitch);
+  DigitalInput m_gamePieceAllIn = new DigitalInput(RobotMap.kConeAllInSwitch);
+  ColorSensorV3 m_coneColorSensor = new ColorSensorV3(I2C.Port.kMXP);
+  ColorMatch m_ColorMatcher = new ColorMatch();
+  double m_intakeSpeed = 0.5;
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem()
   {
+    m_ColorMatcher.addColorMatch(new Color(1.0, 1.0, 0.0));
+  }
+
+  public boolean seesColorYellow() {
+    ColorMatchResult result = m_ColorMatcher.matchClosestColor(m_coneColorSensor.getColor());
+    SmartDashboard.putNumber(getName() + "/Color Sensor/Confidence", result.confidence);
+    return result.confidence > 0.9;
+  }
+
+  public void intakeSmartDashboardInit() {
+    SmartDashboard.putNumber(getName() + "/Intake Speed", m_intakeSpeed);
+  }
+
+  public void intakeSmartDashboardUpdate() {
+    m_intakeSpeed = SmartDashboard.getNumber(getName() + "/Intake Speed", m_intakeSpeed);
+    SmartDashboard.putBoolean(getName() + "/Game Piece Present", m_gamePiecePresent.get());
+    SmartDashboard.putBoolean(getName() + "/Game Piece All In", m_gamePieceAllIn.get());
+    SmartDashboard.putNumber(getName() + "/Color Sensor/R", m_coneColorSensor.getRed());
+    SmartDashboard.putNumber(getName() + "/Color Sensor/G", m_coneColorSensor.getGreen());
+    SmartDashboard.putNumber(getName() + "/Color Sensor/B", m_coneColorSensor.getBlue());
+    SmartDashboard.putBoolean(getName() + "/Color Sensor Sees Yellow", seesColorYellow());
   }
 
   public void toggleIntakeSubsystem()

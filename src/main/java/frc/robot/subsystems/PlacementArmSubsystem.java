@@ -34,14 +34,6 @@ public class PlacementArmSubsystem extends SubsystemBase
     public static final double kArmExtensionFF = 0;
     public static final double kArmExtensionSmartMotionMaxVelocity = 0;
     public static final double kArmExtensionSmartMotionMaxAcceleration = 0;
-    
-
-    public enum ExtensionPosition
-    {
-        FullyRetracted,
-        HalfExtended, 
-        FullyExtented,
-    };
 
     CANSparkMax m_armRotatorMotor = new CANSparkMax(RobotMap.kArmRotatorSparkMaxMotor, MotorType.kBrushless);
     CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor, MotorType.kBrushless);

@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
+import frc.robot.commands.DropIntakeOrientatorCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.ArmVacuumReleaseCommand;
@@ -14,14 +15,19 @@ import frc.robot.commands.LineupArmCommand.ArmPositioningType;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
+
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class RobotContainer
-{
+public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     private final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
@@ -40,13 +46,12 @@ public class RobotContainer
     private Conditioning m_driveXConditioning = new Conditioning();
     private Conditioning m_driveYConditioning = new Conditioning();
     private Conditioning m_turnConditioning = new Conditioning();
-    private double m_governer = 0.5;
+    private double m_speedMultiplier = 0.5;
 
     /**
      * The container form the robot. Contains subsystems, OI devices, and commands.
      */
-    public RobotContainer()
-    {
+    public RobotContainer() {
         LiveWindow.enableAllTelemetry();
         // Setup of conditioning calculations
         m_driveXConditioning.setDeadband(0.18);
@@ -56,51 +61,57 @@ public class RobotContainer
         m_turnConditioning.setDeadband(0.2);
         m_turnConditioning.setExponent(1.4);
 
+        SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
+
         configureBindings();
     }
 
-    private void configureBindings()
-    {
+    public void periodic() {
+        m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
+    }
+
+    private void configureBindings() {
         m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem,
-            () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput()));
+                () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput()));
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
         m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-         m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.High));
-        m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, 
-         m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Mid));
+                m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.High));
+        m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
+                m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Mid));
         m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-         m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Low));
+                m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Low));
 
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
-    
-         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
-         
+
+        m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
+
+        new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.seesColorYellow())
+                .whileTrue(new DropIntakeOrientatorCommand(m_IntakeSubsystem));
+
+        new Trigger(m_IntakeSubsystem::gamePieceIsReady).onTrue(new FlipGamePieceUpCommand(m_IntakeSubsystem));
+
     }
-    
-    public Command getAutonomousCommand()
-    {
+
+    public Command getAutonomousCommand() {
         return Autos.runPath("Basic", m_driveSubsystem);
     }
 
-    public double getDriveXInput()
-    {
+    public double getDriveXInput() {
         // We getY() here because of the FRC coordinate system being turned 90 degrees
         return m_driveXConditioning.condition(m_leftJoystick.getY())
-            * DriveSubsystem.kMaxSpeedMetersPerSecond
-            * m_governer;
+                * DriveSubsystem.kMaxSpeedMetersPerSecond
+                * m_speedMultiplier;
     }
 
-    public double getDriveYInput()
-    {
+    public double getDriveYInput() {
         // We getX() here becasuse of the FRC coordinate system being turned 90 degrees
         return m_driveYConditioning.condition(m_leftJoystick.getX())
-            * DriveSubsystem.kMaxSpeedMetersPerSecond
-            * m_governer;
+                * DriveSubsystem.kMaxSpeedMetersPerSecond
+                * m_speedMultiplier;
     }
 
-    public double getTurnInput()
-    {
+    public double getTurnInput() {
         return m_turnConditioning.condition(m_rightJoystick.getX())
-            * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
+                * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
     }
 }

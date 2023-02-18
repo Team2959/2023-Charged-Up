@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -44,16 +45,59 @@ public class IntakeSubsystem extends SubsystemBase
   ColorMatch m_ColorMatcher = new ColorMatch();
   double m_intakeSpeed = 0.5;
 
+
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem()
   {
     m_ColorMatcher.addColorMatch(new Color(1.0, 1.0, 0.0));
   }
 
+  public boolean gamePieceIsReady() {
+    if(m_gamePieceAllIn.get()) {
+      return true;
+    }
+    else if(m_gamePiecePresent.get()) {
+      if(!seesColorYellow()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void flipGamePiece() {
+    m_flipperArm.set(true);
+  }
+
+  public void unflipGamePiece() {
+    m_flipperArm.set(false);
+  }
+
+  public void startVacuum() {
+    m_intakeVacuumRelease.set(false);
+    m_flipperVacuumMotor.set(1.0);
+  }
+
+  public void stopVacuum() {
+    m_intakeVacuumRelease.set(true);
+    m_flipperVacuumMotor.set(0.0);
+  }
+
   public boolean seesColorYellow() {
     ColorMatchResult result = m_ColorMatcher.matchClosestColor(m_coneColorSensor.getColor());
     SmartDashboard.putNumber(getName() + "/Color Sensor/Confidence", result.confidence);
     return result.confidence > 0.9;
+  }
+
+  public boolean intakeIsDown() {
+    return m_intakeArm.get();
+  }
+
+  public void dropOrientatorBar() {
+    m_coneOrientor.set(true);
+  }
+
+  public void pullUpOrientatorBar() {
+    m_coneOrientor.set(false);
   }
 
   public void intakeSmartDashboardInit() {
@@ -95,11 +139,5 @@ public class IntakeSubsystem extends SubsystemBase
   public GamePieceType getGamePieceType(){
 
     return m_GamePieceType;
-  }
-
-  @Override
-  public void periodic()
-  {
-    // This method will be called once per scheduler run
   }
 }

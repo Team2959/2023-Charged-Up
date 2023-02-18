@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import cwtech.util.Lifetime;
+import cwtech.util.Lifetime.RobotMode;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +23,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         m_robotContainer = new RobotContainer();
-        addPeriodic(() -> {}, 0.005);
     }
 
     @Override
@@ -33,11 +34,13 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods. This must be called from the
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
+        m_robotContainer.periodic();
         CommandScheduler.getInstance().run();
     }
 
     @Override
     public void disabledInit() {
+        Lifetime.updateMode(RobotMode.Disabled);
     }
 
     @Override
@@ -46,6 +49,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        Lifetime.updateMode(RobotMode.Auto);
         setuplogging();
         m_robotContainer.m_driveSubsystem.initalize();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -62,6 +66,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        Lifetime.updateMode(RobotMode.Teleop);
         m_robotContainer.m_driveSubsystem.initalize();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
@@ -74,6 +79,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
+        Lifetime.updateMode(RobotMode.Test);
         CommandScheduler.getInstance().cancelAll();
     }
 
@@ -83,6 +89,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void simulationInit() {
+
     }
 
     @Override

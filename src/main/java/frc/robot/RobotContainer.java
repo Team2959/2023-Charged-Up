@@ -46,7 +46,22 @@ public class RobotContainer {
     private Conditioning m_driveXConditioning = new Conditioning();
     private Conditioning m_driveYConditioning = new Conditioning();
     private Conditioning m_turnConditioning = new Conditioning();
-    private double m_speedMultiplier = 0.5;
+    private double m_governer = 0.8;
+    
+
+    public double getDriveXInput() {
+        // We getY() here because of the FRC coordinate system being turned 90 degrees
+        return m_driveXConditioning.condition(m_leftJoystick.getY()) * DriveSubsystem.kMaxSpeedMetersPerSecond * m_governer;
+    }
+
+    public double getDriveYInput() {
+        // We getX() here becasuse of the FRC coordinate system being turned 90 degrees
+        return m_driveYConditioning.condition(m_leftJoystick.getX()) * DriveSubsystem.kMaxSpeedMetersPerSecond * m_governer;
+    }
+
+    public double getTurnInput() {
+        return m_turnConditioning.condition(m_rightJoystick.getX()) * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
+    }
 
     /**
      * The container form the robot. Contains subsystems, OI devices, and commands.

@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DropIntakeOrientatorCommand;
+import frc.robot.commands.FlipGamePieceUpCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.ArmVacuumReleaseCommand;
@@ -16,11 +17,8 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
-import javax.swing.text.StyleContext.SmallAttributeSet;
-
 import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,9 +31,9 @@ public class RobotContainer {
     private final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
     public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 
-    private Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
-    private Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
-    private Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
+    Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
+    Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
+    Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
     JoystickButton m_highGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kHighGamePeiceButton);
@@ -43,25 +41,10 @@ public class RobotContainer {
     JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePeiceButton);
     JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
 
-    private Conditioning m_driveXConditioning = new Conditioning();
-    private Conditioning m_driveYConditioning = new Conditioning();
-    private Conditioning m_turnConditioning = new Conditioning();
-    private double m_governer = 0.8;
-    
-
-    public double getDriveXInput() {
-        // We getY() here because of the FRC coordinate system being turned 90 degrees
-        return m_driveXConditioning.condition(m_leftJoystick.getY()) * DriveSubsystem.kMaxSpeedMetersPerSecond * m_governer;
-    }
-
-    public double getDriveYInput() {
-        // We getX() here becasuse of the FRC coordinate system being turned 90 degrees
-        return m_driveYConditioning.condition(m_leftJoystick.getX()) * DriveSubsystem.kMaxSpeedMetersPerSecond * m_governer;
-    }
-
-    public double getTurnInput() {
-        return m_turnConditioning.condition(m_rightJoystick.getX()) * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
-    }
+    Conditioning m_driveXConditioning = new Conditioning();
+    Conditioning m_driveYConditioning = new Conditioning();
+    Conditioning m_turnConditioning = new Conditioning();
+    double m_speedMultiplier = 0.8;
 
     /**
      * The container form the robot. Contains subsystems, OI devices, and commands.

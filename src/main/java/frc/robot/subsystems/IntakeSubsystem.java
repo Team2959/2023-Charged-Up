@@ -64,6 +64,10 @@ public class IntakeSubsystem extends SubsystemBase
     return false;
   }
 
+  public void toggleFlipper() {
+    m_flipperArm.set(!m_flipperArm.get());
+  }
+
   public void flipGamePiece() {
     m_flipperArm.set(true);
   }
@@ -119,21 +123,56 @@ public class IntakeSubsystem extends SubsystemBase
     if (m_intakeArm.get())
     {
       //retracting the intake and deactivating the motors
-      m_intakeArm.set(false);
-      m_exteriorFeederMotors.set(VictorSPXControlMode.PercentOutput, 0);
-      m_interiorFeederMotor.set(0);
-      m_coneOrientor.set(false);
+      turnOffIntake();
     }
     else
     {
       //Droping the intake and activating the motors
-      m_intakeArm.set(true);
-      m_exteriorFeederMotors.set(VictorSPXControlMode.PercentOutput, 0.5);
-      m_interiorFeederMotor.set(0.5);
-      m_intakeVacuumRelease.set(true);
-      m_flipperArm.set(true);
-      m_coneOrientor.set(false);
+      turnOnIntake();
     }
+  }
+
+  public void setExteriorFeederMotor(double output) {
+    m_exteriorFeederMotors.set(VictorSPXControlMode.PercentOutput, output);
+  }
+
+  public void setInteriorFeederMotor(double output) {
+    m_interiorFeederMotor.set(output);
+  }
+
+  public void turnOnIntake() {
+    m_intakeArm.set(true);
+    setExteriorFeederMotor(0.5);
+    setInteriorFeederMotor(0.5);
+    m_intakeVacuumRelease.set(true);
+    m_flipperArm.set(true);
+    m_coneOrientor.set(false);
+  }
+
+  public void turnOffIntake() {
+    m_intakeArm.set(false);
+    setExteriorFeederMotor(0);
+    setInteriorFeederMotor(0);
+    m_coneOrientor.set(false);
+  }
+
+  public void reverseAll(boolean exceptFlipper) {
+    if(!exceptFlipper) {
+      m_flipperArm.set(false);
+    }
+
+    m_coneOrientor.set(false);
+    setExteriorFeederMotor(-0.5);
+    setInteriorFeederMotor(-0.5);
+  }
+
+  public void reverseFront() {
+    setExteriorFeederMotor(-0.5);
+  }
+
+  public void stopIntake() {
+    setExteriorFeederMotor(0);
+    setInteriorFeederMotor(0);
   }
 
   public GamePieceType getGamePieceType(){

@@ -23,7 +23,7 @@ public class ArmVacuumReleaseCommand extends CommandBase {
   @Override
   public void initialize() 
   {
-    m_placementArmSubsystem.ManipulateVacuumRelease(true);  // release vacuum and shut off vacuum motors
+    m_placementArmSubsystem.manipulateVacuumRelease(true);  // release vacuum and shut off vacuum motors
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +34,7 @@ public class ArmVacuumReleaseCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) 
   {
-    m_placementArmSubsystem.ManipulateVacuumRelease(false);  // re-engage vacuum solenoid
+    m_placementArmSubsystem.manipulateVacuumRelease(false);  // re-engage vacuum solenoid
   }
 
   // Returns true when the command should end.

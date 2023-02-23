@@ -1,6 +1,7 @@
 package cwtech.util;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Robot;
 
 public class RopeSensor {
@@ -8,12 +9,14 @@ public class RopeSensor {
     DigitalInput m_digitalInput;
     int m_debounceCount;
     boolean m_debounceValue;
+    boolean m_lastTickValue;
     boolean m_isGoingForward;
     int m_ticks;
 
     public RopeSensor(int digitalIOPort) {
         m_digitalInputPort = digitalIOPort;
         m_digitalInput = new DigitalInput(digitalIOPort);
+        m_lastTickValue = m_digitalInput.get();
     }
 
     public int getDigitalInputPort() {
@@ -31,16 +34,22 @@ public class RopeSensor {
     private void update() {
         boolean value = m_digitalInput.get();
 
-        if(m_debounceCount >= 2 && m_debounceValue != value) {
-            m_ticks += m_isGoingForward ? 1: -1;
-            m_debounceCount = 0;
+        if(m_debounceValue == m_lastTickValue) {
+            // don't continue updating because we see the same value as previous tick
+            return;
         }
 
-        if(value == m_debounceValue && m_debounceCount > 0) {
-            m_debounceCount++;
-        } else {
-            m_debounceCount = 1;
+        if(m_debounceCount == 0) {
             m_debounceValue = value;
+            m_debounceCount++;
+        } else if(m_debounceCount > 0) {
+            m_debounceCount++;
+        }
+
+        if(m_debounceCount >= 2) {
+            m_lastTickValue = m_debounceValue;
+            m_debounceCount = 0;
+            m_ticks += m_isGoingForward ? 1 : -1;
         }
     }
 

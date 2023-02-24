@@ -37,7 +37,7 @@ public class SwerveModule {
 
     private static final double kWheelRadius = 2.0 * 0.0254; // 2" * 0.0254 m / inch
     private static final int kEncoderResolution = 4096;
-    private static final double kGearboxRatio = 1.0 / 6.86; // One turn of the wheel is 6.86 turns of the motor
+    private static final double kGearboxRatio = 1.0 / 6.12; // One turn of the wheel is 6.86 turns of the motor
     private static final double kDrivePositionFactor = (2.0 * Math.PI * kWheelRadius * kGearboxRatio);
     private static final double kDriveCurrentLimitAmps = 80.0;
     private static final double kTurnCurrentLimitAmps = 20.0; 

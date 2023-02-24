@@ -15,15 +15,17 @@ public class TeleOpDriveCommand extends CommandBase {
     private Supplier<Double> m_xJoystickSupplier;
     private Supplier<Double> m_yJoystickSupplier;
     private Supplier<Double> m_turnJoystickSupplier;
+    private Supplier<Boolean> m_isTeleopEnabled;
 
     /** Creates a new TeleOpDriveCommand. */
     public TeleOpDriveCommand(DriveSubsystem driveSubsystem,
-            Supplier<Double> xJoystick, Supplier<Double> yJoystick, Supplier<Double> turnJoystick) {
+            Supplier<Double> xJoystick, Supplier<Double> yJoystick, Supplier<Double> turnJoystick, Supplier<Boolean> isTeleopEnabled) {
         m_driveSubsystem = driveSubsystem;
 
         m_xJoystickSupplier = xJoystick;
         m_yJoystickSupplier = yJoystick;
         m_turnJoystickSupplier = turnJoystick;
+        m_isTeleopEnabled = isTeleopEnabled;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(driveSubsystem);
@@ -37,7 +39,7 @@ public class TeleOpDriveCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (Lifetime.isTeleop())
+        if (m_isTeleopEnabled.get())
             m_driveSubsystem.drive(m_xJoystickSupplier.get(), m_yJoystickSupplier.get(), m_turnJoystickSupplier.get(),
                     true);
     }

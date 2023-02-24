@@ -31,6 +31,8 @@ public class RobotContainer {
     private final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
     public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 
+    Robot m_robot;
+
     Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
     Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
     Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
@@ -49,8 +51,8 @@ public class RobotContainer {
     /**
      * The container form the robot. Contains subsystems, OI devices, and commands.
      */
-    public RobotContainer() {
-        LiveWindow.enableAllTelemetry();
+    public RobotContainer(Robot robot) {
+        m_robot = robot;
         // Setup of conditioning calculations
         m_driveXConditioning.setDeadband(0.18);
         m_driveXConditioning.setExponent(1.7);
@@ -70,7 +72,7 @@ public class RobotContainer {
 
     private void configureBindings() {
         m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem,
-                () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput()));
+                () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput(), () -> m_robot.isTeleopEnabled()));
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
         m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
                 m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.High));

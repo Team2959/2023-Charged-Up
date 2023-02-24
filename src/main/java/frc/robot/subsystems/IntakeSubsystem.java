@@ -10,6 +10,7 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
+import cwtech.util.SolenoidV2;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -35,10 +36,10 @@ public class IntakeSubsystem extends SubsystemBase
   VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
   Spark m_interiorFeederMotor = new Spark(RobotMap.kInteriorFeederSparkMotor);
   Spark m_flipperVacuumMotor = new Spark(RobotMap.kFlipperVacuumSparkMotor);
-  Solenoid m_intakeArm = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kIntakeArm);
-  Solenoid m_coneOrientor = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kConeOrientator);
-  Solenoid m_flipperArm = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kFlipperArm);
-  Solenoid m_intakeVacuumRelease = new Solenoid(PneumaticsModuleType.REVPH, RobotMap.kIntakeVacuumRelease);
+  SolenoidV2 m_intakeArm = new SolenoidV2(RobotMap.kIntakeArm);
+  SolenoidV2 m_coneOrientor = new SolenoidV2(RobotMap.kConeOrientator);
+  SolenoidV2 m_flipperArm = new SolenoidV2(RobotMap.kFlipperArm);
+  SolenoidV2 m_intakeVacuumRelease = new SolenoidV2(RobotMap.kIntakeVacuumRelease);
   DigitalInput m_gamePiecePresent = new DigitalInput(RobotMap.kGamePeicePresentSwitch);
   DigitalInput m_gamePieceAllIn = new DigitalInput(RobotMap.kConeAllInSwitch);
   ColorSensorV3 m_coneColorSensor = new ColorSensorV3(I2C.Port.kMXP);

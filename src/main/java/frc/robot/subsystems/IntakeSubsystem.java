@@ -13,9 +13,6 @@ import com.revrobotics.ColorSensorV3;
 import cwtech.util.SolenoidV2;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -45,6 +42,7 @@ public class IntakeSubsystem extends SubsystemBase
   ColorSensorV3 m_coneColorSensor = new ColorSensorV3(I2C.Port.kMXP);
   ColorMatch m_ColorMatcher = new ColorMatch();
   double m_intakeSpeed = 0.5;
+  double m_exteriorIntakeSpeed = 0.5;
 
 
   /** Creates a new IntakeSubsystem. */
@@ -107,10 +105,12 @@ public class IntakeSubsystem extends SubsystemBase
 
   public void intakeSmartDashboardInit() {
     SmartDashboard.putNumber(getName() + "/Intake Speed", m_intakeSpeed);
+    SmartDashboard.putNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
   }
 
   public void intakeSmartDashboardUpdate() {
     m_intakeSpeed = SmartDashboard.getNumber(getName() + "/Intake Speed", m_intakeSpeed);
+    m_exteriorIntakeSpeed = SmartDashboard.getNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
     SmartDashboard.putBoolean(getName() + "/Game Piece Present", m_gamePiecePresent.get());
     SmartDashboard.putBoolean(getName() + "/Game Piece All In", m_gamePieceAllIn.get());
     SmartDashboard.putNumber(getName() + "/Color Sensor/R", m_coneColorSensor.getRed());
@@ -143,8 +143,8 @@ public class IntakeSubsystem extends SubsystemBase
 
   public void turnOnIntake() {
     m_intakeArm.set(true);
-    setExteriorFeederMotor(0.5);
-    setInteriorFeederMotor(0.5);
+    setExteriorFeederMotor(m_exteriorIntakeSpeed);
+    setInteriorFeederMotor(m_intakeSpeed);
     m_intakeVacuumRelease.set(true);
     m_flipperArm.set(true);
     m_coneOrientor.set(false);
@@ -163,12 +163,12 @@ public class IntakeSubsystem extends SubsystemBase
     }
 
     m_coneOrientor.set(false);
-    setExteriorFeederMotor(-0.5);
-    setInteriorFeederMotor(-0.5);
+    setExteriorFeederMotor(-m_exteriorIntakeSpeed);
+    setInteriorFeederMotor(-m_intakeSpeed);
   }
 
   public void reverseFront() {
-    setExteriorFeederMotor(-0.5);
+    setExteriorFeederMotor(-m_exteriorIntakeSpeed);
   }
 
   public void stopIntake() {

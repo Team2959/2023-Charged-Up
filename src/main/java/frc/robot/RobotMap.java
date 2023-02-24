@@ -40,6 +40,8 @@ public final class RobotMap {
     public static final int kFrontRightTurnPulseWidthDigIO = 4;
     public static final int kGamePeicePresentSwitch = 5;
     public static final int kConeAllInSwitch = 6;
+    public static final int kRopeEncoderDigIO = 7;
+    public static final int kRotatorArmEncoderPulseWidthDIO = 8;
 
     // Operator input USB ports
     public static final int kLeftJoystick = 0;

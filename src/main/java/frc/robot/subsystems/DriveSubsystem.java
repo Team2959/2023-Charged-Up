@@ -15,7 +15,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -37,10 +36,11 @@ public class DriveSubsystem extends SubsystemBase {
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;// kMaxSpeedMetersPerSecond /
                                                                           // Math.hypot(0.381, 0.381);
 
-    private final Translation2d kFrontLeftLocation = new Translation2d(0.381, 0.381);
-    private final Translation2d kFrontRightLocation = new Translation2d(0.381, -0.381);
-    private final Translation2d kBackLeftLocation = new Translation2d(-0.381, 0.381);
-    private final Translation2d kBackRightLocation = new Translation2d(-0.381, -0.381);
+    private static final double kHalfTrackWidthMeters = 0.571 / 2.0;
+    private final Translation2d kFrontLeftLocation = new Translation2d(kHalfTrackWidthMeters, kHalfTrackWidthMeters);
+    private final Translation2d kFrontRightLocation = new Translation2d(kHalfTrackWidthMeters, -kHalfTrackWidthMeters);
+    private final Translation2d kBackLeftLocation = new Translation2d(-kHalfTrackWidthMeters, kHalfTrackWidthMeters);
+    private final Translation2d kBackRightLocation = new Translation2d(-kHalfTrackWidthMeters, -kHalfTrackWidthMeters);
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem()
@@ -80,8 +80,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_frontRight.resetAngleEncoderToAbsolute();
         m_backLeft.resetAngleEncoderToAbsolute();
         m_backRight.resetAngleEncoderToAbsolute();
-        // m_odometry = new SwerveDriveOdometry(m_kinematics, m_navX.getRotation2d(),
-        // getPositions());
         m_initalized = true;
     }
 

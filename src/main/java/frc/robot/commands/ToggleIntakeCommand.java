@@ -23,6 +23,7 @@ public class ToggleIntakeCommand extends CommandBase
   @Override
   public void initialize()
   {
+    // ToDo: can convert to InstantCommand
     m_intakeSubsystem.toggleIntakeSubsystem();
   }
 

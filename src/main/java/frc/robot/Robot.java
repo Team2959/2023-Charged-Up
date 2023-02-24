@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import cwtech.util.Lifetime;
-import cwtech.util.Lifetime.RobotMode;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -16,14 +14,15 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
-    private void setuplogging(){
-        DataLogManager.start();
-        DataLogManager.logNetworkTables(true);
-    }
 
     @Override
     public void robotInit() {
         LiveWindow.disableAllTelemetry();
+
+        // only want this for debugging
+        DataLogManager.logNetworkTables(true);
+        DataLogManager.start();
+
         m_robotContainer = new RobotContainer(this);
     }
 
@@ -42,7 +41,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        Lifetime.updateMode(RobotMode.Disabled);
     }
 
     @Override
@@ -51,8 +49,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        Lifetime.updateMode(RobotMode.Auto);
-        setuplogging();
         m_robotContainer.m_driveSubsystem.initalize();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -68,7 +64,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        Lifetime.updateMode(RobotMode.Teleop);
         m_robotContainer.m_driveSubsystem.initalize();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
@@ -81,7 +76,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        Lifetime.updateMode(RobotMode.Test);
         CommandScheduler.getInstance().cancelAll();
     }
 

@@ -8,42 +8,31 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
 public class ArmExtentionCommand extends CommandBase {
-  /** Creates a new ArmExtentionCommand. */
-private double m_targetDistance;
-private PlacementArmSubsystem m_PlacementArmSubsystem;
+    private double m_targetDistance;
+    private PlacementArmSubsystem m_placementArmSubsystem;
 
-  public ArmExtentionCommand(PlacementArmSubsystem placementArmSubsystem, double distance) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(placementArmSubsystem);
-    m_PlacementArmSubsystem = placementArmSubsystem;
-    m_targetDistance = distance;
+    public ArmExtentionCommand(PlacementArmSubsystem placementArmSubsystem, double distance) {
+        addRequirements(placementArmSubsystem);
+        m_placementArmSubsystem = placementArmSubsystem;
+        m_targetDistance = distance;
+    }
 
-  }
+    @Override
+    public void initialize() {
+        m_placementArmSubsystem.setArmExtensionPosition(m_targetDistance);
+    }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
+    @Override
+    public void execute() {
+    }
 
-    m_PlacementArmSubsystem.setArmExtensionPosition(m_targetDistance);
+    @Override
+    public void end(boolean interrupted) {
+        m_placementArmSubsystem.stopArmExtensionMotor();
+    }
 
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    // ToDo: need to stop motor
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() 
-  {
-    double m_currentdistance = m_PlacementArmSubsystem.getArmExtensionPosition();
-
-    return Math.abs(m_targetDistance - m_currentdistance) < 1; // The 1 is a placeholder for later
-  }
+    @Override
+    public boolean isFinished() {
+        return m_placementArmSubsystem.isArmExtensionAtSetpoint();
+    }
 }

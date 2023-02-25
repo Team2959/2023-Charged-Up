@@ -3,48 +3,37 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
-public class ArmRotationCommand extends CommandBase
-{
-  /** Creates a new PlacementArmCommand. */
+public class ArmRotationCommand extends CommandBase {
+    private PlacementArmSubsystem m_placementArmSubsystem;
+    private double m_angle;
 
-  private PlacementArmSubsystem m_PlacementArmSubsystem;
-  private double m_angle;
+    public ArmRotationCommand(PlacementArmSubsystem placementArmSubsystem, double angleInDegrees) {
+        m_placementArmSubsystem = placementArmSubsystem;
+        m_angle = angleInDegrees;
 
-  public ArmRotationCommand(PlacementArmSubsystem placementArmSubsystem, double angleInDegrees)
-  {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_PlacementArmSubsystem = placementArmSubsystem;
-    m_angle = angleInDegrees;
+        addRequirements(placementArmSubsystem);
+    }
 
-    addRequirements(placementArmSubsystem);
-  }
+    @Override
+    public void initialize() {
+        m_placementArmSubsystem.setArmDegrees(m_angle);
+    }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize()
-  {
-    m_PlacementArmSubsystem.setArmDegrees(m_angle);
-  }
+    @Override
+    public void execute() {
+    }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+    @Override
+    public void end(boolean interrupted) {
+        m_placementArmSubsystem.stopArmRotatorMotor();
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    // ToDo: need to stop motor
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished()
-  {
-    double currentAngle = m_PlacementArmSubsystem.getArmAngle();
-    
-    return Math.abs(m_angle - currentAngle) < 0.5;
-  }
+    @Override
+    public boolean isFinished() {
+        return m_placementArmSubsystem.isArmRotatorAtSetpoint();
+    }
 }

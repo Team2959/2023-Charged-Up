@@ -53,10 +53,12 @@ public class IntakeSubsystem extends SubsystemBase
 
   public boolean gamePieceIsReady() {
     if(m_gamePieceAllIn.get()) {
+      m_GamePieceType = GamePieceType.Cone;
       return true;
     }
     else if(m_gamePiecePresent.get()) {
       if(!seesColorYellow()) {
+        m_GamePieceType = GamePieceType.Cube;
         return true;
       }
     }

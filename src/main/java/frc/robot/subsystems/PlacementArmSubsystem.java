@@ -83,6 +83,24 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armRotatorMotorPidController.setSetpoint(degrees);
     }
 
+    public void stopArmExtensionMotor() {
+        m_armExtensionMotor.set(0.0);
+        m_armExtensionMotorPidController.setSetpoint(getArmExtensionPosition());
+    }
+
+    public boolean isArmExtensionAtSetpoint() {
+        return m_armExtensionMotorPidController.atSetpoint();
+    }
+
+    public boolean isArmRotatorAtSetpoint() {
+        return m_armRotatorMotorPidController.atSetpoint();
+    }
+
+    public void stopArmRotatorMotor() {
+        m_armRotatorMotor.set(0.0);
+        m_armExtensionMotorPidController.setSetpoint(getArmAngle());
+    }
+
     public double getArmAngle() {
         return m_armRotatorEncoderDutyCycle.getOutput() * 360;
     }

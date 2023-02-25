@@ -7,16 +7,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ArmToLoadingCommand extends SequentialCommandGroup {
-  /** Creates a new ArmToLoadingCommand. */
-  public ArmToLoadingCommand(PlacementArmSubsystem placementArmSubsystem) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    
-    addCommands(new ArmExtentionCommand(placementArmSubsystem, 0));
-    addCommands(new ArmRotationCommand(placementArmSubsystem, 0));
-  }
+    public ArmToLoadingCommand(PlacementArmSubsystem placementArmSubsystem) {
+        addCommands(new ArmExtentionCommand(placementArmSubsystem, 0),
+                new ArmRotationCommand(placementArmSubsystem, 0));
+    }
 }

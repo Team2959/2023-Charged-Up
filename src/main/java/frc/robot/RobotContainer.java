@@ -9,6 +9,8 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.DropIntakeOrientatorCommand;
 import frc.robot.commands.FlipGamePieceUpCommand;
 import frc.robot.commands.LineupArmCommand;
+import frc.robot.commands.ReverseAllIntakeCommand;
+import frc.robot.commands.ReverseExteriorWheelsCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.ToggleIntakeCommand;
@@ -41,6 +43,8 @@ public class RobotContainer {
     JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kMidGamePeiceButton);
     JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePeiceButton);
     JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
+    JoystickButton m_reverseIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseIntakeButton);
+    JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseExteriorIntakeButton);
 
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
@@ -66,7 +70,7 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
+        // m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
     }
 
     private void configureBindings() {
@@ -89,6 +93,8 @@ public class RobotContainer {
 
         new Trigger(m_IntakeSubsystem::gamePieceIsReady).onTrue(new FlipGamePieceUpCommand(m_IntakeSubsystem));
 
+        m_reverseIntakeButton.onTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
+        m_reverseExteriorIntakeButton.onTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
     }
 
     public Command getAutonomousCommand() {
@@ -96,6 +102,7 @@ public class RobotContainer {
     }
 
     public double getDriveXInput() {
+        // return 0;
         // We getY() here because of the FRC coordinate system being turned 90 degrees
         return m_driveXConditioning.condition(m_leftJoystick.getY())
                 * DriveSubsystem.kMaxSpeedMetersPerSecond
@@ -103,6 +110,7 @@ public class RobotContainer {
     }
 
     public double getDriveYInput() {
+        // return 0;
         // We getX() here becasuse of the FRC coordinate system being turned 90 degrees
         return m_driveYConditioning.condition(m_leftJoystick.getX())
                 * DriveSubsystem.kMaxSpeedMetersPerSecond
@@ -110,7 +118,8 @@ public class RobotContainer {
     }
 
     public double getTurnInput() {
-        return m_turnConditioning.condition(m_rightJoystick.getX())
+        // return 0;
+        return m_turnConditioning.condition(m_rightJoystick.getX() - 0.33)
                 * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
     }
 }

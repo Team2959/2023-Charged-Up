@@ -27,9 +27,9 @@ public final class RobotMap {
     public static final int kGripVacuum3SparkMotor = 4;
 
     // REV Pneumatic Hub solenoid addresses
-    public static final int kIntakeArm = 0;
+    public static final int kIntakeArm = 2;
     public static final int kConeOrientator = 1;
-    public static final int kFlipperArm = 2;
+    public static final int kFlipperArm = 0;
     public static final int kIntakeVacuumRelease = 3;
     public static final int kArmVacuumRelease = 4;
 
@@ -53,17 +53,19 @@ public final class RobotMap {
     public static final int kToggleIntakeButton = 2;
 
     // Co-Piolet Button board
-    public static final int kHighGamePeiceButton = 1;
-    public static final int kMidGamePeiceButton = 2;
-    public static final int kLowGamePeiceButton = 3;
-    public static final int kArmReleaseButton = 4;
-    public static final int kReturnArmToLoadingButton = 5;
-    public static final int kIntakeReleaseButton = 6;
+    public static final int kHighGamePeiceButton = 8;
+    public static final int kMidGamePeiceButton = 9;
+    public static final int kLowGamePeiceButton = 12;
+    public static final int kArmReleaseButton = 1;
+    public static final int kReturnArmToLoadingButton = 4;
+    public static final int kIntakeReleaseButton = 3;
+    public static final int kReverseIntakeButton = 3;
+    public static final int kReverseExteriorIntakeButton = 3;
 
     // Zeroed values, should be in radians
     //private static final double kOffsetZeroed = Math.PI / 2;
-    public static final double kZeroedFrontLeft = 2.672 + Math.toRadians(90);
-    public static final double kZeroedFrontRight = 2.815 + Math.toRadians(90);
-    public static final double kZeroedBackLeft = 0.908 + Math.toRadians(90);
-    public static final double kZeroedBackRight = 1.683 + Math.toRadians(90);
-}
+    public static final double kZeroedFrontLeft = 2.194; // GOOD
+    public static final double kZeroedFrontRight = 5.630; // 
+    public static final double kZeroedBackLeft = 5.681; // 
+    public static final double kZeroedBackRight = 1.815; // 
+};

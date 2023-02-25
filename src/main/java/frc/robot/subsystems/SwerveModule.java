@@ -100,6 +100,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(m_name + "/Drive Encoder Velocity", m_driveEncoder.getVelocity());
         SmartDashboard.putNumber(m_name + "/Drive Encoder Position", m_driveEncoder.getPosition()); 
         SmartDashboard.putNumber(m_name + "/Turn Motor Position", m_turnEncoder.getPosition());
+        SmartDashboard.putNumber(m_name + "/Turn Digital IO", m_dutyCycleEncoder.getOutput());
 
        m_drivePIDController.setP (SmartDashboard.getNumber(m_name + "/Drive P", kDriveP));
        m_drivePIDController.setI (SmartDashboard.getNumber(m_name + "/Drive I", kDriveI));
@@ -141,7 +142,7 @@ public class SwerveModule {
 
         m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
 
-        if(Math.abs(state.speedMetersPerSecond - 0) < 0.001)
+        // if(Math.abs(state.speedMetersPerSecond - 0) < 0.001)
         {
             // Leave because we don't want wheel to go back to zero, because we are stopped
             // return;

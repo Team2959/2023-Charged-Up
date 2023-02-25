@@ -28,6 +28,17 @@ public class IntakeSubsystem extends SubsystemBase
     Cube
   };
 
+  private int m_ticks = 0;
+
+  @Override
+  public void periodic() {
+
+    m_ticks++;
+    if (m_ticks % 15 != 11)
+        return;
+  // intakeSmartDashboardUpdate();
+  }
+
   private GamePieceType m_GamePieceType = GamePieceType.Unknown;
 
   VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
@@ -41,14 +52,16 @@ public class IntakeSubsystem extends SubsystemBase
   DigitalInput m_gamePieceAllIn = new DigitalInput(RobotMap.kConeAllInSwitch);
   ColorSensorV3 m_coneColorSensor = new ColorSensorV3(I2C.Port.kMXP);
   ColorMatch m_ColorMatcher = new ColorMatch();
-  double m_intakeSpeed = 0.5;
-  double m_exteriorIntakeSpeed = 0.5;
+  double m_intakeSpeed = 0.75;
+  double m_exteriorIntakeSpeed = 1.0;
 
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem()
   {
+    m_flipperArm.set(false);
     m_ColorMatcher.addColorMatch(new Color(1.0, 1.0, 0.0));
+    // intakeSmartDashboardInit();
   }
 
   public boolean gamePieceIsReady() {

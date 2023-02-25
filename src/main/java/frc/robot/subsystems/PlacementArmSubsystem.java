@@ -44,6 +44,8 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     static double kDegreesPerRevolution = 360.0 / 4096.0;
 
+    private int m_ticks = 0;
+
     // ** Creates a new PlacementArmSubsystem. */
     public PlacementArmSubsystem() {
         m_armRotatorMotorPidController.setP(kArmRotatorP);
@@ -122,10 +124,15 @@ public class PlacementArmSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
 
         SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", getArmAngle());
-        smartDashboardUpdate();
 
-        m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));
-        m_armRotatorMotor.set(m_armRotatorMotorPidController.calculate(getArmAngle()));
+        m_ticks++;
+        if (m_ticks % 15 != 3)
+            return;
+
+        // smartDashboardUpdate();
+
+        // m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));
+        // m_armRotatorMotor.set(m_armRotatorMotorPidController.calculate(getArmAngle()));
     }
 
     public void manipulateVacuumRelease(boolean release) {

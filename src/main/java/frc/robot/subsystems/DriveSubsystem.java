@@ -42,6 +42,8 @@ public class DriveSubsystem extends SubsystemBase {
     private final Translation2d kBackLeftLocation = new Translation2d(-kHalfTrackWidthMeters, kHalfTrackWidthMeters);
     private final Translation2d kBackRightLocation = new Translation2d(-kHalfTrackWidthMeters, -kHalfTrackWidthMeters);
 
+    private int m_ticks = 0;
+
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem()
     {
@@ -65,10 +67,10 @@ public class DriveSubsystem extends SubsystemBase {
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getAngle(), getPositions());
 
-        m_frontLeft.driveSmartDashboardInit();
-        m_frontRight.driveSmartDashboardInit();
-        m_backLeft.driveSmartDashboardInit();
-        m_backRight.driveSmartDashboardInit();
+        // m_frontLeft.driveSmartDashboardInit();
+        // m_frontRight.driveSmartDashboardInit();
+        // m_backLeft.driveSmartDashboardInit();
+        // m_backRight.driveSmartDashboardInit();
     }
 
     public void initalize()
@@ -93,12 +95,16 @@ public class DriveSubsystem extends SubsystemBase {
     {
         m_odometry.update(getAngle(), getPositions());
 
+        m_ticks++;
+        if (m_ticks % 15 != 7)
+            return;
+
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
 
-        m_frontLeft.driveSmartDashboardUpdate();
-        m_frontRight.driveSmartDashboardUpdate();
-        m_backLeft.driveSmartDashboardUpdate();
-        m_backRight.driveSmartDashboardUpdate();
+        // m_frontLeft.driveSmartDashboardUpdate();
+        // m_frontRight.driveSmartDashboardUpdate();
+        // m_backLeft.driveSmartDashboardUpdate();
+        // m_backRight.driveSmartDashboardUpdate();
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,

@@ -8,6 +8,7 @@ import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DropIntakeOrientatorCommand;
 import frc.robot.commands.FlipGamePieceUpCommand;
+import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.ReverseAllIntakeCommand;
 import frc.robot.commands.ReverseExteriorWheelsCommand;
@@ -23,6 +24,7 @@ import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -39,12 +41,14 @@ public class RobotContainer {
     Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
+    JoystickButton m_intakeReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kIntakeReleaseButton);
     JoystickButton m_highGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kHighGamePeiceButton);
     JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kMidGamePeiceButton);
     JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePeiceButton);
     JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
     JoystickButton m_reverseIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseIntakeButton);
     JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseExteriorIntakeButton);
+    JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
 
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
@@ -76,25 +80,38 @@ public class RobotContainer {
     private void configureBindings() {
         m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem,
                 () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput(), () -> m_robot.isTeleopEnabled()));
+
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
+
         m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
                 m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.High));
         m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
                 m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Mid));
         m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
                 m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Low));
+        
+        m_testButton.onTrue(new InstantCommand(() -> {
+            m_IntakeSubsystem.flipGamePiece();
+            if(m_IntakeSubsystem.isVacuumEngaged()) {
+                m_IntakeSubsystem.stopVacuum();
+            }
+            else {
+                m_IntakeSubsystem.startVacuum();
+            }
+        }));
 
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
+        m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
 
-        new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.seesColorYellow())
+        new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientatorCommand(m_IntakeSubsystem));
 
         new Trigger(m_IntakeSubsystem::gamePieceIsReady).onTrue(new FlipGamePieceUpCommand(m_IntakeSubsystem));
 
-        m_reverseIntakeButton.onTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
-        m_reverseExteriorIntakeButton.onTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
+        m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
+        m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
     }
 
     public Command getAutonomousCommand() {
@@ -104,7 +121,7 @@ public class RobotContainer {
     public double getDriveXInput() {
         // return 0;
         // We getY() here because of the FRC coordinate system being turned 90 degrees
-        return m_driveXConditioning.condition(m_leftJoystick.getY())
+        return m_driveXConditioning.condition(-m_leftJoystick.getY())
                 * DriveSubsystem.kMaxSpeedMetersPerSecond
                 * m_speedMultiplier;
     }
@@ -119,7 +136,7 @@ public class RobotContainer {
 
     public double getTurnInput() {
         // return 0;
-        return m_turnConditioning.condition(m_rightJoystick.getX() - 0.33)
+        return m_turnConditioning.condition(m_rightJoystick.getX())
                 * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
     }
 }

@@ -6,16 +6,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.revrobotics.ColorMatch;
-import com.revrobotics.ColorMatchResult;
-import com.revrobotics.ColorSensorV3;
 
 import cwtech.util.SolenoidV2;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -28,19 +23,6 @@ public class IntakeSubsystem extends SubsystemBase
     Cube
   };
 
-  private int m_ticks = 0;
-
-  @Override
-  public void periodic() {
-
-    m_ticks++;
-    if (m_ticks % 15 != 11)
-        return;
-  // intakeSmartDashboardUpdate();
-  }
-
-  private GamePieceType m_GamePieceType = GamePieceType.Unknown;
-
   VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
   Spark m_interiorFeederMotor = new Spark(RobotMap.kInteriorFeederSparkMotor);
   Spark m_flipperVacuumMotor = new Spark(RobotMap.kFlipperVacuumSparkMotor);
@@ -48,34 +30,45 @@ public class IntakeSubsystem extends SubsystemBase
   SolenoidV2 m_coneOrientor = new SolenoidV2(RobotMap.kConeOrientator);
   SolenoidV2 m_flipperArm = new SolenoidV2(RobotMap.kFlipperArm);
   SolenoidV2 m_intakeVacuumRelease = new SolenoidV2(RobotMap.kIntakeVacuumRelease);
-  DigitalInput m_gamePiecePresent = new DigitalInput(RobotMap.kGamePeicePresentSwitch);
-  DigitalInput m_gamePieceAllIn = new DigitalInput(RobotMap.kConeAllInSwitch);
-  ColorSensorV3 m_coneColorSensor = new ColorSensorV3(I2C.Port.kMXP);
-  ColorMatch m_ColorMatcher = new ColorMatch();
-  double m_intakeSpeed = 0.75;
+  DigitalInput m_gamePieceDetected = new DigitalInput(RobotMap.kGamePieceDetectedSwitch);
+  DigitalInput m_gamePieceIn = new DigitalInput(RobotMap.kGamePieceInSwitch);
+  DigitalInput m_gamePieceIsCone = new DigitalInput(RobotMap.kConeAllInSwitch);
+  double m_intakeSpeed = 1;
   double m_exteriorIntakeSpeed = 1.0;
+  private GamePieceType m_GamePieceType = GamePieceType.Unknown;
+  private int m_ticks = 0;
 
+  @Override
+  public void periodic() {
+    m_ticks++;
+    if (m_ticks % 15 != 11)
+        return;
+
+    intakeSmartDashboardUpdate();
+  }
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem()
   {
-    m_flipperArm.set(false);
-    m_ColorMatcher.addColorMatch(new Color(1.0, 1.0, 0.0));
+    m_flipperArm.set(true);
+
     // intakeSmartDashboardInit();
   }
 
   public boolean gamePieceIsReady() {
-    if(m_gamePieceAllIn.get()) {
+    if(m_gamePieceIsCone.get()) {
       m_GamePieceType = GamePieceType.Cone;
       return true;
     }
-    else if(m_gamePiecePresent.get()) {
-      if(!seesColorYellow()) {
+    if(m_gamePieceIn.get()) {
         m_GamePieceType = GamePieceType.Cube;
         return true;
-      }
     }
     return false;
+  }
+
+  public boolean isVacuumEngaged() {
+    return !m_intakeVacuumRelease.get();
   }
 
   public void toggleFlipper() {
@@ -91,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase
   }
 
   public void startVacuum() {
-    m_intakeVacuumRelease.set(false);
+    engageVacuumSeal();
     m_flipperVacuumMotor.set(1.0);
   }
 
@@ -100,14 +93,16 @@ public class IntakeSubsystem extends SubsystemBase
     m_flipperVacuumMotor.set(0.0);
   }
 
-  public boolean seesColorYellow() {
-    ColorMatchResult result = m_ColorMatcher.matchClosestColor(m_coneColorSensor.getColor());
-    SmartDashboard.putNumber(getName() + "/Color Sensor/Confidence", result.confidence);
-    return result.confidence > 0.9;
+  public void engageVacuumSeal() {
+    m_intakeVacuumRelease.set(false);
   }
 
   public boolean intakeIsDown() {
     return m_intakeArm.get();
+  }
+
+  public boolean gamePieceDetected() {
+    return m_gamePieceDetected.get();
   }
 
   public void dropOrientatorBar() {
@@ -126,12 +121,10 @@ public class IntakeSubsystem extends SubsystemBase
   public void intakeSmartDashboardUpdate() {
     m_intakeSpeed = SmartDashboard.getNumber(getName() + "/Intake Speed", m_intakeSpeed);
     m_exteriorIntakeSpeed = SmartDashboard.getNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
-    SmartDashboard.putBoolean(getName() + "/Game Piece Present", m_gamePiecePresent.get());
-    SmartDashboard.putBoolean(getName() + "/Game Piece All In", m_gamePieceAllIn.get());
-    SmartDashboard.putNumber(getName() + "/Color Sensor/R", m_coneColorSensor.getRed());
-    SmartDashboard.putNumber(getName() + "/Color Sensor/G", m_coneColorSensor.getGreen());
-    SmartDashboard.putNumber(getName() + "/Color Sensor/B", m_coneColorSensor.getBlue());
-    SmartDashboard.putBoolean(getName() + "/Color Sensor Sees Yellow", seesColorYellow());
+    SmartDashboard.putBoolean(getName() + "/Game Piece Detected", m_gamePieceDetected.get());
+    SmartDashboard.putBoolean(getName() + "/Game Piece In", m_gamePieceIn.get());
+    SmartDashboard.putBoolean(getName() + "/Game Piece Is Cone", m_gamePieceIsCone.get());
+    SmartDashboard.putNumber(getName() + "/PWM of Intake Belts", m_interiorFeederMotor.get());
   }
 
   public void toggleIntakeSubsystem()
@@ -160,8 +153,8 @@ public class IntakeSubsystem extends SubsystemBase
     m_intakeArm.set(true);
     setExteriorFeederMotor(m_exteriorIntakeSpeed);
     setInteriorFeederMotor(m_intakeSpeed);
-    m_intakeVacuumRelease.set(true);
-    m_flipperArm.set(true);
+    startVacuum();
+    unflipGamePiece();
     m_coneOrientor.set(false);
   }
 
@@ -169,6 +162,7 @@ public class IntakeSubsystem extends SubsystemBase
     m_intakeArm.set(false);
     setExteriorFeederMotor(0);
     setInteriorFeederMotor(0);
+    flipGamePiece();
     m_coneOrientor.set(false);
   }
 
@@ -192,7 +186,6 @@ public class IntakeSubsystem extends SubsystemBase
   }
 
   public GamePieceType getGamePieceType(){
-
     return m_GamePieceType;
   }
 }

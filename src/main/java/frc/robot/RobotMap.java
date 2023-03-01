@@ -22,26 +22,27 @@ public final class RobotMap {
     // PWM motor addresses
     public static final int kInteriorFeederSparkMotor = 0;
     public static final int kFlipperVacuumSparkMotor = 1;
-    public static final int kGripVacuum1SparkMotor = 2;
-    public static final int kGripVacuum2SparkMotor = 3;
-    public static final int kGripVacuum3SparkMotor = 4;
+    public static final int kGripVacuumSparkMotor = 2;
 
     // REV Pneumatic Hub solenoid addresses
-    public static final int kIntakeArm = 2;
-    public static final int kConeOrientator = 1;
     public static final int kFlipperArm = 0;
+    public static final int kConeOrientator = 1;
+    public static final int kIntakeArm = 2;
     public static final int kIntakeVacuumRelease = 3;
-    public static final int kArmVacuumRelease = 4;
+    public static final int kArmVacuumRelease1 = 4;
+    public static final int kArmVacuumRelease2 = 5;
+    public static final int kArmVacuumRelease3 = 6;
 
     // Digital IO addresses
     public static final int kFrontLeftTurnPulseWidthDigIO = 1;
     public static final int kBackLeftTurnPulseWidthDigIO = 2;
     public static final int kBackRightTurnPulseWidthDigIO = 3;
     public static final int kFrontRightTurnPulseWidthDigIO = 4;
-    public static final int kGamePeicePresentSwitch = 5;
+    public static final int kGamePieceInSwitch = 5;
     public static final int kConeAllInSwitch = 6;
     public static final int kRopeEncoderDigIO = 7;
     public static final int kRotatorArmEncoderPulseWidthDIO = 8;
+    public static final int kGamePieceDetectedSwitch = 9;
 
     // Operator input USB ports
     public static final int kLeftJoystick = 0;
@@ -59,13 +60,14 @@ public final class RobotMap {
     public static final int kArmReleaseButton = 1;
     public static final int kReturnArmToLoadingButton = 4;
     public static final int kIntakeReleaseButton = 3;
-    public static final int kReverseIntakeButton = 3;
-    public static final int kReverseExteriorIntakeButton = 3;
+    public static final int kReverseIntakeButton = 10;
+    public static final int kReverseExteriorIntakeButton = 6;
+    public static final int kTestButton = 11;
 
     // Zeroed values, should be in radians
-    //private static final double kOffsetZeroed = Math.PI / 2;
-    public static final double kZeroedFrontLeft = 2.194; // GOOD
-    public static final double kZeroedFrontRight = 5.630; // 
-    public static final double kZeroedBackLeft = 5.681; // 
-    public static final double kZeroedBackRight = 1.815; // 
+    // source is google document in Electrical for team - module data
+    public static final double kZeroedFrontLeft = 5.343;
+    public static final double kZeroedFrontRight = 5.630; 
+    public static final double kZeroedBackLeft = 5.681;
+    public static final double kZeroedBackRight = 1.815;
 };

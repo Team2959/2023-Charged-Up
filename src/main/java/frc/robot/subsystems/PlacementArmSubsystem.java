@@ -31,10 +31,10 @@ public class PlacementArmSubsystem extends SubsystemBase {
     CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor, MotorType.kBrushless);
     DigitalInput m_armRotatorEncoderDigitalInput = new DigitalInput(RobotMap.kRotatorArmEncoderPulseWidthDIO);
     DutyCycle m_armRotatorEncoderDutyCycle = new DutyCycle(m_armRotatorEncoderDigitalInput);
-    Spark m_gripVacuumMotor1 = new Spark(RobotMap.kGripVacuum1SparkMotor);
-    Spark m_gripVacuumMotor2 = new Spark(RobotMap.kGripVacuum2SparkMotor);
-    Spark m_gripVacuumMotor3 = new Spark(RobotMap.kGripVacuum3SparkMotor);
-    SolenoidV2 m_armVacuumRelease = new SolenoidV2(RobotMap.kArmVacuumRelease);
+    Spark m_gripVacuumMotor = new Spark(RobotMap.kGripVacuumSparkMotor);
+    SolenoidV2 m_armVacuumRelease1 = new SolenoidV2(RobotMap.kArmVacuumRelease1);
+    SolenoidV2 m_armVacuumRelease2 = new SolenoidV2(RobotMap.kArmVacuumRelease2);
+    SolenoidV2 m_armVacuumRelease3 = new SolenoidV2(RobotMap.kArmVacuumRelease3);
 
     RopeSensor m_ropeSensor = new RopeSensor(RobotMap.kRopeEncoderDigIO);
     PIDController m_armExtensionMotorPidController = new PIDController(kArmExtensionP, kArmExtensionI, kArmExtensionD);
@@ -55,6 +55,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setP(kArmExtensionP);
         m_armExtensionMotorPidController.setI(kArmExtensionI);
         m_armExtensionMotorPidController.setD(kArmExtensionD);
+
         smartDashboardInit();
     }
 
@@ -136,21 +137,27 @@ public class PlacementArmSubsystem extends SubsystemBase {
     }
 
     public void manipulateVacuumRelease(boolean release) {
+        manipulateVacuumSolenoids(release);
         if (release) {
-            m_armVacuumRelease.set(true);
-            m_gripVacuumMotor1.set(0);
-            m_gripVacuumMotor2.set(0);
-            m_gripVacuumMotor3.set(0);
-        } else {
-            m_armVacuumRelease.set(false);
+            manipulateVacuumMotors(false);
         }
     }
 
     public void engageVacuum() {
-        m_armVacuumRelease.set(false);
-        m_gripVacuumMotor1.set(1.0);
-        m_gripVacuumMotor2.set(1.0);
-        m_gripVacuumMotor3.set(1.0);
+        manipulateVacuumSolenoids(false);
+        manipulateVacuumMotors(true);
     }
 
+    private void manipulateVacuumSolenoids(boolean newState)
+    {
+        m_armVacuumRelease1.set(newState);
+        m_armVacuumRelease2.set(newState);
+        m_armVacuumRelease3.set(newState);
+    }
+
+    private void manipulateVacuumMotors(boolean evacuate)
+    {
+        var speed = evacuate ? 1.0 : 0.0;
+        m_gripVacuumMotor.set(speed);
+    }
 }

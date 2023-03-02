@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase
   private SparkMaxPIDController m_flipperPIDController;
   private SparkMaxRelativeEncoder m_flipperEncoder;
   SolenoidV2 m_intakeArm = new SolenoidV2(RobotMap.kIntakeArm);
-  SolenoidV2 m_coneOrientor = new SolenoidV2(RobotMap.kConeOrientator);
+  SolenoidV2 m_coneOrienter = new SolenoidV2(RobotMap.kConeOrientater);
   SolenoidV2 m_intakeVacuumRelease = new SolenoidV2(RobotMap.kIntakeVacuumRelease);
   DigitalInput m_gamePieceDetected = new DigitalInput(RobotMap.kGamePieceDetectedSwitch);
   DigitalInput m_gamePieceIn = new DigitalInput(RobotMap.kGamePieceInSwitch);
@@ -128,11 +128,11 @@ public class IntakeSubsystem extends SubsystemBase
   }
 
   public void dropOrientatorBar() {
-    m_coneOrientor.set(true);
+    m_coneOrienter.set(true);
   }
 
   public void pullUpOrientatorBar() {
-    m_coneOrientor.set(false);
+    m_coneOrienter.set(false);
   }
 
   public void intakeSmartDashboardInit() {
@@ -191,7 +191,7 @@ public class IntakeSubsystem extends SubsystemBase
     setInteriorFeederMotor(m_intakeSpeed);
     startVacuum();
     unflipGamePiece();
-    m_coneOrientor.set(false);
+    m_coneOrienter.set(false);
   }
 
   public void turnOffIntake() {
@@ -199,7 +199,7 @@ public class IntakeSubsystem extends SubsystemBase
     setExteriorFeederMotor(0);
     setInteriorFeederMotor(0);
     flipGamePiece();
-    m_coneOrientor.set(false);
+    m_coneOrienter.set(false);
   }
 
   public void reverseAll(boolean exceptFlipper) {
@@ -207,7 +207,7 @@ public class IntakeSubsystem extends SubsystemBase
       unflipGamePiece();
     }
 
-    m_coneOrientor.set(false);
+    m_coneOrienter.set(false);
     setExteriorFeederMotor(-m_exteriorIntakeSpeed);
     setInteriorFeederMotor(-m_intakeSpeed);
   }

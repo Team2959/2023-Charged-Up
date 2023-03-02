@@ -20,12 +20,12 @@ import frc.robot.RobotMap;
 
 public class PlacementArmSubsystem extends SubsystemBase {
 
-    public static final double kArmRotatorP = 0.1;
-    public static final double kArmRotatorI = 0;
-    public static final double kArmRotatorD = 0;
-    public static final double kArmExtensionP = 0.1;
-    public static final double kArmExtensionI = 0;
-    public static final double kArmExtensionD = 0;
+    private static final double kArmRotatorP = 0.1;
+    private static final double kArmRotatorI = 0;
+    private static final double kArmRotatorD = 0;
+    private static final double kArmExtensionP = 0.1;
+    private static final double kArmExtensionI = 0;
+    private static final double kArmExtensionD = 0;
 
     CANSparkMax m_armRotatorMotor = new CANSparkMax(RobotMap.kArmRotatorSparkMaxMotor, MotorType.kBrushless);
     CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor, MotorType.kBrushless);
@@ -35,6 +35,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
     SolenoidV2 m_armVacuumRelease1 = new SolenoidV2(RobotMap.kArmVacuumRelease1);
     SolenoidV2 m_armVacuumRelease2 = new SolenoidV2(RobotMap.kArmVacuumRelease2);
     SolenoidV2 m_armVacuumRelease3 = new SolenoidV2(RobotMap.kArmVacuumRelease3);
+    SolenoidV2 m_armVacuumRelease4 = new SolenoidV2(RobotMap.kArmVacuumRelease4);
 
     RopeSensor m_ropeSensor = new RopeSensor(RobotMap.kRopeEncoderDigIO);
     PIDController m_armExtensionMotorPidController = new PIDController(kArmExtensionP, kArmExtensionI, kArmExtensionD);
@@ -73,7 +74,6 @@ public class PlacementArmSubsystem extends SubsystemBase {
     }
 
     public void smartDashboardUpdate() {
-        SmartDashboard.putNumber(getName() + "/Arm Rotator Position", getArmAngle());
         m_armRotatorMotorPidController.setP(SmartDashboard.getNumber(getName() + "/Arm Rotator P", kArmRotatorP));
         m_armRotatorMotorPidController.setI(SmartDashboard.getNumber(getName() + "/Arm Rotator I", kArmRotatorI));
         m_armRotatorMotorPidController.setD(SmartDashboard.getNumber(getName() + "/Arm Rotator D", kArmRotatorD));
@@ -125,6 +125,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
 
         SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", getArmAngle());
+        SmartDashboard.putNumber(getName() + "/Arm Extension Ticks", getArmExtensionPosition());
 
         m_ticks++;
         if (m_ticks % 15 != 3)
@@ -153,6 +154,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armVacuumRelease1.set(newState);
         m_armVacuumRelease2.set(newState);
         m_armVacuumRelease3.set(newState);
+        m_armVacuumRelease4.set(newState);
     }
 
     private void manipulateVacuumMotors(boolean evacuate)

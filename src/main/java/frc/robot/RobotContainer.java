@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
-import frc.robot.commands.DropIntakeOrientatorCommand;
+import frc.robot.commands.DropIntakeOrientaterCommand;
 import frc.robot.commands.FlipGamePieceUpCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
@@ -106,7 +106,7 @@ public class RobotContainer {
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
 
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
-                .whileTrue(new DropIntakeOrientatorCommand(m_IntakeSubsystem));
+                .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
 
         new Trigger(m_IntakeSubsystem::gamePieceIsReady).onTrue(new FlipGamePieceUpCommand(m_IntakeSubsystem));
 

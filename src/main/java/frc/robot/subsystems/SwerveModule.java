@@ -13,16 +13,16 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
 
 public class SwerveModule {
-    public static final double kDriveP = 0.05;
-    public static final double kDriveI = 0.0;
-    public static final double kDriveD = 0.001;
-    public static final double kDriveFF = 0.02;
-    public static final double kDriveIZone = 600;
-    public static final double kTurnP = 0.4;
-    public static final double kTurnI = 0.00001;
-    public static final double kTurnD = 0.0;
-    public static final double kTurnFF = 0.0;
-    public static final double kTurnIZone = 1.0;
+    private static final double kDriveP = 0.05;
+    private static final double kDriveI = 0.0;
+    private static final double kDriveD = 0.001;
+    private static final double kDriveFF = 0.02;
+    private static final double kDriveIZone = 600;
+    private static final double kTurnP = 0.4;
+    private static final double kTurnI = 0.00001;
+    private static final double kTurnD = 0.0;
+    private static final double kTurnFF = 0.0;
+    private static final double kTurnIZone = 1.0;
 
     private CANSparkMax m_driveMotor;
     private CANSparkMax m_turnMotor;

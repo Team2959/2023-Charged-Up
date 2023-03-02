@@ -26,12 +26,13 @@ public final class RobotMap {
     public static final int kGripVacuumSparkMotor = 2;
 
     // REV Pneumatic Hub solenoid addresses
-    public static final int kConeOrientator = 1;
+    public static final int kConeOrientater = 1;
     public static final int kIntakeArm = 2;
     public static final int kIntakeVacuumRelease = 3;
     public static final int kArmVacuumRelease1 = 4;
     public static final int kArmVacuumRelease2 = 5;
     public static final int kArmVacuumRelease3 = 6;
+    public static final int kArmVacuumRelease4 = 7;
 
     // Digital IO addresses
     public static final int kFrontLeftTurnPulseWidthDigIO = 1;

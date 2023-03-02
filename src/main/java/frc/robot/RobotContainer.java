@@ -73,8 +73,8 @@ public class RobotContainer {
         configureBindings();
     }
 
-    public void periodic() {
-        // m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
+    public void teleOpInit() {
+        m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
     }
 
     private void configureBindings() {

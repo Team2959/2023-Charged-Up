@@ -18,6 +18,7 @@ public final class RobotMap {
     public static final int kExteriorFeederVictorSpxMotor = 5;
     public static final int kArmRotatorSparkMaxMotor = 7;
     public static final int kArmExtensionSparkMaxMotor = 8;
+    public static final int kFlipperSparkMaxMotor = 9;
 
     // PWM motor addresses
     public static final int kInteriorFeederSparkMotor = 0;
@@ -25,7 +26,6 @@ public final class RobotMap {
     public static final int kGripVacuumSparkMotor = 2;
 
     // REV Pneumatic Hub solenoid addresses
-    public static final int kFlipperArm = 0;
     public static final int kConeOrientator = 1;
     public static final int kIntakeArm = 2;
     public static final int kIntakeVacuumRelease = 3;
@@ -66,8 +66,8 @@ public final class RobotMap {
 
     // Zeroed values, should be in radians
     // source is google document in Electrical for team - module data
-    public static final double kZeroedFrontLeft = 5.343;
-    public static final double kZeroedFrontRight = 5.630; 
-    public static final double kZeroedBackLeft = 5.681;
-    public static final double kZeroedBackRight = 1.815;
+    public static final double kZeroedFrontLeft = 3.957;    // for FL module 5
+    public static final double kZeroedFrontRight = 5.630;   // for FR module 4
+    public static final double kZeroedBackLeft = 5.681;     // for BL module 2
+    public static final double kZeroedBackRight = 1.815;    // for BR module 3
 };

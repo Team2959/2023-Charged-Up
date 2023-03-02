@@ -67,7 +67,7 @@ public final class RobotMap {
 
     // Zeroed values, should be in radians
     // source is google document in Electrical for team - module data
-    public static final double kZeroedFrontLeft = 3.957;    // for FL module 5
+    public static final double kZeroedFrontLeft = 5.343;    // for FL module 1
     public static final double kZeroedFrontRight = 5.630;   // for FR module 4
     public static final double kZeroedBackLeft = 5.681;     // for BL module 2
     public static final double kZeroedBackRight = 1.815;    // for BR module 3

@@ -20,12 +20,7 @@ import frc.robot.RobotMap;
 
 public class IntakeSubsystem extends SubsystemBase
 {
-  public enum GamePieceType
-  {
-    Unknown,
-    Cone,
-    Cube
-  };
+  
 
   VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
   Spark m_interiorFeederMotor = new Spark(RobotMap.kInteriorFeederSparkMotor);
@@ -41,7 +36,7 @@ public class IntakeSubsystem extends SubsystemBase
   DigitalInput m_gamePieceIsUpright = new DigitalInput(RobotMap.kGamePieceUprightSwitch);
   double m_intakeSpeed = 1;
   double m_exteriorIntakeSpeed = 1.0;
-  private GamePieceType m_GamePieceType = GamePieceType.Unknown;
+ 
   private int m_ticks = 0;
   private double m_flippedPosition = -4;
 
@@ -136,6 +131,7 @@ public class IntakeSubsystem extends SubsystemBase
     SmartDashboard.putNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
 
     SmartDashboard.putNumber(getName() + "/Flipper Down Position", m_flippedPosition);
+    SmartDashboard.putNumber(getName() + "/Current Flipper Position", m_flipperEncoder.getPosition());
     SmartDashboard.putNumber(getName() + "/Flipper P", m_flipperPIDController.getP());
     SmartDashboard.putNumber(getName() + "/Flipper I", m_flipperPIDController.getI());
     SmartDashboard.putNumber(getName() + "/Flipper D", m_flipperPIDController.getD());
@@ -150,6 +146,7 @@ public class IntakeSubsystem extends SubsystemBase
     SmartDashboard.putBoolean(getName() + "/Game Piece In", m_gamePieceIn.get());
     SmartDashboard.putBoolean(getName() + "/Game Piece Is Upright", m_gamePieceIsUpright.get());
 
+    SmartDashboard.putNumber(getName() + "/Current Flipper Position", m_flipperEncoder.getPosition());
     m_flippedPosition = SmartDashboard.getNumber(getName() + "/Flipper Down Position", m_flippedPosition);
     m_flipperPIDController.setP(SmartDashboard.getNumber(getName() + "/Flipper P", kFlipperP));
     m_flipperPIDController.setI(SmartDashboard.getNumber(getName() + "/Flipper I", kFlipperI));
@@ -216,12 +213,4 @@ public class IntakeSubsystem extends SubsystemBase
     setInteriorFeederMotor(0);
   }
 
-  public void setGamePieceType(GamePieceType gamePiece)
-  {
-    m_GamePieceType = gamePiece;
-  }
-
-  public GamePieceType getGamePieceType(){
-    return m_GamePieceType;
-  }
 }

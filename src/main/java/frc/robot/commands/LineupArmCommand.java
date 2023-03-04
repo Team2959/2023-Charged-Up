@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -22,7 +21,7 @@ public class LineupArmCommand extends SequentialCommandGroup
 
   /** Creates a new LineupArmCommand. */
   public LineupArmCommand(PlacementArmSubsystem placementArmSubsystem,
-      IntakeSubsystem.GamePieceType gamePieceType,
+      PlacementArmSubsystem.GamePieceType gamePieceType,
       ArmPositioningType positioningType)
   {
     // Add your commands in the addCommands() call, e.g.
@@ -34,14 +33,14 @@ public class LineupArmCommand extends SequentialCommandGroup
     {
       case High:
         distance = 40; //Inches
-        if (gamePieceType == IntakeSubsystem.GamePieceType.Cone)
+        if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
           angle = 90;
         else
           angle = 85;
         break;
       case Mid:
         distance = 23;
-        if (gamePieceType == IntakeSubsystem.GamePieceType.Cone)
+        if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
           angle = 60;
         else
           angle = 55;

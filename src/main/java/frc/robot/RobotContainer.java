@@ -13,6 +13,7 @@ import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.ReverseAllIntakeCommand;
 import frc.robot.commands.ReverseExteriorWheelsCommand;
 import frc.robot.commands.TeleOpDriveCommand;
+import frc.robot.commands.TestArmRotationCommand;
 import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.ToggleIntakeCommand;
 import frc.robot.commands.LineupArmCommand.ArmPositioningType;
@@ -47,7 +48,8 @@ public class RobotContainer {
     JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePeiceButton);
     JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
     JoystickButton m_reverseIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseIntakeButton);
-    JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseExteriorIntakeButton);
+    JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox,
+            RobotMap.kReverseExteriorIntakeButton);
     JoystickButton m_gamePieceConeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceConeButton);
     JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
@@ -86,18 +88,17 @@ public class RobotContainer {
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
 
         m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.High));
+                m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.High));
         m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Mid));
+                m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Mid));
         m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                m_IntakeSubsystem.getGamePieceType(), ArmPositioningType.Low));
-        
+                m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Low));
+
         m_testButton.onTrue(new InstantCommand(() -> {
             m_IntakeSubsystem.flipGamePiece();
-            if(m_IntakeSubsystem.isVacuumEngaged()) {
+            if (m_IntakeSubsystem.isVacuumEngaged()) {
                 m_IntakeSubsystem.stopVacuum();
-            }
-            else {
+            } else {
                 m_IntakeSubsystem.startVacuum();
             }
         }));
@@ -107,14 +108,22 @@ public class RobotContainer {
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
 
+        m_testButton.whileTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
+
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
 
-        new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip).onTrue(new FlipGamePieceUpCommand(m_IntakeSubsystem));
-        // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToLoad).onTrue(new LoadGamePieceUpCommand(m_IntakeSubsystem));
+        // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip).onTrue(new
+        // FlipGamePieceUpCommand(m_IntakeSubsystem));
+        new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip)
+                .onTrue(new InstantCommand(() -> m_IntakeSubsystem.flipGamePiece()));
+        // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToLoad).onTrue(new
+        // LoadGamePieceUpCommand(m_IntakeSubsystem));
 
-        m_gamePieceConeButton.onTrue(new InstantCommand(() -> {m_IntakeSubsystem.setGamePieceType(IntakeSubsystem.GamePieceType.Cone);}));
-        m_gamePieceCubeButton.onTrue(new InstantCommand(() -> {m_IntakeSubsystem.setGamePieceType(IntakeSubsystem.GamePieceType.Cube);}));
+        // m_gamePieceConeButton.onTrue(new InstantCommand(() ->
+        // {m_IntakeSubsystem.setGamePieceType(PlacementArmSubsystem.GamePieceType.Cone);}));
+        // m_gamePieceCubeButton.onTrue(new InstantCommand(() ->
+        // {m_IntakeSubsystem.setGamePieceType(IntakeSubsystem.GamePieceType.Cube);}));
 
         m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
         m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
@@ -125,7 +134,6 @@ public class RobotContainer {
     }
 
     public double getDriveXInput() {
-        // return 0;
         // We getY() here because of the FRC coordinate system being turned 90 degrees
         return m_driveXConditioning.condition(-m_leftJoystick.getY())
                 * DriveSubsystem.kMaxSpeedMetersPerSecond
@@ -133,7 +141,6 @@ public class RobotContainer {
     }
 
     public double getDriveYInput() {
-        // return 0;
         // We getX() here becasuse of the FRC coordinate system being turned 90 degrees
         return m_driveYConditioning.condition(m_leftJoystick.getX())
                 * DriveSubsystem.kMaxSpeedMetersPerSecond
@@ -141,7 +148,6 @@ public class RobotContainer {
     }
 
     public double getTurnInput() {
-        // return 0;
         return m_turnConditioning.condition(m_rightJoystick.getX())
                 * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
     }

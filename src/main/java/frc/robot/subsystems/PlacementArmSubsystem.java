@@ -27,6 +27,14 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private static final double kArmExtensionI = 0;
     private static final double kArmExtensionD = 0;
 
+    public enum GamePieceType {
+        Unknown,
+        Cone,
+        Cube
+    };
+
+    private GamePieceType m_GamePieceType = GamePieceType.Unknown;
+
     CANSparkMax m_armRotatorMotor = new CANSparkMax(RobotMap.kArmRotatorSparkMaxMotor, MotorType.kBrushless);
     CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor, MotorType.kBrushless);
     DigitalInput m_armRotatorEncoderDigitalInput = new DigitalInput(RobotMap.kRotatorArmEncoderPulseWidthDIO);
@@ -45,6 +53,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     static double kDegreesPerRevolution = 360.0 / 4096.0;
 
+    private double m_targetExtensionPosition = 0;
     private int m_ticks = 0;
 
     // ** Creates a new PlacementArmSubsystem. */
@@ -71,6 +80,9 @@ public class PlacementArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Arm Extension P", m_armExtensionMotorPidController.getP());
         SmartDashboard.putNumber(getName() + "/Arm Extension I", m_armExtensionMotorPidController.getI());
         SmartDashboard.putNumber(getName() + "/Arm Extension D", m_armExtensionMotorPidController.getD());
+
+        SmartDashboard.putNumber(getName() + "/Arm Rotation Target Position", 0);
+        SmartDashboard.putNumber(getName() + "/Arm Rotation Target Position", m_targetExtensionPosition);
     }
 
     public void smartDashboardUpdate() {
@@ -80,6 +92,9 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setP(SmartDashboard.getNumber(getName() + "/Arm Extension P", kArmExtensionP));
         m_armExtensionMotorPidController.setI(SmartDashboard.getNumber(getName() + "/Arm Extension I", kArmExtensionI));
         m_armExtensionMotorPidController.setD(SmartDashboard.getNumber(getName() + "/Arm Extension", kArmExtensionD));
+
+        m_targetExtensionPosition = SmartDashboard.getNumber(getName() + "/Arm Rotation Target Position",
+                m_targetExtensionPosition);
     }
 
     public void setArmDegrees(double degrees) {
@@ -137,6 +152,49 @@ public class PlacementArmSubsystem extends SubsystemBase {
         // m_armRotatorMotor.set(m_armRotatorMotorPidController.calculate(getArmAngle()));
     }
 
+    public void conePickUp() {
+        m_gripVacuumMotor.set(1);
+        m_armVacuumRelease1.set(false);
+        m_armVacuumRelease2.set(false);
+        m_armVacuumRelease3.set(false);
+        m_armVacuumRelease4.set(true);
+        setGamePieceType(GamePieceType.Cone);
+    }
+
+    public void cubePickUp() {
+        m_gripVacuumMotor.set(1);
+        m_armVacuumRelease2.set(true);
+        m_armVacuumRelease3.set(true);
+        m_armVacuumRelease4.set(false);
+        setGamePieceType(GamePieceType.Cube);
+
+    }
+
+    public void gamPieceRelease()
+    {
+        if(m_GamePieceType == GamePieceType.Cube) 
+        {
+            m_gripVacuumMotor.set(0);
+            m_armVacuumRelease2.set(true);
+            m_armVacuumRelease3.set(true);
+            m_armVacuumRelease4.set(true);
+            setGamePieceType(GamePieceType.Unknown);
+        }
+        else if(m_GamePieceType == GamePieceType.Cone) 
+        {
+            m_gripVacuumMotor.set(0);
+            m_armVacuumRelease1.set(true);
+            m_armVacuumRelease2.set(true);
+            m_armVacuumRelease3.set(true);
+            m_armVacuumRelease4.set(true);
+            setGamePieceType(GamePieceType.Unknown);
+        }
+    }
+
+    public void moveToTargetRotation(double target) {
+        m_armRotatorMotor.set(m_armRotatorMotorPidController.calculate(target));
+    }
+
     public void manipulateVacuumRelease(boolean release) {
         manipulateVacuumSolenoids(release);
         if (release) {
@@ -149,17 +207,23 @@ public class PlacementArmSubsystem extends SubsystemBase {
         manipulateVacuumMotors(true);
     }
 
-    private void manipulateVacuumSolenoids(boolean newState)
-    {
+    private void manipulateVacuumSolenoids(boolean newState) {
         m_armVacuumRelease1.set(newState);
         m_armVacuumRelease2.set(newState);
         m_armVacuumRelease3.set(newState);
         m_armVacuumRelease4.set(newState);
     }
 
-    private void manipulateVacuumMotors(boolean evacuate)
-    {
+    private void manipulateVacuumMotors(boolean evacuate) {
         var speed = evacuate ? 1.0 : 0.0;
         m_gripVacuumMotor.set(speed);
+    }
+
+    public void setGamePieceType(GamePieceType gamePiece) {
+        m_GamePieceType = gamePiece;
+    }
+
+    public GamePieceType getGamePieceType() {
+        return m_GamePieceType;
     }
 }

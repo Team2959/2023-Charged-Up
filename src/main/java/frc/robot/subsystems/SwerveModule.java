@@ -96,7 +96,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(m_name + "/Turn FF", m_turnPIDController.getFF());
     }
 
-    public void driveSmartDashboardUpdate() {
+    public void smartDashboardUpdate() {
         SmartDashboard.putNumber(m_name + "/Drive Encoder Velocity", m_driveEncoder.getVelocity());
         SmartDashboard.putNumber(m_name + "/Drive Encoder Position", m_driveEncoder.getPosition()); 
         SmartDashboard.putNumber(m_name + "/Turn Motor Position", m_turnEncoder.getPosition());

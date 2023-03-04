@@ -6,11 +6,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotMap;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
 public class TestArmRotationCommand extends CommandBase {
-  private double m_targetRotationPosition = 0;
+  private double m_targetRotationPosition = 60;
   private PlacementArmSubsystem m_placementArmSubsystem;
   /** Creates a new TestArmRotationCommand. */
   public TestArmRotationCommand(PlacementArmSubsystem placementArmSubsystem) {
@@ -24,15 +23,12 @@ public class TestArmRotationCommand extends CommandBase {
   @Override
   public void initialize() {
     m_targetRotationPosition = SmartDashboard.getNumber("Test Arm Rotation Target Position", m_targetRotationPosition);
-   
+    m_placementArmSubsystem.setArmDegrees(m_targetRotationPosition);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-
-
   }
 
   // Called once the command ends or is interrupted.
@@ -42,6 +38,6 @@ public class TestArmRotationCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_placementArmSubsystem.isArmRotatorAtSetpoint();
   }
 }

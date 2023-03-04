@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import cwtech.util.RopeSensor;
@@ -20,10 +21,10 @@ import frc.robot.RobotMap;
 
 public class PlacementArmSubsystem extends SubsystemBase {
 
-    private static final double kArmRotatorP = 0.1;
+    private static final double kArmRotatorP = 0.01;
     private static final double kArmRotatorI = 0;
     private static final double kArmRotatorD = 0;
-    private static final double kArmExtensionP = 0.1;
+    private static final double kArmExtensionP = 0.001;
     private static final double kArmExtensionI = 0;
     private static final double kArmExtensionD = 0;
 
@@ -65,6 +66,11 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setP(kArmExtensionP);
         m_armExtensionMotorPidController.setI(kArmExtensionI);
         m_armExtensionMotorPidController.setD(kArmExtensionD);
+
+        m_armRotatorMotor.setIdleMode(IdleMode.kCoast);
+        m_armExtensionMotor.setIdleMode(IdleMode.kCoast);
+
+        m_armRotatorMotorPidController.setSetpoint(60);
 
         smartDashboardInit();
     }
@@ -141,6 +147,10 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", getArmAngle());
         SmartDashboard.putNumber(getName() + "/Arm Extension Ticks", getArmExtensionPosition());
+        
+        double raw =  m_armRotatorMotorPidController.calculate(getArmAngle());
+        SmartDashboard.putNumber(getName() + "/Arm Rotator Raw Output", raw);
+        m_armRotatorMotor.set(raw);
 
         m_ticks++;
         if (m_ticks % 15 != 3)
@@ -149,7 +159,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
         // smartDashboardUpdate();
 
         // m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));
-        // m_armRotatorMotor.set(m_armRotatorMotorPidController.calculate(getArmAngle()));
+        
     }
 
     public void conePickUp() {

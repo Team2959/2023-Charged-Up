@@ -40,10 +40,10 @@ public class IntakeSubsystem extends SubsystemBase
   private int m_ticks = 0;
   private double m_flippedPosition = -4;
 
-  private static final double kFlipperP = 0.1;
+  private static final double kFlipperP = 0.05;
   private static final double kFlipperI = 0;
   private static final double kFlipperD = 0;
-  private static final double kFlipperFF = 0.01;
+  private static final double kFlipperFF = 0.005;
   private static final double kFlipperIZone = 0;
 
   @Override
@@ -52,7 +52,7 @@ public class IntakeSubsystem extends SubsystemBase
     if (m_ticks % 15 != 11)
         return;
 
-    intakeSmartDashboardUpdate();
+    smartDashboardUpdate();
   }
 
   /** Creates a new IntakeSubsystem. */
@@ -66,19 +66,19 @@ public class IntakeSubsystem extends SubsystemBase
     m_flipperPIDController.setFF(kFlipperFF);
     m_flipperPIDController.setIZone(kFlipperIZone);
 
-    intakeSmartDashboardInit();
+    smartDashboardInit();
   }
 
   public boolean gamePieceDetected() {
-    return m_gamePieceDetected.get();
+    return !m_gamePieceDetected.get();
   }
 
   public boolean gamePieceIsReadyToFlip() {
-    return m_gamePieceIn.get();
+    return !m_gamePieceIn.get();
   }
 
   public boolean gamePieceIsReadyToLoad() {
-    return m_gamePieceIsUpright.get();
+    return !m_gamePieceIsUpright.get();
   }
 
   public boolean isVacuumEngaged() {
@@ -86,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase
   }
 
   public void toggleFlipper() {
-    if (m_flipperEncoder.getPosition() > 10)
+    if (m_flipperEncoder.getPosition() < -2)
       flipGamePiece();
     else
       unflipGamePiece();
@@ -126,7 +126,7 @@ public class IntakeSubsystem extends SubsystemBase
     m_coneOrienter.set(false);
   }
 
-  public void intakeSmartDashboardInit() {
+  public void smartDashboardInit() {
     SmartDashboard.putNumber(getName() + "/Intake Speed", m_intakeSpeed);
     SmartDashboard.putNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
 
@@ -139,7 +139,7 @@ public class IntakeSubsystem extends SubsystemBase
     SmartDashboard.putNumber(getName() + "/Flipper FF", m_flipperPIDController.getFF());
 }
 
-  public void intakeSmartDashboardUpdate() {
+  public void smartDashboardUpdate() {
     m_intakeSpeed = SmartDashboard.getNumber(getName() + "/Intake Speed", m_intakeSpeed);
     m_exteriorIntakeSpeed = SmartDashboard.getNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
     SmartDashboard.putBoolean(getName() + "/Game Piece Detected", m_gamePieceDetected.get());

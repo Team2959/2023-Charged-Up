@@ -7,6 +7,7 @@ public class DropIntakeOrientaterCommand extends CommandBase {
     IntakeSubsystem m_intakeSubsystem;
 
     public DropIntakeOrientaterCommand(IntakeSubsystem intakeSubsystem) {
+        m_intakeSubsystem = intakeSubsystem;
         addRequirements(intakeSubsystem);
     }
 

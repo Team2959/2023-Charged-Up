@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -41,6 +42,15 @@ public class DriveSubsystem extends SubsystemBase {
     private final Translation2d kFrontRightLocation = new Translation2d(kHalfTrackWidthMeters, -kHalfTrackWidthMeters);
     private final Translation2d kBackLeftLocation = new Translation2d(-kHalfTrackWidthMeters, kHalfTrackWidthMeters);
     private final Translation2d kBackRightLocation = new Translation2d(-kHalfTrackWidthMeters, -kHalfTrackWidthMeters);
+    private static final double kXBalancingP = 0.1;
+    private static final double kXBalancingI = 0.0;
+    private static final double kXBalancingD = 0.0;
+    private static final double kYBalancingP = 0.1;
+    private static final double kYBalancingI = 0.0;
+    private static final double kYBalancingD = 0.0;
+
+    final PIDController m_xBalancingController = new PIDController(kXBalancingP, kXBalancingI, kXBalancingD);
+    final PIDController m_yBalancingController = new PIDController(kYBalancingP, kYBalancingI, kYBalancingD);
 
     private int m_ticks = 0;
 
@@ -100,11 +110,15 @@ public class DriveSubsystem extends SubsystemBase {
             return;
 
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
+        SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
+        SmartDashboard.putNumber(getName() + "/Pitch", m_navX.getPitch());
+    }
 
-        // m_frontLeft.driveSmartDashboardUpdate();
-        // m_frontRight.driveSmartDashboardUpdate();
-        // m_backLeft.driveSmartDashboardUpdate();
-        // m_backRight.driveSmartDashboardUpdate();
+    public void smartDashboardUpdate() {
+        m_frontLeft.smartDashboardUpdate();
+        m_frontRight.smartDashboardUpdate();
+        m_backLeft.smartDashboardUpdate();
+        m_backRight.smartDashboardUpdate();
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,

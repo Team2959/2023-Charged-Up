@@ -8,11 +8,13 @@ import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DropIntakeOrientaterCommand;
 import frc.robot.commands.FlipGamePieceUpCommand;
+import frc.robot.commands.FlipperToggleCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.ReverseAllIntakeCommand;
 import frc.robot.commands.ReverseExteriorWheelsCommand;
 import frc.robot.commands.TeleOpDriveCommand;
+import frc.robot.commands.TestArmExtensionCommand;
 import frc.robot.commands.TestArmRotationCommand;
 import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.ToggleIntakeCommand;
@@ -25,6 +27,7 @@ import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -72,13 +75,34 @@ public class RobotContainer {
         m_turnConditioning.setDeadband(0.2);
         m_turnConditioning.setExponent(1.4);
 
-        SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
+        m_PlacementArmSubsystem.setupRopeSensor(robot);
 
         configureBindings();
+        smartDashboardInit();
+        registerSmartDashboardCalls();
+    }
+
+    public void smartDashboardInit() {
+        SmartDashboard.putNumber("Test Arm Rotation Target Position", 60);
+        m_IntakeSubsystem.smartDashboardInit();
+        m_PlacementArmSubsystem.smartDashboardInit();
+    }
+
+    public void registerSmartDashboardCalls() {
+        m_robot.addPeriodic(() -> {
+            m_IntakeSubsystem.smartDashboardUpdate();
+            m_PlacementArmSubsystem.smartDashboardUpdate();
+            smartDashboardUpdate();
+        }, 1, 0.502);
     }
 
     public void teleOpInit() {
-        m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
+        // SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
+    }
+
+    public void smartDashboardUpdate() {
+        m_speedMultiplier = m_leftJoystick.getThrottle();
+        SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
     }
 
     private void configureBindings() {
@@ -94,21 +118,21 @@ public class RobotContainer {
         m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
                 m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Low));
 
-        m_testButton.onTrue(new InstantCommand(() -> {
-            m_IntakeSubsystem.flipGamePiece();
-            if (m_IntakeSubsystem.isVacuumEngaged()) {
-                m_IntakeSubsystem.stopVacuum();
-            } else {
-                m_IntakeSubsystem.startVacuum();
-            }
-        }));
+        // m_testButton.onTrue(new InstantCommand(() -> {
+        //     m_IntakeSubsystem.flipGamePiece();
+        //     if (m_IntakeSubsystem.isVacuumEngaged()) {
+        //         m_IntakeSubsystem.stopVacuum();
+        //     } else {
+        //         m_IntakeSubsystem.startVacuum();
+        //     }
+        // }));
+        // m_testButton.onTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
+        m_testButton.onTrue(new TestArmExtensionCommand(m_PlacementArmSubsystem));
 
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
         m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
-
-        m_testButton.whileTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
 
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
@@ -116,14 +140,12 @@ public class RobotContainer {
         // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip).onTrue(new
         // FlipGamePieceUpCommand(m_IntakeSubsystem));
         new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip)
-                .onTrue(new InstantCommand(() -> m_IntakeSubsystem.flipGamePiece()));
+                .onTrue(Commands.waitSeconds(1).andThen(new InstantCommand(() -> m_IntakeSubsystem.flipGamePiece())));
         // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToLoad).onTrue(new
         // LoadGamePieceUpCommand(m_IntakeSubsystem));
 
-        // m_gamePieceConeButton.onTrue(new InstantCommand(() ->
-        // {m_IntakeSubsystem.setGamePieceType(PlacementArmSubsystem.GamePieceType.Cone);}));
-        // m_gamePieceCubeButton.onTrue(new InstantCommand(() ->
-        // {m_IntakeSubsystem.setGamePieceType(IntakeSubsystem.GamePieceType.Cube);}));
+        m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp()));
+        m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.cubePickUp()));
 
         m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
         m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
@@ -142,13 +164,13 @@ public class RobotContainer {
 
     public double getDriveYInput() {
         // We getX() here becasuse of the FRC coordinate system being turned 90 degrees
-        return m_driveYConditioning.condition(m_leftJoystick.getX())
+        return m_driveYConditioning.condition(-m_leftJoystick.getX())
                 * DriveSubsystem.kMaxSpeedMetersPerSecond
                 * m_speedMultiplier;
     }
 
     public double getTurnInput() {
-        return m_turnConditioning.condition(m_rightJoystick.getX())
+        return m_turnConditioning.condition(-m_rightJoystick.getX())
                 * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
     }
 }

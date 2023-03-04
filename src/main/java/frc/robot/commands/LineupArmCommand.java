@@ -34,20 +34,20 @@ public class LineupArmCommand extends SequentialCommandGroup
       case High:
         distance = 40; //Inches
         if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
-          angle = 90;
+          angle = 175;
         else
-          angle = 85;
+          angle = 170;
         break;
       case Mid:
         distance = 23;
         if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
-          angle = 60;
+          angle = 160;
         else
-          angle = 55;
+          angle = 155;
         break;
       case Low:
         distance = 6;
-        angle = 25;
+        angle = 100;
         break;
     }
     

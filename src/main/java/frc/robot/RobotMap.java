@@ -21,7 +21,7 @@ public final class RobotMap {
     public static final int kFlipperSparkMaxMotor = 9;
 
     // PWM motor addresses
-    public static final int kInteriorFeederSparkMotor = 0;
+    public static final int kInteriorFeederSparkMotor = 4;
     public static final int kFlipperVacuumSparkMotor = 1;
     public static final int kGripVacuumSparkMotor = 2;
 
@@ -35,13 +35,13 @@ public final class RobotMap {
     public static final int kArmVacuumRelease4 = 7;
 
     // Digital IO addresses
+    public static final int kRopeEncoderDigIO = 0;
     public static final int kFrontLeftTurnPulseWidthDigIO = 1;
     public static final int kBackLeftTurnPulseWidthDigIO = 2;
     public static final int kBackRightTurnPulseWidthDigIO = 3;
     public static final int kFrontRightTurnPulseWidthDigIO = 4;
     public static final int kGamePieceInSwitch = 5;
     public static final int kGamePieceUprightSwitch = 6;
-    public static final int kRopeEncoderDigIO = 7;
     public static final int kRotatorArmEncoderPulseWidthDIO = 8;
     public static final int kGamePieceDetectedSwitch = 9;
 

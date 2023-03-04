@@ -4,22 +4,29 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
 public class TestArmExtensionCommand extends CommandBase {
   /** Creates a new TestArmExtensionCommand. */
-  private PlacementArmSubsystem m_PlacementArmSubsystem;
+  private double m_targetExtensionPosition;
+
+  private PlacementArmSubsystem m_placementArmSubsystem;
   public TestArmExtensionCommand(PlacementArmSubsystem placementArmSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_PlacementArmSubsystem = placementArmSubsystem;
+    m_placementArmSubsystem = placementArmSubsystem;
 
     addRequirements(placementArmSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_targetExtensionPosition = SmartDashboard.getNumber("Test Arm Extension Target Position", m_targetExtensionPosition);
+    m_placementArmSubsystem.setArmDegrees(m_targetExtensionPosition);
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -32,6 +39,6 @@ public class TestArmExtensionCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_placementArmSubsystem.isArmExtensionAtSetpoint();
   }
 }

@@ -38,12 +38,12 @@ public class IntakeSubsystem extends SubsystemBase
   SolenoidV2 m_intakeVacuumRelease = new SolenoidV2(RobotMap.kIntakeVacuumRelease);
   DigitalInput m_gamePieceDetected = new DigitalInput(RobotMap.kGamePieceDetectedSwitch);
   DigitalInput m_gamePieceIn = new DigitalInput(RobotMap.kGamePieceInSwitch);
-  DigitalInput m_gamePieceIsCone = new DigitalInput(RobotMap.kConeAllInSwitch);
+  DigitalInput m_gamePieceIsUpright = new DigitalInput(RobotMap.kGamePieceUprightSwitch);
   double m_intakeSpeed = 1;
   double m_exteriorIntakeSpeed = 1.0;
   private GamePieceType m_GamePieceType = GamePieceType.Unknown;
   private int m_ticks = 0;
-  private double m_flippedPosition = 90;
+  private double m_flippedPosition = -4;
 
   private static final double kFlipperP = 0.1;
   private static final double kFlipperI = 0;
@@ -74,16 +74,16 @@ public class IntakeSubsystem extends SubsystemBase
     intakeSmartDashboardInit();
   }
 
-  public boolean gamePieceIsReady() {
-    if(m_gamePieceIsCone.get()) {
-      m_GamePieceType = GamePieceType.Cone;
-      return true;
-    }
-    if(m_gamePieceIn.get()) {
-        m_GamePieceType = GamePieceType.Cube;
-        return true;
-    }
-    return false;
+  public boolean gamePieceDetected() {
+    return m_gamePieceDetected.get();
+  }
+
+  public boolean gamePieceIsReadyToFlip() {
+    return m_gamePieceIn.get();
+  }
+
+  public boolean gamePieceIsReadyToLoad() {
+    return m_gamePieceIsUpright.get();
   }
 
   public boolean isVacuumEngaged() {
@@ -123,10 +123,6 @@ public class IntakeSubsystem extends SubsystemBase
     return m_intakeArm.get();
   }
 
-  public boolean gamePieceDetected() {
-    return m_gamePieceDetected.get();
-  }
-
   public void dropOrientatorBar() {
     m_coneOrienter.set(true);
   }
@@ -152,8 +148,7 @@ public class IntakeSubsystem extends SubsystemBase
     m_exteriorIntakeSpeed = SmartDashboard.getNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
     SmartDashboard.putBoolean(getName() + "/Game Piece Detected", m_gamePieceDetected.get());
     SmartDashboard.putBoolean(getName() + "/Game Piece In", m_gamePieceIn.get());
-    SmartDashboard.putBoolean(getName() + "/Game Piece Is Cone", m_gamePieceIsCone.get());
-    SmartDashboard.putNumber(getName() + "/PWM of Intake Belts", m_interiorFeederMotor.get());
+    SmartDashboard.putBoolean(getName() + "/Game Piece Is Upright", m_gamePieceIsUpright.get());
 
     m_flippedPosition = SmartDashboard.getNumber(getName() + "/Flipper Down Position", m_flippedPosition);
     m_flipperPIDController.setP(SmartDashboard.getNumber(getName() + "/Flipper P", kFlipperP));
@@ -219,6 +214,11 @@ public class IntakeSubsystem extends SubsystemBase
   public void stopIntake() {
     setExteriorFeederMotor(0);
     setInteriorFeederMotor(0);
+  }
+
+  public void setGamePieceType(GamePieceType gamePiece)
+  {
+    m_GamePieceType = gamePiece;
   }
 
   public GamePieceType getGamePieceType(){

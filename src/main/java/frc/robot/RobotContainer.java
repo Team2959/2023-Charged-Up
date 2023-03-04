@@ -48,6 +48,8 @@ public class RobotContainer {
     JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
     JoystickButton m_reverseIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseIntakeButton);
     JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseExteriorIntakeButton);
+    JoystickButton m_gamePieceConeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceConeButton);
+    JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
 
     Conditioning m_driveXConditioning = new Conditioning();
@@ -108,7 +110,11 @@ public class RobotContainer {
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
 
-        new Trigger(m_IntakeSubsystem::gamePieceIsReady).onTrue(new FlipGamePieceUpCommand(m_IntakeSubsystem));
+        new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip).onTrue(new FlipGamePieceUpCommand(m_IntakeSubsystem));
+        // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToLoad).onTrue(new LoadGamePieceUpCommand(m_IntakeSubsystem));
+
+        m_gamePieceConeButton.onTrue(new InstantCommand(() -> {m_IntakeSubsystem.setGamePieceType(IntakeSubsystem.GamePieceType.Cone);}));
+        m_gamePieceCubeButton.onTrue(new InstantCommand(() -> {m_IntakeSubsystem.setGamePieceType(IntakeSubsystem.GamePieceType.Cube);}));
 
         m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
         m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));

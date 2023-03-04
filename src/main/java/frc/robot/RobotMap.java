@@ -40,7 +40,7 @@ public final class RobotMap {
     public static final int kBackRightTurnPulseWidthDigIO = 3;
     public static final int kFrontRightTurnPulseWidthDigIO = 4;
     public static final int kGamePieceInSwitch = 5;
-    public static final int kConeAllInSwitch = 6;
+    public static final int kGamePieceUprightSwitch = 6;
     public static final int kRopeEncoderDigIO = 7;
     public static final int kRotatorArmEncoderPulseWidthDIO = 8;
     public static final int kGamePieceDetectedSwitch = 9;
@@ -63,7 +63,9 @@ public final class RobotMap {
     public static final int kIntakeReleaseButton = 3;
     public static final int kReverseIntakeButton = 10;
     public static final int kReverseExteriorIntakeButton = 6;
-    public static final int kTestButton = 11;
+    public static final int kGamePieceConeButton = 11;
+    public static final int kGamePieceCubeButton = 5;
+    public static final int kTestButton = 7;
 
     // Zeroed values, should be in radians
     // source is google document in Electrical for team - module data

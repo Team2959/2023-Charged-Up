@@ -29,7 +29,8 @@ public class ArmRotationCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_placementArmSubsystem.stopArmRotatorMotor();
+        if (interrupted)
+            m_placementArmSubsystem.stopArmRotatorMotor();
     }
 
     @Override

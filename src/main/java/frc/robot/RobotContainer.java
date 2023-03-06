@@ -75,7 +75,7 @@ public class RobotContainer {
         m_turnConditioning.setDeadband(0.2);
         m_turnConditioning.setExponent(1.4);
 
-        m_PlacementArmSubsystem.setupRopeSensor(robot);
+        // m_PlacementArmSubsystem.setupRopeSensor(robot);
 
         configureBindings();
         smartDashboardInit();

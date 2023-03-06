@@ -20,40 +20,29 @@ import frc.robot.RobotMap;
 
 public class IntakeSubsystem extends SubsystemBase
 {
-  
-
-  VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
-  Spark m_interiorFeederMotor = new Spark(RobotMap.kInteriorFeederSparkMotor);
-  Spark m_flipperVacuumMotor = new Spark(RobotMap.kFlipperVacuumSparkMotor);
-  CANSparkMax m_flipperMotor = new CANSparkMax(RobotMap.kFlipperSparkMaxMotor, MotorType.kBrushless);
+  private VictorSPX m_exteriorFeederMotors = new VictorSPX(RobotMap.kExteriorFeederVictorSpxMotor);
+  private Spark m_interiorFeederMotor = new Spark(RobotMap.kInteriorFeederSparkMotor);
+  private Spark m_flipperVacuumMotor = new Spark(RobotMap.kFlipperVacuumSparkMotor);
+  private CANSparkMax m_flipperMotor = new CANSparkMax(RobotMap.kFlipperSparkMaxMotor, MotorType.kBrushless);
   private SparkMaxPIDController m_flipperPIDController;
   private SparkMaxRelativeEncoder m_flipperEncoder;
-  SolenoidV2 m_intakeArm = new SolenoidV2(RobotMap.kIntakeArm);
-  SolenoidV2 m_coneOrienter = new SolenoidV2(RobotMap.kConeOrientater);
-  SolenoidV2 m_intakeVacuumRelease = new SolenoidV2(RobotMap.kIntakeVacuumRelease);
-  DigitalInput m_gamePieceDetected = new DigitalInput(RobotMap.kGamePieceDetectedSwitch);
-  DigitalInput m_gamePieceIn = new DigitalInput(RobotMap.kGamePieceInSwitch);
-  DigitalInput m_gamePieceIsUpright = new DigitalInput(RobotMap.kGamePieceUprightSwitch);
-  double m_intakeSpeed = 1;
-  double m_exteriorIntakeSpeed = 1.0;
+  private SolenoidV2 m_intakeArm = new SolenoidV2(RobotMap.kIntakeArm);
+  private SolenoidV2 m_coneOrienter = new SolenoidV2(RobotMap.kConeOrientater);
+  private SolenoidV2 m_intakeVacuumRelease = new SolenoidV2(RobotMap.kIntakeVacuumRelease);
+  private DigitalInput m_gamePieceDetected = new DigitalInput(RobotMap.kGamePieceDetectedSwitch);
+  private DigitalInput m_gamePieceIn = new DigitalInput(RobotMap.kGamePieceInSwitch);
+  private DigitalInput m_gamePieceIsUpright = new DigitalInput(RobotMap.kGamePieceUprightSwitch);
+  private double m_intakeSpeed = 1;
+  private double m_exteriorIntakeSpeed = 1.0;
  
-  private int m_ticks = 0;
-  private double m_flippedPosition = -4;
+  private static final double kDefaultFlipperDownPosition = -4;
+  private double m_flippedPosition = kDefaultFlipperDownPosition;
 
   private static final double kFlipperP = 0.05;
   private static final double kFlipperI = 0;
   private static final double kFlipperD = 0;
   private static final double kFlipperFF = 0.005;
   private static final double kFlipperIZone = 0;
-
-  @Override
-  public void periodic() {
-    m_ticks++;
-    if (m_ticks % 15 != 11)
-        return;
-
-    smartDashboardUpdate();
-  }
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem()
@@ -65,8 +54,6 @@ public class IntakeSubsystem extends SubsystemBase
     m_flipperPIDController.setD(kFlipperD);
     m_flipperPIDController.setFF(kFlipperFF);
     m_flipperPIDController.setIZone(kFlipperIZone);
-
-    smartDashboardInit();
   }
 
   public boolean gamePieceDetected() {
@@ -130,14 +117,14 @@ public class IntakeSubsystem extends SubsystemBase
     SmartDashboard.putNumber(getName() + "/Intake Speed", m_intakeSpeed);
     SmartDashboard.putNumber(getName() + "/Exterior Intake Speed", m_exteriorIntakeSpeed);
 
-    SmartDashboard.putNumber(getName() + "/Flipper Down Position", m_flippedPosition);
+    SmartDashboard.putNumber(getName() + "/Flipper Down Position", kDefaultFlipperDownPosition);
     SmartDashboard.putNumber(getName() + "/Current Flipper Position", m_flipperEncoder.getPosition());
     SmartDashboard.putNumber(getName() + "/Flipper P", m_flipperPIDController.getP());
     SmartDashboard.putNumber(getName() + "/Flipper I", m_flipperPIDController.getI());
     SmartDashboard.putNumber(getName() + "/Flipper D", m_flipperPIDController.getD());
     SmartDashboard.putNumber(getName() + "/Flipper IZone", m_flipperPIDController.getIZone());
     SmartDashboard.putNumber(getName() + "/Flipper FF", m_flipperPIDController.getFF());
-}
+  }
 
   public void smartDashboardUpdate() {
     m_intakeSpeed = SmartDashboard.getNumber(getName() + "/Intake Speed", m_intakeSpeed);
@@ -147,13 +134,13 @@ public class IntakeSubsystem extends SubsystemBase
     SmartDashboard.putBoolean(getName() + "/Game Piece Is Upright", m_gamePieceIsUpright.get());
 
     SmartDashboard.putNumber(getName() + "/Current Flipper Position", m_flipperEncoder.getPosition());
-    m_flippedPosition = SmartDashboard.getNumber(getName() + "/Flipper Down Position", m_flippedPosition);
+    m_flippedPosition = SmartDashboard.getNumber(getName() + "/Flipper Down Position", kDefaultFlipperDownPosition);
     m_flipperPIDController.setP(SmartDashboard.getNumber(getName() + "/Flipper P", kFlipperP));
     m_flipperPIDController.setI(SmartDashboard.getNumber(getName() + "/Flipper I", kFlipperI));
     m_flipperPIDController.setD(SmartDashboard.getNumber(getName() + "/Flipper D", kFlipperD));
     m_flipperPIDController.setIZone(SmartDashboard.getNumber(getName() + "/Flipper IZone", kFlipperIZone));
     m_flipperPIDController.setFF(SmartDashboard.getNumber(getName() + "/Flipper FF", kFlipperFF));
-}
+  }
 
   public void toggleIntakeSubsystem()
   {
@@ -212,5 +199,4 @@ public class IntakeSubsystem extends SubsystemBase
     setExteriorFeederMotor(0);
     setInteriorFeederMotor(0);
   }
-
 }

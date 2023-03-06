@@ -9,21 +9,21 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
 public class TestArmRotationCommand extends CommandBase {
-  private double m_targetRotationPosition = 60;
   private PlacementArmSubsystem m_placementArmSubsystem;
+
   /** Creates a new TestArmRotationCommand. */
   public TestArmRotationCommand(PlacementArmSubsystem placementArmSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_placementArmSubsystem = placementArmSubsystem;
-
     addRequirements(placementArmSubsystem);
+    SmartDashboard.putNumber("Test Arm Rotation Target Position", PlacementArmSubsystem.kArmHomePosition);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_targetRotationPosition = SmartDashboard.getNumber("Test Arm Rotation Target Position", m_targetRotationPosition);
-    m_placementArmSubsystem.setArmDegrees(m_targetRotationPosition);
+    double target = SmartDashboard.getNumber("Test Arm Rotation Target Position", PlacementArmSubsystem.kArmHomePosition);
+    m_placementArmSubsystem.setArmDegrees(target);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

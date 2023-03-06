@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -21,12 +23,16 @@ import frc.robot.RobotMap;
 
 public class PlacementArmSubsystem extends SubsystemBase {
 
+    public static final double kArmHomePosition = 60;
     private static final double kArmRotatorP = 0.01;
     private static final double kArmRotatorI = 0;
     private static final double kArmRotatorD = 0;
+
     private static final double kArmExtensionP = 0.001;
     private static final double kArmExtensionI = 0;
     private static final double kArmExtensionD = 0;
+    private static final double kArmExtensionFF = 0;
+    private static final double kArmExtensionIzone = 0;
 
     public enum GamePieceType {
         Unknown,
@@ -36,26 +42,22 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     private GamePieceType m_GamePieceType = GamePieceType.Unknown;
 
-    CANSparkMax m_armRotatorMotor = new CANSparkMax(RobotMap.kArmRotatorSparkMaxMotor, MotorType.kBrushless);
-    CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor, MotorType.kBrushless);
-    DigitalInput m_armRotatorEncoderDigitalInput = new DigitalInput(RobotMap.kRotatorArmEncoderPulseWidthDIO);
-    DutyCycle m_armRotatorEncoderDutyCycle = new DutyCycle(m_armRotatorEncoderDigitalInput);
-    Spark m_gripVacuumMotor = new Spark(RobotMap.kGripVacuumSparkMotor);
-    SolenoidV2 m_armVacuumRelease1 = new SolenoidV2(RobotMap.kArmVacuumRelease1);
-    SolenoidV2 m_armVacuumRelease2 = new SolenoidV2(RobotMap.kArmVacuumRelease2);
-    SolenoidV2 m_armVacuumRelease3 = new SolenoidV2(RobotMap.kArmVacuumRelease3);
-    SolenoidV2 m_armVacuumRelease4 = new SolenoidV2(RobotMap.kArmVacuumRelease4);
+    private CANSparkMax m_armRotatorMotor = new CANSparkMax(RobotMap.kArmRotatorSparkMaxMotor, MotorType.kBrushless);
+    private CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor, MotorType.kBrushless);
+    private DigitalInput m_armRotatorEncoderDigitalInput = new DigitalInput(RobotMap.kRotatorArmEncoderPulseWidthDIO);
+    private DutyCycle m_armRotatorEncoderDutyCycle = new DutyCycle(m_armRotatorEncoderDigitalInput);
+    private Spark m_gripVacuumMotor = new Spark(RobotMap.kGripVacuumSparkMotor);
+    private SolenoidV2 m_armVacuumRelease1 = new SolenoidV2(RobotMap.kArmVacuumRelease1);
+    private SolenoidV2 m_armVacuumRelease2 = new SolenoidV2(RobotMap.kArmVacuumRelease2);
+    private SolenoidV2 m_armVacuumRelease3 = new SolenoidV2(RobotMap.kArmVacuumRelease3);
+    private SolenoidV2 m_armVacuumRelease4 = new SolenoidV2(RobotMap.kArmVacuumRelease4);
 
-    RopeSensor m_ropeSensor = new RopeSensor(RobotMap.kRopeEncoderDigIO);
-    PIDController m_armExtensionMotorPidController = new PIDController(kArmExtensionP, kArmExtensionI, kArmExtensionD);
-    double m_lastArmExtensionPosition = 0; // Arm starts fully retracted
+    // RopeSensor m_ropeSensor = new RopeSensor(RobotMap.kRopeEncoderDigIO);
+    private SparkMaxRelativeEncoder m_extensionEncoder;
+    private SparkMaxPIDController m_armExtensionMotorPidController;
+    private double m_lastArmExtensionTarget = 0; // Arm starts fully retracted
 
-    PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
-
-    static double kDegreesPerRevolution = 360.0 / 4096.0;
-
-    private double m_targetExtensionPosition = 0;
-    private int m_ticks = 0;
+    private PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
 
     // ** Creates a new PlacementArmSubsystem. */
     public PlacementArmSubsystem() {
@@ -63,82 +65,88 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armRotatorMotorPidController.setI(kArmRotatorI);
         m_armRotatorMotorPidController.setD(kArmRotatorD);
 
+        m_armExtensionMotorPidController = m_armExtensionMotor.getPIDController();
+        m_extensionEncoder = (SparkMaxRelativeEncoder) m_armExtensionMotor.getEncoder();
+
         m_armExtensionMotorPidController.setP(kArmExtensionP);
         m_armExtensionMotorPidController.setI(kArmExtensionI);
         m_armExtensionMotorPidController.setD(kArmExtensionD);
+        m_armExtensionMotorPidController.setFF(kArmExtensionFF);
+        m_armExtensionMotorPidController.setIZone(kArmExtensionIzone);
 
         m_armRotatorMotor.setIdleMode(IdleMode.kCoast);
         m_armExtensionMotor.setIdleMode(IdleMode.kCoast);
 
-        m_armRotatorMotorPidController.setSetpoint(60);
-
-        smartDashboardInit();
+        setArmDegrees(kArmHomePosition);
+        // setArmExtensionPosition(0);
     }
 
     public void setupRopeSensor(Robot robot) {
-        m_ropeSensor.setup(robot);
+        // m_ropeSensor.setup(robot);
     }
 
     public void smartDashboardInit() {
         SmartDashboard.putNumber(getName() + "/Arm Rotator P", m_armExtensionMotorPidController.getP());
         SmartDashboard.putNumber(getName() + "/Arm Rotator I", m_armExtensionMotorPidController.getI());
         SmartDashboard.putNumber(getName() + "/Arm Rotator D", m_armExtensionMotorPidController.getD());
+
         SmartDashboard.putNumber(getName() + "/Arm Extension P", m_armExtensionMotorPidController.getP());
         SmartDashboard.putNumber(getName() + "/Arm Extension I", m_armExtensionMotorPidController.getI());
         SmartDashboard.putNumber(getName() + "/Arm Extension D", m_armExtensionMotorPidController.getD());
-
-        SmartDashboard.putNumber(getName() + "/Arm Rotation Target Position", 0);
-        SmartDashboard.putNumber(getName() + "/Arm Rotation Target Position", m_targetExtensionPosition);
+        SmartDashboard.putNumber(getName() + "/Arm Extension FF", m_armExtensionMotorPidController.getFF());
+        SmartDashboard.putNumber(getName() + "/Arm Extension Izone", m_armExtensionMotorPidController.getIZone());
     }
 
     public void smartDashboardUpdate() {
         m_armRotatorMotorPidController.setP(SmartDashboard.getNumber(getName() + "/Arm Rotator P", kArmRotatorP));
         m_armRotatorMotorPidController.setI(SmartDashboard.getNumber(getName() + "/Arm Rotator I", kArmRotatorI));
         m_armRotatorMotorPidController.setD(SmartDashboard.getNumber(getName() + "/Arm Rotator D", kArmRotatorD));
+
         m_armExtensionMotorPidController.setP(SmartDashboard.getNumber(getName() + "/Arm Extension P", kArmExtensionP));
         m_armExtensionMotorPidController.setI(SmartDashboard.getNumber(getName() + "/Arm Extension I", kArmExtensionI));
-        m_armExtensionMotorPidController.setD(SmartDashboard.getNumber(getName() + "/Arm Extension", kArmExtensionD));
-
-        m_targetExtensionPosition = SmartDashboard.getNumber(getName() + "/Arm Rotation Target Position",
-                m_targetExtensionPosition);
+        m_armExtensionMotorPidController.setD(SmartDashboard.getNumber(getName() + "/Arm Extension D", kArmExtensionD));
+        m_armExtensionMotorPidController.setFF(SmartDashboard.getNumber(getName() + "/Arm Extension FF", kArmExtensionFF));
+        m_armExtensionMotorPidController.setIZone(SmartDashboard.getNumber(getName() + "/Arm Extension Izone", kArmExtensionIzone));
     }
 
     public void setArmDegrees(double degrees) {
         m_armRotatorMotorPidController.setSetpoint(degrees);
     }
 
+    public void setArmExtensionPosition(double distance) {
+        m_armExtensionMotor.set(0); // stop motor so us modifying the going forward doesn't screw things up
+
+        // // m_ropeSensor.setGoingForward(distance > m_lastArmExtensionTarget);
+        // // m_armExtensionMotorPidController.setSetpoint(distance);
+        // m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
+
+        m_lastArmExtensionTarget = distance;
+    }
+
     public void stopArmExtensionMotor() {
-        m_armExtensionMotor.set(0.0);
-        m_armExtensionMotorPidController.setSetpoint(getArmExtensionPosition());
+        setArmExtensionPosition(getArmExtensionPosition());
+    }
+
+    public void stopArmRotatorMotor() {
+        setArmDegrees(getArmAngle());
     }
 
     public boolean isArmExtensionAtSetpoint() {
-        return m_armExtensionMotorPidController.atSetpoint();
+        // return m_armExtensionMotorPidController.atSetpoint();
+        return Math.abs(m_lastArmExtensionTarget - getArmExtensionPosition()) < 50;
     }
 
     public boolean isArmRotatorAtSetpoint() {
         return m_armRotatorMotorPidController.atSetpoint();
     }
 
-    public void stopArmRotatorMotor() {
-        m_armRotatorMotor.set(0.0);
-        m_armExtensionMotorPidController.setSetpoint(getArmAngle());
-    }
-
     public double getArmAngle() {
         return m_armRotatorEncoderDutyCycle.getOutput() * 360;
     }
 
-    public void setArmExtensionPosition(double distance) {
-        m_armExtensionMotor.set(0); // stop motor so us modifying the going forward doesn't screw things up
-
-        m_ropeSensor.setGoingForward(distance > m_lastArmExtensionPosition);
-
-        m_armExtensionMotorPidController.setSetpoint(distance);
-    }
-
     public double getArmExtensionPosition() {
-        return m_ropeSensor.getTicks();
+        // return m_ropeSensor.getTicks();
+        return m_extensionEncoder.getPosition();
     }
 
     @Override
@@ -149,17 +157,10 @@ public class PlacementArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Arm Extension Ticks", getArmExtensionPosition());
         
         double raw =  m_armRotatorMotorPidController.calculate(getArmAngle());
-        SmartDashboard.putNumber(getName() + "/Arm Rotator Raw Output", raw);
+        // SmartDashboard.putNumber(getName() + "/Arm Rotator Raw Output", raw);
         m_armRotatorMotor.set(raw);
 
-        m_ticks++;
-        if (m_ticks % 15 != 3)
-            return;
-
-        // smartDashboardUpdate();
-
-        // m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));
-        
+        // m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));      
     }
 
     public void conePickUp() {
@@ -177,7 +178,6 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armVacuumRelease3.set(true);
         m_armVacuumRelease4.set(false);
         setGamePieceType(GamePieceType.Cube);
-
     }
 
     public void gamPieceRelease()

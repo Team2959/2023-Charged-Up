@@ -28,7 +28,8 @@ public class ArmExtentionCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_placementArmSubsystem.stopArmExtensionMotor();
+        if (interrupted)
+            m_placementArmSubsystem.stopArmExtensionMotor();
     }
 
     @Override

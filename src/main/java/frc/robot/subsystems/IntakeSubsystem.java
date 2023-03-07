@@ -54,6 +54,8 @@ public class IntakeSubsystem extends SubsystemBase
     m_flipperPIDController.setD(kFlipperD);
     m_flipperPIDController.setFF(kFlipperFF);
     m_flipperPIDController.setIZone(kFlipperIZone);
+
+    flipGamePiece();
   }
 
   public boolean gamePieceDetected() {
@@ -95,6 +97,10 @@ public class IntakeSubsystem extends SubsystemBase
   public void stopVacuum() {
     dropOrientatorBar();
     m_flipperVacuumMotor.set(0.0);
+  }
+
+  public void releaseVacuumSeal() {
+    m_intakeVacuumRelease.set(true);
   }
 
   public void engageVacuumSeal() {

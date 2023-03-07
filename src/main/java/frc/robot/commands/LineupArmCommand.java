@@ -32,21 +32,21 @@ public class LineupArmCommand extends SequentialCommandGroup
     switch (positioningType)
     {
       case High:
-        distance = 40; //Inches
+        distance = 80; //Inches
         if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
           angle = 175;
         else
           angle = 170;
         break;
       case Mid:
-        distance = 23;
+        distance = 55;
         if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
           angle = 160;
         else
           angle = 155;
         break;
       case Low:
-        distance = 6;
+        distance = 30;
         angle = 100;
         break;
     }

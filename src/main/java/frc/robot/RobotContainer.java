@@ -11,6 +11,8 @@ import frc.robot.commands.FlipGamePieceUpCommand;
 import frc.robot.commands.FlipperToggleCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
+import frc.robot.commands.WallGamePieceLineupCommand;
+import frc.robot.commands.WallGamePiecePickupCommand;
 import frc.robot.commands.ReverseAllIntakeCommand;
 import frc.robot.commands.ReverseExteriorWheelsCommand;
 import frc.robot.commands.TeleOpDriveCommand;
@@ -56,6 +58,11 @@ public class RobotContainer {
     JoystickButton m_gamePieceConeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceConeButton);
     JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
+    JoystickButton m_testButton2 = new JoystickButton(m_buttonBox, RobotMap.kTestButton2);
+
+    JoystickButton m_PickUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kPickUpWallGamePieceButton);
+    JoystickButton m_LineUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
+
 
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
@@ -126,7 +133,7 @@ public class RobotContainer {
         //         m_IntakeSubsystem.startVacuum();
         //     }
         // }));
-        // m_testButton.onTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
+        m_testButton2.onTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
         m_testButton.onTrue(new TestArmExtensionCommand(m_PlacementArmSubsystem));
 
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
@@ -134,15 +141,17 @@ public class RobotContainer {
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
 
+        m_PickUpWallGamePieceButton.whileTrue(new WallGamePieceLineupCommand(m_PlacementArmSubsystem));
+        m_PickUpWallGamePieceButton.whileTrue(new WallGamePiecePickupCommand(m_PlacementArmSubsystem));
+
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
 
-        // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip).onTrue(new
-        // FlipGamePieceUpCommand(m_IntakeSubsystem));
-        new Trigger(m_IntakeSubsystem::gamePieceIsReadyToFlip)
-                .onTrue(Commands.waitSeconds(1).andThen(new InstantCommand(() -> m_IntakeSubsystem.flipGamePiece())));
-        // new Trigger(m_IntakeSubsystem::gamePieceIsReadyToLoad).onTrue(new
-        // LoadGamePieceUpCommand(m_IntakeSubsystem));
+        new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceIsReadyToFlip())
+                .onTrue(Commands.waitSeconds(2)
+                .andThen(new InstantCommand(() -> m_IntakeSubsystem.flipGamePiece())));
+        // new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceIsReadyToLoad())
+        //         .onTrue(new LoadGamePieceUpCommand(m_IntakeSubsystem));
 
         m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp()));
         m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.cubePickUp()));

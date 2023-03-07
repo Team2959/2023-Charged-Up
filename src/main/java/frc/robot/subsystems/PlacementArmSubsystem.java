@@ -10,7 +10,7 @@ import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import cwtech.util.RopeSensor;
+
 import cwtech.util.SolenoidV2;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -24,11 +24,11 @@ import frc.robot.RobotMap;
 public class PlacementArmSubsystem extends SubsystemBase {
 
     public static final double kArmHomePosition = 60;
-    private static final double kArmRotatorP = 0.01;
+    private static final double kArmRotatorP = 0.02;
     private static final double kArmRotatorI = 0;
     private static final double kArmRotatorD = 0;
 
-    private static final double kArmExtensionP = 0.001;
+    private static final double kArmExtensionP = 0.02;
     private static final double kArmExtensionI = 0;
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
@@ -56,17 +56,23 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private SparkMaxRelativeEncoder m_extensionEncoder;
     private SparkMaxPIDController m_armExtensionMotorPidController;
     private double m_lastArmExtensionTarget = 0; // Arm starts fully retracted
+    private double m_lastArmRotationTarget = 0;
 
     private PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
 
     // ** Creates a new PlacementArmSubsystem. */
     public PlacementArmSubsystem() {
+        m_armExtensionMotor.restoreFactoryDefaults();
+
+        m_armRotatorMotor.setIdleMode(IdleMode.kBrake);
+        m_armExtensionMotor.setIdleMode(IdleMode.kBrake);
+
         m_armRotatorMotorPidController.setP(kArmRotatorP);
         m_armRotatorMotorPidController.setI(kArmRotatorI);
         m_armRotatorMotorPidController.setD(kArmRotatorD);
 
-        m_armExtensionMotorPidController = m_armExtensionMotor.getPIDController();
         m_extensionEncoder = (SparkMaxRelativeEncoder) m_armExtensionMotor.getEncoder();
+        m_armExtensionMotorPidController = m_armExtensionMotor.getPIDController();
 
         m_armExtensionMotorPidController.setP(kArmExtensionP);
         m_armExtensionMotorPidController.setI(kArmExtensionI);
@@ -74,11 +80,8 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setFF(kArmExtensionFF);
         m_armExtensionMotorPidController.setIZone(kArmExtensionIzone);
 
-        m_armRotatorMotor.setIdleMode(IdleMode.kCoast);
-        m_armExtensionMotor.setIdleMode(IdleMode.kCoast);
-
         setArmDegrees(kArmHomePosition);
-        // setArmExtensionPosition(0);
+        setArmExtensionPosition(getArmExtensionPosition());
     }
 
     public void setupRopeSensor(Robot robot) {
@@ -111,6 +114,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public void setArmDegrees(double degrees) {
         m_armRotatorMotorPidController.setSetpoint(degrees);
+        m_lastArmRotationTarget = degrees;
     }
 
     public void setArmExtensionPosition(double distance) {
@@ -118,7 +122,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
         // // m_ropeSensor.setGoingForward(distance > m_lastArmExtensionTarget);
         // // m_armExtensionMotorPidController.setSetpoint(distance);
-        // m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
+        m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
 
         m_lastArmExtensionTarget = distance;
     }
@@ -133,11 +137,12 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public boolean isArmExtensionAtSetpoint() {
         // return m_armExtensionMotorPidController.atSetpoint();
-        return Math.abs(m_lastArmExtensionTarget - getArmExtensionPosition()) < 50;
+        return Math.abs(m_lastArmExtensionTarget - getArmExtensionPosition()) < 5;
     }
 
     public boolean isArmRotatorAtSetpoint() {
-        return m_armRotatorMotorPidController.atSetpoint();
+        // return m_armRotatorMotorPidController.atSetpoint();
+        return Math.abs(m_lastArmRotationTarget - getArmAngle()) < 5;
     }
 
     public double getArmAngle() {
@@ -180,25 +185,14 @@ public class PlacementArmSubsystem extends SubsystemBase {
         setGamePieceType(GamePieceType.Cube);
     }
 
-    public void gamPieceRelease()
+    public void gamePieceRelease()
     {
-        if(m_GamePieceType == GamePieceType.Cube) 
-        {
-            m_gripVacuumMotor.set(0);
-            m_armVacuumRelease2.set(true);
-            m_armVacuumRelease3.set(true);
-            m_armVacuumRelease4.set(true);
-            setGamePieceType(GamePieceType.Unknown);
-        }
-        else if(m_GamePieceType == GamePieceType.Cone) 
-        {
-            m_gripVacuumMotor.set(0);
-            m_armVacuumRelease1.set(true);
-            m_armVacuumRelease2.set(true);
-            m_armVacuumRelease3.set(true);
-            m_armVacuumRelease4.set(true);
-            setGamePieceType(GamePieceType.Unknown);
-        }
+        m_gripVacuumMotor.set(0);
+        m_armVacuumRelease1.set(true);
+        m_armVacuumRelease2.set(true);
+        m_armVacuumRelease3.set(true);
+        m_armVacuumRelease4.set(true);
+        setGamePieceType(GamePieceType.Unknown);
     }
 
     public void moveToTargetRotation(double target) {

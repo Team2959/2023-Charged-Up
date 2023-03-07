@@ -4,37 +4,19 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class IntakeVacuumReleaseCommand extends CommandBase {
-  private IntakeSubsystem m_intakeSubsystem;
+public class IntakeVacuumReleaseCommand extends SequentialCommandGroup {
   /** Creates a new IntakeReleaseCommand. */
   public IntakeVacuumReleaseCommand(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intakeSubsystem);
-    m_intakeSubsystem = intakeSubsystem;
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    m_intakeSubsystem.stopVacuum();
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_intakeSubsystem.engageVacuumSeal();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    addCommands(
+      new InstantCommand(() -> intakeSubsystem.releaseVacuumSeal()),
+      new InstantCommand(() -> intakeSubsystem.stopVacuum()),
+      new WaitCommand(1),
+      new InstantCommand(() -> intakeSubsystem.engageVacuumSeal()));
+}
 }

@@ -10,6 +10,6 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 public class ArmToLoadingCommand extends SequentialCommandGroup {
     public ArmToLoadingCommand(PlacementArmSubsystem placementArmSubsystem) {
         addCommands(new ArmExtentionCommand(placementArmSubsystem, 0),
-                new ArmRotationCommand(placementArmSubsystem, 0));
+                new ArmRotationCommand(placementArmSubsystem, PlacementArmSubsystem.kArmHomePosition));
     }
 }

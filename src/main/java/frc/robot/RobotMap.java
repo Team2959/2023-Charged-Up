@@ -53,6 +53,8 @@ public final class RobotMap {
 
     // Driver Buttons
     public static final int kToggleIntakeButton = 2;
+    public static final int kLineUpWallGamePieceButton = 7;
+    public static final int kPickUpWallGamePieceButton = 8;
 
     // Co-Piolet Button board
     public static final int kHighGamePeiceButton = 8;
@@ -66,6 +68,9 @@ public final class RobotMap {
     public static final int kGamePieceConeButton = 11;
     public static final int kGamePieceCubeButton = 5;
     public static final int kTestButton = 7;
+    public static final int kTestButton2 = 2;
+
+
 
     // Zeroed values, should be in radians
     // source is google document in Electrical for team - module data

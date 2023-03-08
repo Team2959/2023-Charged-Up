@@ -41,7 +41,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
     public enum GamePieceType {
         Unknown,
         Cone,
-        Cube, High, Mid, Low
+        Cube
     };
 
     private GamePieceType m_GamePieceType = GamePieceType.Unknown;
@@ -60,7 +60,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private SparkMaxRelativeEncoder m_extensionEncoder;
     private SparkMaxPIDController m_armExtensionMotorPidController;
     private double m_lastArmExtensionTarget = 0; // Arm starts fully retracted
-    private double m_lastArmRotationTarget = 0;
+    private double m_lastArmRotationTarget = kArmHomePosition;
 
     private PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
 

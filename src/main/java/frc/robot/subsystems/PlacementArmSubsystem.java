@@ -70,7 +70,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
     private TrapezoidProfile m_armRotatorTrapezoidProfile = null;
-    private SparkMaxPIDController m_rotationPIDController;
+    // private SparkMaxPIDController m_rotationPIDController;
     private SparkMaxRelativeEncoder m_rotationMotorEncoder;
 
     // ** Creates a new PlacementArmSubsystem. */
@@ -81,7 +81,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armExtensionMotor.setIdleMode(IdleMode.kBrake);
 
         m_rotationMotorEncoder = (SparkMaxRelativeEncoder) m_armRotatorMotor.getEncoder();
-        m_rotationPIDController = m_armRotatorMotor.getPIDController();
+        // m_rotationPIDController = m_armRotatorMotor.getPIDController();
         // m_rotationPIDController.setP(kArmRotatorP);
         // m_rotationPIDController.setI(kArmRotatorI);
         // m_rotationPIDController.setD(kArmRotatorD);

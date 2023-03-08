@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.PlacementArmSubsystem.GamePieceType;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -13,8 +14,6 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 public class WallGamePiecePickupCommand extends SequentialCommandGroup {
   /** Creates a new WallGamePiecePickupCommand. */
   public WallGamePiecePickupCommand(PlacementArmSubsystem placementArmSubsystem) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(new ArmRotationCommand(placementArmSubsystem, 165)); 
   }
 }

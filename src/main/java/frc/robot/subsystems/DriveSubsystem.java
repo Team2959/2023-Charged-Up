@@ -114,6 +114,13 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Pitch", m_navX.getPitch());
     }
 
+    public void smartDashboardInit() {
+        m_frontLeft.driveSmartDashboardInit();
+        m_frontRight.driveSmartDashboardInit();
+        m_backLeft.driveSmartDashboardInit();
+        m_backRight.driveSmartDashboardInit();
+    }
+
     public void smartDashboardUpdate() {
         m_frontLeft.smartDashboardUpdate();
         m_frontRight.smartDashboardUpdate();

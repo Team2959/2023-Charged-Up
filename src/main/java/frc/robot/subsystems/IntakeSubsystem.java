@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import cwtech.util.SolenoidV2;
@@ -54,6 +55,7 @@ public class IntakeSubsystem extends SubsystemBase
     m_flipperPIDController.setD(kFlipperD);
     m_flipperPIDController.setFF(kFlipperFF);
     m_flipperPIDController.setIZone(kFlipperIZone);
+    m_flipperMotor.setIdleMode(IdleMode.kBrake);
 
     flipGamePiece();
   }

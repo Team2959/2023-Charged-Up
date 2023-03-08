@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
@@ -21,37 +23,26 @@ public class LineupArmCommand extends SequentialCommandGroup
 
   /** Creates a new LineupArmCommand. */
   public LineupArmCommand(PlacementArmSubsystem placementArmSubsystem,
-      PlacementArmSubsystem.GamePieceType gamePieceType,
       ArmPositioningType positioningType)
   {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
     double distance = 0;
-    double angle = 0;
     switch (positioningType)
     {
       case High:
-        distance = 80; //Inches
-        if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
-          angle = 175;
-        else
-          angle = 170;
+        distance = 115; 
         break;
       case Mid:
-        distance = 55;
-        if (gamePieceType == PlacementArmSubsystem.GamePieceType.Cone)
-          angle = 160;
-        else
-          angle = 155;
+        distance = 50;
         break;
       case Low:
         distance = 30;
-        angle = 100;
         break;
     }
     
-    addCommands(new ArmRotationCommand(placementArmSubsystem, angle));
+    addCommands(new ArmRotationCommand(placementArmSubsystem, () -> placementArmSubsystem.getTargetGamePieceAngle(positioningType)));
     addCommands(new ArmExtentionCommand(placementArmSubsystem, distance));
   }
 }

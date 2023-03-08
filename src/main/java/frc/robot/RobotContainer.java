@@ -4,11 +4,10 @@
 
 package frc.robot;
 
+import frc.robot.commands.ArmExtensionInitalizeCommand;
 import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DropIntakeOrientaterCommand;
-import frc.robot.commands.FlipGamePieceUpCommand;
-import frc.robot.commands.FlipperToggleCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.WallGamePieceLineupCommand;
@@ -24,11 +23,13 @@ import frc.robot.commands.LineupArmCommand.ArmPositioningType;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
-
+import frc.robot.subsystems.PlacementArmSubsystem.GamePieceType;
 import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -55,7 +56,7 @@ public class RobotContainer {
     JoystickButton m_reverseIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseIntakeButton);
     JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox,
             RobotMap.kReverseExteriorIntakeButton);
-    JoystickButton m_gamePieceConeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceConeButton);
+    JoystickButton m_gamePieceConeButton = new JoystickButton(m_leftJoystick, RobotMap.kGamePieceConeButton);
     JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
     JoystickButton m_testButton2 = new JoystickButton(m_buttonBox, RobotMap.kTestButton2);
@@ -69,20 +70,27 @@ public class RobotContainer {
     Conditioning m_turnConditioning = new Conditioning();
     double m_speedMultiplier = 0.8;
 
+    SendableChooser<PlacementArmSubsystem.GamePieceType> m_preloadedPieceChooser = new SendableChooser<>();
+
     /**
      * The container form the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer(Robot robot) {
         m_robot = robot;
         // Setup of conditioning calculations
-        m_driveXConditioning.setDeadband(0.18);
+        m_driveXConditioning.setDeadband(0.25);
         m_driveXConditioning.setExponent(1.7);
-        m_driveYConditioning.setDeadband(0.15);
+        m_driveYConditioning.setDeadband(0.25);
         m_driveYConditioning.setExponent(1.4);
         m_turnConditioning.setDeadband(0.2);
         m_turnConditioning.setExponent(1.4);
 
         // m_PlacementArmSubsystem.setupRopeSensor(robot);
+
+        m_preloadedPieceChooser.addOption("Cone", GamePieceType.Cone);
+        m_preloadedPieceChooser.addOption("Cube", GamePieceType.Cube);
+        SmartDashboard.putData("Auto/Preloaded Piece", m_preloadedPieceChooser);
+        SmartDashboard.putData("CS", CommandScheduler.getInstance());
 
         configureBindings();
         smartDashboardInit();
@@ -93,18 +101,21 @@ public class RobotContainer {
         SmartDashboard.putNumber("Test Arm Rotation Target Position", 60);
         m_IntakeSubsystem.smartDashboardInit();
         m_PlacementArmSubsystem.smartDashboardInit();
+        m_driveSubsystem.smartDashboardInit();
     }
 
     public void registerSmartDashboardCalls() {
         m_robot.addPeriodic(() -> {
             m_IntakeSubsystem.smartDashboardUpdate();
             m_PlacementArmSubsystem.smartDashboardUpdate();
+            m_driveSubsystem.smartDashboardUpdate();
             smartDashboardUpdate();
         }, 1, 0.502);
     }
 
     public void teleOpInit() {
-        // SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
+        SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
+        // (new ArmExtensionInitalizeCommand(m_PlacementArmSubsystem, () -> m_PlacementArmSubsystem.getGamePieceType())).andThen(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp())).schedule();
     }
 
     public void smartDashboardUpdate() {
@@ -118,12 +129,12 @@ public class RobotContainer {
 
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
 
-        m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.High));
+        // m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
+        //         m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.High));
         m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Mid));
+                () -> m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Mid));
         m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Low));
+                () -> m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Low));
 
         // m_testButton.onTrue(new InstantCommand(() -> {
         //     m_IntakeSubsystem.flipGamePiece();
@@ -141,8 +152,8 @@ public class RobotContainer {
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
 
-        m_PickUpWallGamePieceButton.whileTrue(new WallGamePieceLineupCommand(m_PlacementArmSubsystem));
-        m_PickUpWallGamePieceButton.whileTrue(new WallGamePiecePickupCommand(m_PlacementArmSubsystem));
+        m_LineUpWallGamePieceButton.onTrue(new WallGamePieceLineupCommand(m_PlacementArmSubsystem));
+        m_PickUpWallGamePieceButton.onTrue(new WallGamePiecePickupCommand(m_PlacementArmSubsystem));
 
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));

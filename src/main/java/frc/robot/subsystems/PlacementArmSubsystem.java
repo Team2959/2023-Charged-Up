@@ -13,6 +13,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import cwtech.util.SolenoidV2;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -20,11 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.commands.LineupArmCommand.ArmPositioningType;
 
 public class PlacementArmSubsystem extends SubsystemBase {
 
     public static final double kArmHomePosition = 60;
-    private static final double kArmRotatorP = 0.02;
+    private static final double kArmRotatorP = 0.0175;
     private static final double kArmRotatorI = 0;
     private static final double kArmRotatorD = 0;
 
@@ -33,11 +36,13 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
     private static final double kArmExtensionIzone = 0;
+    private static final double kLoadedConeExtensionPositionOffset = 35;
+    private static final double kLoadedCubeExtensionPositionOffset = 0;
 
     public enum GamePieceType {
         Unknown,
         Cone,
-        Cube
+        Cube, High, Mid, Low
     };
 
     private GamePieceType m_GamePieceType = GamePieceType.Unknown;
@@ -60,6 +65,9 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     private PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
 
+    private TrapezoidProfile.Constraints kConstraints = new Constraints(50, 50);
+    private TrapezoidProfile m_armRotatorTrapezoidProfile = null;
+
     // ** Creates a new PlacementArmSubsystem. */
     public PlacementArmSubsystem() {
         m_armExtensionMotor.restoreFactoryDefaults();
@@ -80,7 +88,10 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setFF(kArmExtensionFF);
         m_armExtensionMotorPidController.setIZone(kArmExtensionIzone);
 
+        
         setArmDegrees(kArmHomePosition);
+        
+        m_extensionEncoder.setPosition(0);
         setArmExtensionPosition(getArmExtensionPosition());
     }
 
@@ -118,7 +129,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
     }
 
     public void setArmExtensionPosition(double distance) {
-        m_armExtensionMotor.set(0); // stop motor so us modifying the going forward doesn't screw things up
+        // m_armExtensionMotor.set(0); // stop motor so us modifying the going forward doesn't screw things up
 
         // // m_ropeSensor.setGoingForward(distance > m_lastArmExtensionTarget);
         // // m_armExtensionMotorPidController.setSetpoint(distance);
@@ -133,6 +144,15 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public void stopArmRotatorMotor() {
         setArmDegrees(getArmAngle());
+    }
+
+    public void initalizeArm(GamePieceType gamePieceType) {
+        if(gamePieceType == GamePieceType.Cone) {
+            m_extensionEncoder.setPosition(kLoadedConeExtensionPositionOffset);
+        }
+        else if(gamePieceType == GamePieceType.Cube) {
+            m_extensionEncoder.setPosition(kLoadedCubeExtensionPositionOffset);
+        }
     }
 
     public boolean isArmExtensionAtSetpoint() {
@@ -179,9 +199,15 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public void cubePickUp() {
         m_gripVacuumMotor.set(1);
+        m_armVacuumRelease1.set(true); // TODO check this
         m_armVacuumRelease2.set(true);
         m_armVacuumRelease3.set(true);
         m_armVacuumRelease4.set(false);
+        
+        // m_armVacuumRelease1.set(false); // TODO check this
+        // m_armVacuumRelease2.set(false);
+        // m_armVacuumRelease3.set(false);
+        // m_armVacuumRelease4.set(true);
         setGamePieceType(GamePieceType.Cube);
     }
 
@@ -229,5 +255,29 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public GamePieceType getGamePieceType() {
         return m_GamePieceType;
+    } 
+
+    public double getTargetGamePieceAngle(ArmPositioningType armPosition)
+    {
+        double angle = 0;
+        switch (armPosition)
+        {
+          case High:
+            if (getGamePieceType() == PlacementArmSubsystem.GamePieceType.Cone)
+              angle = 185;
+            else
+              angle = 180;
+            break;
+          case Mid:
+            if (getGamePieceType() == PlacementArmSubsystem.GamePieceType.Cone)
+              angle = 165;
+            else
+              angle = 155;
+            break;
+          case Low:
+            angle = 115;
+            break;
+        }
+        return angle;
     }
 }

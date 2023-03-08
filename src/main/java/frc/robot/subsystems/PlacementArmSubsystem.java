@@ -10,7 +10,6 @@ import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-
 import cwtech.util.SolenoidV2;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -22,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.commands.LineupArmCommand.ArmPositioningType;
 
 public class PlacementArmSubsystem extends SubsystemBase {
 
@@ -256,28 +254,4 @@ public class PlacementArmSubsystem extends SubsystemBase {
     public GamePieceType getGamePieceType() {
         return m_GamePieceType;
     } 
-
-    public double getTargetGamePieceAngle(ArmPositioningType armPosition)
-    {
-        double angle = 0;
-        switch (armPosition)
-        {
-          case High:
-            if (getGamePieceType() == PlacementArmSubsystem.GamePieceType.Cone)
-              angle = 185;
-            else
-              angle = 180;
-            break;
-          case Mid:
-            if (getGamePieceType() == PlacementArmSubsystem.GamePieceType.Cone)
-              angle = 165;
-            else
-              angle = 155;
-            break;
-          case Low:
-            angle = 115;
-            break;
-        }
-        return angle;
-    }
 }

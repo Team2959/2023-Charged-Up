@@ -4,9 +4,8 @@
 
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -14,35 +13,11 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class LineupArmCommand extends SequentialCommandGroup
 {
-  public enum ArmPositioningType
-  {
-    High,
-    Mid,
-    Low,
-  };
-
   /** Creates a new LineupArmCommand. */
   public LineupArmCommand(PlacementArmSubsystem placementArmSubsystem,
       ArmPositioningType positioningType)
   {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-
-    double distance = 0;
-    switch (positioningType)
-    {
-      case High:
-        distance = 115; 
-        break;
-      case Mid:
-        distance = 50;
-        break;
-      case Low:
-        distance = 30;
-        break;
-    }
-    
-    addCommands(new ArmRotationCommand(placementArmSubsystem, () -> placementArmSubsystem.getTargetGamePieceAngle(positioningType)));
-    addCommands(new ArmExtentionCommand(placementArmSubsystem, distance));
+    addCommands(new ArmRotationByArmPositionTypeCommand(placementArmSubsystem, positioningType));
+    addCommands(new ArmExtentionCommand(placementArmSubsystem, ArmPositioninInfo.getArmDistance(positioningType)));
   }
 }

@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import frc.robot.commands.ArmExtensionInitalizeCommand;
 import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DropIntakeOrientaterCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
-import frc.robot.commands.WallGamePieceLineupCommand;
-import frc.robot.commands.WallGamePiecePickupCommand;
 import frc.robot.commands.ReverseAllIntakeCommand;
 import frc.robot.commands.ReverseExteriorWheelsCommand;
 import frc.robot.commands.TeleOpDriveCommand;
@@ -19,7 +16,7 @@ import frc.robot.commands.TestArmExtensionCommand;
 import frc.robot.commands.TestArmRotationCommand;
 import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.ToggleIntakeCommand;
-import frc.robot.commands.LineupArmCommand.ArmPositioningType;
+import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
@@ -78,9 +75,9 @@ public class RobotContainer {
     public RobotContainer(Robot robot) {
         m_robot = robot;
         // Setup of conditioning calculations
-        m_driveXConditioning.setDeadband(0.25);
+        m_driveXConditioning.setDeadband(0.15);
         m_driveXConditioning.setExponent(1.7);
-        m_driveYConditioning.setDeadband(0.25);
+        m_driveYConditioning.setDeadband(0.15);
         m_driveYConditioning.setExponent(1.4);
         m_turnConditioning.setDeadband(0.2);
         m_turnConditioning.setExponent(1.4);
@@ -98,6 +95,7 @@ public class RobotContainer {
     }
 
     public void smartDashboardInit() {
+        SmartDashboard.putNumber("Test Arm Extension Target Position", 0);
         SmartDashboard.putNumber("Test Arm Rotation Target Position", 60);
         m_IntakeSubsystem.smartDashboardInit();
         m_PlacementArmSubsystem.smartDashboardInit();
@@ -106,16 +104,17 @@ public class RobotContainer {
 
     public void registerSmartDashboardCalls() {
         m_robot.addPeriodic(() -> {
-            m_IntakeSubsystem.smartDashboardUpdate();
-            m_PlacementArmSubsystem.smartDashboardUpdate();
             m_driveSubsystem.smartDashboardUpdate();
             smartDashboardUpdate();
         }, 1, 0.502);
+        m_robot.addPeriodic(() -> {
+            m_IntakeSubsystem.smartDashboardUpdate();
+            m_PlacementArmSubsystem.smartDashboardUpdate();
+        }, 1, 0.303);
     }
 
     public void teleOpInit() {
         SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
-        // (new ArmExtensionInitalizeCommand(m_PlacementArmSubsystem, () -> m_PlacementArmSubsystem.getGamePieceType())).andThen(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp())).schedule();
     }
 
     public void smartDashboardUpdate() {
@@ -129,12 +128,21 @@ public class RobotContainer {
 
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
 
-        // m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-        //         m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.High));
-        m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                () -> m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Mid));
-        m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem,
-                () -> m_PlacementArmSubsystem.getGamePieceType(), ArmPositioningType.Low));
+        m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp()));
+        m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.cubePickUp()));
+
+        m_LineUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallLineup));
+        m_PickUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallPickup));
+
+        // Disabled high button until arm can fully extend for placement
+        // m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.High));
+        m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Mid));
+        m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Low));
+
+        m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
+        m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
+
+        m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
 
         // m_testButton.onTrue(new InstantCommand(() -> {
         //     m_IntakeSubsystem.flipGamePiece();
@@ -147,14 +155,6 @@ public class RobotContainer {
         m_testButton2.onTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
         m_testButton.onTrue(new TestArmExtensionCommand(m_PlacementArmSubsystem));
 
-        m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
-        m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
-
-        m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
-
-        m_LineUpWallGamePieceButton.onTrue(new WallGamePieceLineupCommand(m_PlacementArmSubsystem));
-        m_PickUpWallGamePieceButton.onTrue(new WallGamePiecePickupCommand(m_PlacementArmSubsystem));
-
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
 
@@ -163,9 +163,6 @@ public class RobotContainer {
                 .andThen(new InstantCommand(() -> m_IntakeSubsystem.flipGamePiece())));
         // new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceIsReadyToLoad())
         //         .onTrue(new LoadGamePieceUpCommand(m_IntakeSubsystem));
-
-        m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp()));
-        m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.cubePickUp()));
 
         m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
         m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));

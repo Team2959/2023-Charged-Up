@@ -54,7 +54,8 @@ public final class RobotMap {
     // Driver Buttons
     public static final int kToggleIntakeButton = 2;
     public static final int kLineUpWallGamePieceButton = 11;
-    public static final int kPickUpWallGamePieceButton = 9;
+    public static final int kPickUpWallGamePieceButton = 12;
+    public static final int kCubeEjectionButton = 8;
 
     // Co-Piolet Button board
     public static final int kHighGamePeiceButton = 8;

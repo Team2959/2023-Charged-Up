@@ -63,15 +63,18 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private double m_lastArmRotationTarget = kArmHomePosition;
 
     private PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
+    private static double kMyTrapSlope = (2.5/3.0 - 0.1)/(2.5 - 0.1);
+    private static double kMyTrapOffset = 0.1 - kMyTrapSlope * 0.1;
 
-    private static double kDt = 0.02;
-    private static double kTravelVelocity = 50;
-    private TrapezoidProfile.Constraints kConstraints = new Constraints(kTravelVelocity, 50);
-    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
-    private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
-    private TrapezoidProfile m_armRotatorTrapezoidProfile = null;
+    // private static double kDt = 0.02;
+    // private static double kTravelVelocity = 50;
+    // private double m_elapsedTrapezoidalTime = 0;
+    // private TrapezoidProfile.Constraints kConstraints = new Constraints(kTravelVelocity, 50);
+    // private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
+    // private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+    // private TrapezoidProfile m_armRotatorTrapezoidProfile = null;
     // private SparkMaxPIDController m_rotationPIDController;
-    private SparkMaxRelativeEncoder m_rotationMotorEncoder;
+    // private SparkMaxRelativeEncoder m_rotationMotorEncoder;
 
     // ** Creates a new PlacementArmSubsystem. */
     public PlacementArmSubsystem() {
@@ -80,7 +83,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armRotatorMotor.setIdleMode(IdleMode.kBrake);
         m_armExtensionMotor.setIdleMode(IdleMode.kBrake);
 
-        m_rotationMotorEncoder = (SparkMaxRelativeEncoder) m_armRotatorMotor.getEncoder();
+        // m_rotationMotorEncoder = (SparkMaxRelativeEncoder) m_armRotatorMotor.getEncoder();
         // m_rotationPIDController = m_armRotatorMotor.getPIDController();
         // m_rotationPIDController.setP(kArmRotatorP);
         // m_rotationPIDController.setI(kArmRotatorI);
@@ -99,7 +102,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setFF(kArmExtensionFF);
         m_armExtensionMotorPidController.setIZone(kArmExtensionIzone);
 
-        m_setpoint = new TrapezoidProfile.State(getArmAngle(), 0);
+        // m_setpoint = new TrapezoidProfile.State(getArmAngle(), 0);
         setArmDegrees(kArmHomePosition);
         
         m_extensionEncoder.setPosition(0);
@@ -114,6 +117,11 @@ public class PlacementArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Arm Extension Ticks", getArmExtensionPosition());
         
         double raw =  m_armRotatorMotorPidController.calculate(getArmAngle());
+        var diff = Math.abs(raw);
+        if (diff > 0.25)
+            raw /= 3.0;
+        else if ( diff > 1.0)
+            raw = raw * kMyTrapSlope + kMyTrapOffset;
         // SmartDashboard.putNumber(getName() + "/Arm Rotator Raw Output", raw);
         m_armRotatorMotor.set(raw);
 
@@ -121,12 +129,15 @@ public class PlacementArmSubsystem extends SubsystemBase {
         // m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));      
 
         // Trapezoidal profile testing
-        m_setpoint = m_armRotatorTrapezoidProfile.calculate(kDt);
-        SmartDashboard.putNumber(getName() + "/Arm Rotation Trap Target Position", m_setpoint.position);
-        SmartDashboard.putNumber(getName() + "/Arm Rotation Trap Target Velocity", m_setpoint.velocity);
-        SmartDashboard.putNumber(getName() + "/Arm Rotation Motor Velocity", m_rotationMotorEncoder.getVelocity());
-        // m_rotationPIDController.setReference(m_setpoint.velocity, ControlType.kVelocity);
-        // m_rotationPIDController.setReference(m_setpoint.velocity, ControlType.kSmartVelocity);
+        // m_elapsedTrapezoidalTime += kDt;
+        // m_setpoint = m_armRotatorTrapezoidProfile.calculate(m_elapsedTrapezoidalTime);
+        // var motorRotationVelocity = 192.0 * m_setpoint.velocity / 360.0;
+        // SmartDashboard.putNumber(getName() + "/Arm Rotation Trap Target Position", m_setpoint.position);
+        // SmartDashboard.putNumber(getName() + "/Arm Rotation Trap Target Velocity", m_setpoint.velocity);
+        // SmartDashboard.putNumber(getName() + "/Arm Rotation Target Motor Velocity", motorRotationVelocity);
+        // SmartDashboard.putNumber(getName() + "/Arm Rotation Motor Velocity", m_rotationMotorEncoder.getVelocity());
+        // m_rotationPIDController.setReference(motorRotationVelocity, ControlType.kVelocity);
+        // m_rotationPIDController.setReference(motorRotationVelocity, ControlType.kSmartVelocity);
     }
 
     public void setupRopeSensor(Robot robot) {
@@ -161,8 +172,9 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public void setArmDegrees(double degrees) {
         // trapezoidal testing
-        m_goal = new TrapezoidProfile.State(degrees, kTravelVelocity);
-        m_armRotatorTrapezoidProfile = new TrapezoidProfile(kConstraints, m_goal, m_setpoint);
+        // m_goal = new TrapezoidProfile.State(degrees, 0);
+        // m_elapsedTrapezoidalTime = 0;
+        // m_armRotatorTrapezoidProfile = new TrapezoidProfile(kConstraints, m_goal, m_setpoint);
 
         // simple arm PID control
         m_armRotatorMotorPidController.setSetpoint(degrees);
@@ -225,7 +237,7 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public void cubePickUp() {
         m_gripVacuumMotor.set(1);
-        m_armVacuumRelease1.set(true); // TODO check this
+        m_armVacuumRelease1.set(false); // TODO check this
         m_armVacuumRelease2.set(true);
         m_armVacuumRelease3.set(true);
         m_armVacuumRelease4.set(false);

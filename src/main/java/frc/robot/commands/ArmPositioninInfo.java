@@ -41,13 +41,13 @@ public final class ArmPositioninInfo {
               return 180;
           case Mid:
             if (gamePieceType == GamePieceType.Cone)
-              return 165;
+              return 170;
             else
               return 155;
           case Low:
             return 115;
           case WallLineup:
-            return 175;
+            return 180;
           case WallPickup:
             return 160;
         default:

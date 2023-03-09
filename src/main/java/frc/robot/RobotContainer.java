@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
+import frc.robot.commands.CubeExtractionCommandGroup;
 import frc.robot.commands.DropIntakeOrientaterCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
@@ -54,6 +55,7 @@ public class RobotContainer {
     JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox,
             RobotMap.kReverseExteriorIntakeButton);
     JoystickButton m_gamePieceConeButton = new JoystickButton(m_leftJoystick, RobotMap.kGamePieceConeButton);
+    JoystickButton m_cubeEjectionButton = new JoystickButton(m_leftJoystick, RobotMap.kCubeEjectionButton);
     JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
     JoystickButton m_testButton2 = new JoystickButton(m_buttonBox, RobotMap.kTestButton2);
@@ -118,7 +120,7 @@ public class RobotContainer {
     }
 
     public void smartDashboardUpdate() {
-        m_speedMultiplier = m_leftJoystick.getThrottle();
+        m_speedMultiplier = Math.max(0.5, Math.abs(m_leftJoystick.getThrottle()));
         SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
     }
 
@@ -142,7 +144,7 @@ public class RobotContainer {
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
         m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
 
-        m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem));
+        m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem, m_IntakeSubsystem));
 
         // m_testButton.onTrue(new InstantCommand(() -> {
         //     m_IntakeSubsystem.flipGamePiece();
@@ -166,6 +168,7 @@ public class RobotContainer {
 
         m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
         m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
+        m_cubeEjectionButton.onTrue(new CubeExtractionCommandGroup(m_IntakeSubsystem, m_PlacementArmSubsystem));
     }
 
     public Command getAutonomousCommand() {

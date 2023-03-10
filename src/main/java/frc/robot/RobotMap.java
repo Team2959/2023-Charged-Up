@@ -56,6 +56,7 @@ public final class RobotMap {
     public static final int kLineUpWallGamePieceButton = 11;
     public static final int kPickUpWallGamePieceButton = 12;
     public static final int kCubeEjectionButton = 8;
+    public static final int kGroundPickupButton = 9;
 
     // Co-Piolet Button board
     public static final int kHighGamePeiceButton = 8;

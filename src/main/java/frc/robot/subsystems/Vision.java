@@ -8,7 +8,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Vision {
-    public class BotPose {
+    public static class BotPose {
         double m_x, m_y, m_z, m_roll, m_pitch, m_yaw;
 
         BotPose(double x, double y, double z, double roll, double pitch, double yaw) {
@@ -19,13 +19,34 @@ public class Vision {
             m_pitch = pitch;
             m_yaw = yaw;
         }
+
+        public double getX() {
+            return m_x;
+        }
+
+        public double getY() {
+            return m_y;
+        }
+
+        public double getZ() {
+            return m_z;
+        }
     }
 
-    NetworkTableEntry m_botposeEntry = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose");
+    static NetworkTableEntry m_botposeEntry = NetworkTableInstance.getDefault().getTable("limelight")
+            .getEntry("botpose");
     // TODO correct pipeline id
-    NetworkTableEntry m_pipelineEntry = NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline");
+    static NetworkTableEntry m_pipelineEntry = NetworkTableInstance.getDefault().getTable("limelight")
+            .getEntry("pipeline");
 
     Vision() {
+        m_botposeEntry.getDoubleArray(new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 });
+    }
+
+    static BotPose getBotPose() {
+        double[] botposeRaw = m_botposeEntry.getDoubleArray(new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 });
+        var botpose = new BotPose(botposeRaw[0], botposeRaw[1], botposeRaw[2], botposeRaw[3], botposeRaw[4], botposeRaw[5]);
+        return botpose;
     }
 
 }

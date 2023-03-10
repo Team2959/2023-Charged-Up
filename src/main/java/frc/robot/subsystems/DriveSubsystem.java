@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.Vision.BotPose;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -48,15 +49,26 @@ public class DriveSubsystem extends SubsystemBase {
     private static final double kYBalancingP = 0.1;
     private static final double kYBalancingI = 0.0;
     private static final double kYBalancingD = 0.0;
+    private static final double kRotationP = 0.1;
+    private static final double kRotationI = 0.0;
+    private static final double kRotationD = 0.0;
 
     final PIDController m_xBalancingController = new PIDController(kXBalancingP, kXBalancingI, kXBalancingD);
     final PIDController m_yBalancingController = new PIDController(kYBalancingP, kYBalancingI, kYBalancingD);
+    boolean m_balancing = false;
+
+    final PIDController m_rotationController = new PIDController(kRotationP, kRotationI, kRotationD);
+    double m_angleToRotateTo = 0.0;
+    boolean m_rotationAlignmentOn = false;
+    
+    double autoRotateValue = 0.0;
+    double autoXValue = 0.0;
+    double autoYValue = 0.0;
 
     private int m_ticks = 0;
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem()
-    {
+    public DriveSubsystem() {
         m_navX = new AHRS(I2C.Port.kMXP);
 
         m_kinematics = new SwerveDriveKinematics(kFrontLeftLocation, kFrontRightLocation, kBackLeftLocation,
@@ -76,15 +88,9 @@ public class DriveSubsystem extends SubsystemBase {
                 RobotMap.kZeroedBackRight, "Back Right");
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getAngle(), getPositions());
-
-        // m_frontLeft.driveSmartDashboardInit();
-        // m_frontRight.driveSmartDashboardInit();
-        // m_backLeft.driveSmartDashboardInit();
-        // m_backRight.driveSmartDashboardInit();
     }
 
-    public void initalize()
-    {
+    public void initalize() {
         if (m_initalized)
             return;
         m_navX.reset();
@@ -95,15 +101,50 @@ public class DriveSubsystem extends SubsystemBase {
         m_initalized = true;
     }
 
-    public void offsetNavX(Rotation2d offset)
-    {
+    public void offsetNavX(Rotation2d offset) {
         m_navX.setAngleAdjustment(offset.getDegrees());
     }
 
+    public void turnOnBalancing() {
+        m_balancing = true;
+        m_xBalancingController.setSetpoint(0);
+        m_yBalancingController.setSetpoint(0);
+    }
+
+    public void turnOffBalancing() {
+        m_balancing = false;
+    }
+
+    public void turnOnRotate() {
+        double diff180 = Math.abs(180 - getAngle().getDegrees());
+        double diff0 = Math.abs(getAngle().getDegrees());
+        if(diff0 > diff180) {
+            m_angleToRotateTo = 180;
+        } else {
+            m_angleToRotateTo = 0;
+        }
+        m_rotationAlignmentOn = true;
+    }
+
+    public void turnOffRotate() {
+        m_rotationAlignmentOn = false;
+    }
+
     @Override
-    public void periodic()
-    {
+    public void periodic() {
         m_odometry.update(getAngle(), getPositions());
+        
+        // TODO try this code
+        // if (m_balancing) {
+        //     // TODO trapezoidal
+        //     autoXValue = m_xBalancingController.calculate(m_navX.getRoll());
+        //     autoYValue = m_yBalancingController.calculate(m_navX.getPitch());
+        // }
+
+        // if(m_rotationAlignmentOn) {
+        //     // TODO trapezoidal
+        //     autoRotateValue = m_rotationController.calculate(m_navX.getAngle());
+        // }
 
         m_ticks++;
         if (m_ticks % 15 != 7)
@@ -112,6 +153,10 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
         SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
         SmartDashboard.putNumber(getName() + "/Pitch", m_navX.getPitch());
+        BotPose botpose = Vision.getBotPose();
+        SmartDashboard.putNumber(getName() + "/Distance X", botpose.getX());
+        SmartDashboard.putNumber(getName() + "/Distance Y", botpose.getY());
+        SmartDashboard.putNumber(getName() + "/Distance Z", botpose.getZ());
     }
 
     public void smartDashboardInit() {
@@ -129,10 +174,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,
-            double rotationRadiansPerSecond, boolean fieldRelative)
-    {
+            double rotationRadiansPerSecond, boolean fieldRelative) {
+        // if(m_balancing) {
+        //     xMetersPerSecond = autoXValue * DriveSubsystem.kMaxSpeedMetersPerSecond;
+        //     yMetersPerSecond = autoYValue * DriveSubsystem.kMaxSpeedMetersPerSecond;
+        // }
+        // if(m_rotationAlignmentOn) {
+        //     rotationRadiansPerSecond = Math.toRadians(autoRotateValue * 360);
+        // }
+
+
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, rotationRadiansPerSecond, getAngle())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xMetersPerSecond, yMetersPerSecond, rotationRadiansPerSecond,
+                        getAngle())
                 : new ChassisSpeeds(xMetersPerSecond, yMetersPerSecond, rotationRadiansPerSecond));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(states, kMaxSpeedMetersPerSecond);
@@ -143,36 +197,30 @@ public class DriveSubsystem extends SubsystemBase {
         m_backRight.setDesiredState(states[3]);
     }
 
-    public SwerveDriveKinematics getKinematics()
-    {
+    public SwerveDriveKinematics getKinematics() {
         return m_kinematics;
     }
 
-    public Pose2d getPose()
-    {
+    public Pose2d getPose() {
         return m_odometry.getPoseMeters();
     }
 
-    public void setDesiredState(SwerveModuleState[] states)
-    {
+    public void setDesiredState(SwerveModuleState[] states) {
         m_frontLeft.setDesiredState(states[0]);
         m_frontRight.setDesiredState(states[1]);
         m_backLeft.setDesiredState(states[2]);
         m_backRight.setDesiredState(states[3]);
     }
 
-    public Rotation2d getAngle()
-    {
+    public Rotation2d getAngle() {
         return m_navX.getRotation2d();
     }
 
-    public void resetOdometry(Pose2d pose)
-    {
+    public void resetOdometry(Pose2d pose) {
         m_odometry.resetPosition(getAngle(), getPositions(), pose);
     }
 
-    private SwerveModulePosition[] getPositions()
-    {
+    private SwerveModulePosition[] getPositions() {
         SwerveModulePosition[] swerveStates = { m_frontLeft.getPosition(), m_frontRight.getPosition(),
                 m_backLeft.getPosition(), m_backRight.getPosition() };
         return swerveStates;

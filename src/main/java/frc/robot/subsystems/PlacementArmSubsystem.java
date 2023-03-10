@@ -63,8 +63,9 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private double m_lastArmRotationTarget = kArmHomePosition;
 
     private PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
-    private static double kMyTrapSlope = (2.5/3.0 - 0.1)/(2.5 - 0.1);
-    private static double kMyTrapOffset = 0.1 - kMyTrapSlope * 0.1;
+    private static double kRotationLimitDivisor = 3.0;
+    private static double kRotationLimitContinue = 0.25;
+    private static double kRotationLimitStart = kRotationLimitContinue / kRotationLimitDivisor;
 
     // private static double kDt = 0.02;
     // private static double kTravelVelocity = 50;
@@ -118,10 +119,12 @@ public class PlacementArmSubsystem extends SubsystemBase {
         
         double raw =  m_armRotatorMotorPidController.calculate(getArmAngle());
         var diff = Math.abs(raw);
-        if (diff > 0.25)
+        if (diff > kRotationLimitContinue)
             raw /= 3.0;
-        else if ( diff > 1.0)
-            raw = raw * kMyTrapSlope + kMyTrapOffset;
+        else if (diff > kRotationLimitStart)
+        {
+            raw = kRotationLimitStart;
+        }
         // SmartDashboard.putNumber(getName() + "/Arm Rotator Raw Output", raw);
         m_armRotatorMotor.set(raw);
 

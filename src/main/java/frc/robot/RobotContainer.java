@@ -10,6 +10,7 @@ import frc.robot.commands.CubeExtractionCommandGroup;
 import frc.robot.commands.DropIntakeOrientaterCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
+import frc.robot.commands.PickupOffGroundCommand;
 import frc.robot.commands.ReverseAllIntakeCommand;
 import frc.robot.commands.ReverseExteriorWheelsCommand;
 import frc.robot.commands.TeleOpDriveCommand;
@@ -35,9 +36,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
-    private final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
+    public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
+    public final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
     public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+
+    public final SendableChooser<Command> m_autoChooser = Autos.sendableChooser(this);
 
     Robot m_robot;
 
@@ -62,7 +65,8 @@ public class RobotContainer {
 
     JoystickButton m_PickUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kPickUpWallGamePieceButton);
     JoystickButton m_LineUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
-
+    JoystickButton m_groundPickupButtton = new JoystickButton(m_leftJoystick, RobotMap.kGroundPickupButton);
+    
 
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
@@ -90,6 +94,7 @@ public class RobotContainer {
         m_preloadedPieceChooser.addOption("Cube", GamePieceType.Cube);
         SmartDashboard.putData("Auto/Preloaded Piece", m_preloadedPieceChooser);
         SmartDashboard.putData("CS", CommandScheduler.getInstance());
+        SmartDashboard.putData("Auto/Routine", m_autoChooser);
 
         configureBindings();
         smartDashboardInit();
@@ -144,6 +149,8 @@ public class RobotContainer {
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
         m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
 
+        m_groundPickupButtton.onTrue(new PickupOffGroundCommand(m_PlacementArmSubsystem));
+
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem, m_IntakeSubsystem));
 
         // m_testButton.onTrue(new InstantCommand(() -> {
@@ -172,7 +179,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Autos.runPath("Basic", m_driveSubsystem);
+        return m_autoChooser.getSelected();
     }
 
     public double getDriveXInput() {

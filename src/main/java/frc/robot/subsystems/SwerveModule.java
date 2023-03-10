@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class SwerveModule {
     private static final double kDriveP = 0.05;
@@ -48,6 +49,9 @@ public class SwerveModule {
         m_turnMotor = new CANSparkMax(turnMotor, CANSparkMax.MotorType.kBrushless);
         m_driveMotor.restoreFactoryDefaults();
         m_turnMotor.restoreFactoryDefaults();
+
+        m_driveMotor.setIdleMode(IdleMode.kBrake);
+        m_turnMotor.setIdleMode(IdleMode.kBrake);
 
         m_driveMotor.setSmartCurrentLimit((int) kDriveCurrentLimitAmps);
         m_turnMotor.setSmartCurrentLimit((int) kTurnCurrentLimitAmps);
@@ -163,6 +167,10 @@ public class SwerveModule {
     public void resetAngleEncoderToAbsolute()
     {
         m_turnEncoder.setPosition(getAbsoluteEncoderPosition());
+    }
+
+    public void setAngle(double i) {
+        m_turnPIDController.setP(i);
     }
 }
 

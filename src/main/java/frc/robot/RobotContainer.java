@@ -10,6 +10,7 @@ import frc.robot.commands.CubeExtractionCommandGroup;
 import frc.robot.commands.DropIntakeOrientaterCommand;
 import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
+import frc.robot.commands.LockWheelsCommand;
 import frc.robot.commands.PickupOffGroundCommand;
 import frc.robot.commands.ReverseAllIntakeCommand;
 import frc.robot.commands.ReverseExteriorWheelsCommand;
@@ -35,6 +36,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
+    private static double kDriveYExponent = 1.4;
+    private static double kDriveXExponent = 1.7;
     // The robot's subsystems and commands are defined here...
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     public final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
@@ -47,6 +50,8 @@ public class RobotContainer {
     Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
     Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
     Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
+    JoystickButton m_lockWheeButton = new JoystickButton(m_rightJoystick, 1);
+    JoystickButton m_wallLineupHoriz = new JoystickButton(m_leftJoystick, 10);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
     JoystickButton m_intakeReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kIntakeReleaseButton);
@@ -82,9 +87,9 @@ public class RobotContainer {
         m_robot = robot;
         // Setup of conditioning calculations
         m_driveXConditioning.setDeadband(0.15);
-        m_driveXConditioning.setExponent(1.7);
+        m_driveXConditioning.setExponent(kDriveXExponent);
         m_driveYConditioning.setDeadband(0.15);
-        m_driveYConditioning.setExponent(1.4);
+        m_driveYConditioning.setExponent(kDriveYExponent);
         m_turnConditioning.setDeadband(0.2);
         m_turnConditioning.setExponent(1.4);
 
@@ -104,6 +109,9 @@ public class RobotContainer {
     public void smartDashboardInit() {
         SmartDashboard.putNumber("Test Arm Extension Target Position", 0);
         SmartDashboard.putNumber("Test Arm Rotation Target Position", 60);
+        SmartDashboard.putNumber("Drive X/Exponent", kDriveXExponent);
+        SmartDashboard.putNumber("Drive Y/Exponent", kDriveYExponent);
+
         m_IntakeSubsystem.smartDashboardInit();
         m_PlacementArmSubsystem.smartDashboardInit();
         m_driveSubsystem.smartDashboardInit();
@@ -118,6 +126,10 @@ public class RobotContainer {
             m_IntakeSubsystem.smartDashboardUpdate();
             m_PlacementArmSubsystem.smartDashboardUpdate();
         }, 1, 0.303);
+        kDriveXExponent = SmartDashboard.getNumber("Drive X/Exponent", kDriveXExponent);
+        kDriveYExponent = SmartDashboard.getNumber("Drive Y/Exponent", kDriveYExponent);
+        m_driveXConditioning.setExponent(kDriveXExponent);
+        m_driveYConditioning.setExponent(kDriveYExponent);
     }
 
     public void teleOpInit() {
@@ -138,11 +150,15 @@ public class RobotContainer {
         m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp()));
         m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.cubePickUp()));
 
+        m_wallLineupHoriz.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallHorizLineup));
+
+        m_lockWheeButton.whileTrue(new LockWheelsCommand(m_driveSubsystem));
+
         m_LineUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallLineup));
         m_PickUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallPickup));
 
         // Disabled high button until arm can fully extend for placement
-        // m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.High));
+        m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.High));
         m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Mid));
         m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Low));
 

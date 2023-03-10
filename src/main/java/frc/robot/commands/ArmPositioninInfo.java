@@ -9,7 +9,8 @@ public final class ArmPositioninInfo {
       Mid,
       Low,
       WallLineup,
-      WallPickup
+      WallPickup,
+      WallHorizLineup,
     };
   
     public static double getArmDistance(ArmPositioningType armPosition)
@@ -25,6 +26,8 @@ public final class ArmPositioninInfo {
           case WallLineup:
           case WallPickup:
             return 60;
+          case WallHorizLineup:
+            return 0;
         default:
             return 0;
         }
@@ -50,6 +53,8 @@ public final class ArmPositioninInfo {
             return 180;
           case WallPickup:
             return 160;
+          case WallHorizLineup:
+            return 157;
         default:
             return 0;
         }

@@ -153,10 +153,10 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
         SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
         SmartDashboard.putNumber(getName() + "/Pitch", m_navX.getPitch());
-        BotPose botpose = Vision.getBotPose();
-        SmartDashboard.putNumber(getName() + "/Distance X", botpose.getX());
-        SmartDashboard.putNumber(getName() + "/Distance Y", botpose.getY());
-        SmartDashboard.putNumber(getName() + "/Distance Z", botpose.getZ());
+        // BotPose botpose = Vision.getBotPose();
+        // SmartDashboard.putNumber(getName() + "/Distance X", botpose.getX());
+        // SmartDashboard.putNumber(getName() + "/Distance Y", botpose.getY());
+        // SmartDashboard.putNumber(getName() + "/Distance Z", botpose.getZ());
     }
 
     public void smartDashboardInit() {
@@ -224,6 +224,13 @@ public class DriveSubsystem extends SubsystemBase {
         SwerveModulePosition[] swerveStates = { m_frontLeft.getPosition(), m_frontRight.getPosition(),
                 m_backLeft.getPosition(), m_backRight.getPosition() };
         return swerveStates;
+    }
+
+    public void turn180() {
+        m_frontLeft.setAngle(90);
+        m_frontRight.setAngle(90);
+        m_backLeft.setAngle(90);
+        m_backRight.setAngle(90);
     }
 
 }

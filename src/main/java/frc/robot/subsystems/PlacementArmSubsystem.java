@@ -13,12 +13,14 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import cwtech.util.SolenoidV2;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -29,6 +31,8 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private static final double kArmRotatorP = 0.0175;
     private static final double kArmRotatorI = 0;
     private static final double kArmRotatorD = 0;
+    private static final double kArmRotatorMaxVelocity = 50; // degrees per second
+    private static final double kArmRotatorMaxAccel = 50; // degrees per second per second
 
     private static final double kArmExtensionP = 0.02;
     private static final double kArmExtensionI = 0;
@@ -63,9 +67,12 @@ public class PlacementArmSubsystem extends SubsystemBase {
     private double m_lastArmRotationTarget = kArmHomePosition;
 
     private PIDController m_armRotatorMotorPidController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
+    private ProfiledPIDController m_armRotatorMotorProfiledPidController = new ProfiledPIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD, new Constraints(kArmRotatorMaxVelocity, kArmRotatorMaxAccel));
     private static double kRotationLimitDivisor = 3.0;
     private static double kRotationLimitContinue = 0.25;
     private static double kRotationLimitStart = kRotationLimitContinue / kRotationLimitDivisor;
+
+    public boolean m_quickFixCone = true;
 
     // private static double kDt = 0.02;
     // private static double kTravelVelocity = 50;
@@ -106,8 +113,20 @@ public class PlacementArmSubsystem extends SubsystemBase {
         // m_setpoint = new TrapezoidProfile.State(getArmAngle(), 0);
         setArmDegrees(kArmHomePosition);
         
-        m_extensionEncoder.setPosition(0);
-        setArmExtensionPosition(getArmExtensionPosition());
+        // m_extensionEncoder.setPosition(0);
+        // setArmExtensionPosition(getArmExtensionPosition());
+    }
+
+    public void onAutoInit() {
+        // if(m_quickFixCone) {
+            m_extensionEncoder.setPosition(37);
+            setArmExtensionPosition(37);
+            m_armExtensionMotor.set(0);
+        // }
+    }
+
+    public void setArmExtensionEncoder(double value) {
+        m_extensionEncoder.setPosition(value);
     }
 
     @Override
@@ -116,15 +135,19 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", getArmAngle());
         SmartDashboard.putNumber(getName() + "/Arm Extension Ticks", getArmExtensionPosition());
+
+        // TODO try profiled
+        // double rawProfiled = m_armRotatorMotorProfiledPidController.calculate(getArmAngle(), m_lastArmRotationTarget);
+        // m_armRotatorMotor.set(rawProfiled);
         
         double raw =  m_armRotatorMotorPidController.calculate(getArmAngle());
         var diff = Math.abs(raw);
         if (diff > kRotationLimitContinue)
             raw /= 3.0;
-        else if (diff > kRotationLimitStart)
-        {
-            raw = kRotationLimitStart;
-        }
+        // else if (diff > kRotationLimitStart)
+        // {
+        //     raw = kRotationLimitStart;
+        // }
         // SmartDashboard.putNumber(getName() + "/Arm Rotator Raw Output", raw);
         m_armRotatorMotor.set(raw);
 
@@ -181,7 +204,6 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
         // simple arm PID control
         m_armRotatorMotorPidController.setSetpoint(degrees);
-
         m_lastArmRotationTarget = degrees;
     }
 

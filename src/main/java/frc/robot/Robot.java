@@ -64,6 +64,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        CommandScheduler.getInstance().cancelAll();
         m_robotContainer.teleOpInit();
         m_robotContainer.m_driveSubsystem.initalize();
         if (m_autonomousCommand != null) {

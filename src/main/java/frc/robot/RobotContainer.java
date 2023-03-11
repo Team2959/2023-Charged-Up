@@ -18,6 +18,7 @@ import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.TestArmExtensionCommand;
 import frc.robot.commands.TestArmRotationCommand;
 import frc.robot.commands.ArmVacuumReleaseCommand;
+import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.ToggleIntakeCommand;
 import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
 import frc.robot.subsystems.DriveSubsystem;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem.GamePieceType;
 import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,8 +38,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
-    private static double kDriveYExponent = 1.4;
-    private static double kDriveXExponent = 1.7;
+    private static double kDriveYExponent = 2; //1.4;
+    private static double kDriveXExponent = 2; //1.7;
     // The robot's subsystems and commands are defined here...
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     public final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
@@ -67,6 +69,7 @@ public class RobotContainer {
     JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
     JoystickButton m_testButton2 = new JoystickButton(m_buttonBox, RobotMap.kTestButton2);
+    JoystickButton m_balJoystickButton = new JoystickButton(m_rightJoystick, 11);
 
     // JoystickButton m_PickUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kPickUpWallGamePieceButton);
     // JoystickButton m_LineUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
@@ -76,7 +79,7 @@ public class RobotContainer {
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
     Conditioning m_turnConditioning = new Conditioning();
-    double m_speedMultiplier = 0.8;
+    double m_speedMultiplier = 0.70;
 
     SendableChooser<PlacementArmSubsystem.GamePieceType> m_preloadedPieceChooser = new SendableChooser<>();
 
@@ -162,12 +165,16 @@ public class RobotContainer {
         m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Mid));
         m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Low));
 
+
+// - -> left
+// + -> forward
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
         m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
 
         m_groundPickupButtton.onTrue(new PickupOffGroundCommand(m_PlacementArmSubsystem));
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem, m_IntakeSubsystem));
+        m_balJoystickButton.whileTrue(new AutoBalanceCommand(m_driveSubsystem));
 
         // m_testButton.onTrue(new InstantCommand(() -> {
         //     m_IntakeSubsystem.flipGamePiece();

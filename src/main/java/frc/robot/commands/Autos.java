@@ -45,6 +45,7 @@ public final class Autos {
         sendableChooser.setDefaultOption("Place Cone Auto",
                 placeGamePiece(GamePieceType.Cone, container.m_driveSubsystem,
                         container.m_PlacementArmSubsystem, container.m_IntakeSubsystem));
+        sendableChooser.addOption("Place Cone and Balance NOT TESTED", placeGamePieceAndBalance(GamePieceType.Cone, container.m_driveSubsystem, container.m_PlacementArmSubsystem, container.m_IntakeSubsystem));
         sendableChooser.addOption("Drive Only", runPath("Place Game Piece", container.m_driveSubsystem));
         // sendableChooser.addOption("Basic Cube 1",
         // (new CubeExtractionCommandGroup(container.m_IntakeSubsystem,
@@ -86,6 +87,29 @@ public final class Autos {
                 new WaitCommand(2));
         return readyPiece.andThen(runPath("Place Game Piece", driveSubsystem))
                 .andThen(new ArmToLoadingCommand(placementArmSubsystem, intakeSubsystem));
+    }
+
+    public static Command placeGamePieceAndBalance(GamePieceType gamePieceType, DriveSubsystem driveSubsystem,
+            PlacementArmSubsystem placementArmSubsystem, IntakeSubsystem intakeSubsystem) {
+        var events = new HashMap<String, Command>();
+        Command readyPiece = Commands.sequence(
+                new InstantCommand(() -> {
+                    if (gamePieceType == GamePieceType.Cone) {
+                        placementArmSubsystem.conePickUp();
+                    } else {
+                        placementArmSubsystem.cubePickUp();
+                    }
+                }),
+                new WaitCommand(1),
+                new ArmRotationCommand(placementArmSubsystem, 55),
+                new WaitCommand(1),
+                new ArmExtentionCommand(placementArmSubsystem, 0),
+                new LineupArmCommand(placementArmSubsystem, ArmPositioningType.High),
+                new WaitCommand(0.5),
+                new ArmVacuumReleaseCommand(placementArmSubsystem),
+                new WaitCommand(0.5));
+        return readyPiece.andThen(runPath("Place Game Piece And Balance", driveSubsystem))
+                .andThen(new ArmToLoadingCommand(placementArmSubsystem, intakeSubsystem)).andThen(new AutoBalanceCommand(driveSubsystem));
     }
 
     public static Command runPath(String name, HashMap<String, Command> events, DriveSubsystem driveSubsystem) {

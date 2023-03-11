@@ -40,6 +40,7 @@ public final class ArmPositioninInfo {
             case High:
                 if (gamePieceType == GamePieceType.Cone)
                     return 165;
+                    // return 167;
                 else
                     return 150;
             case Mid:

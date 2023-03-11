@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,6 +16,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -43,19 +46,22 @@ public class DriveSubsystem extends SubsystemBase {
     private final Translation2d kFrontRightLocation = new Translation2d(kHalfTrackWidthMeters, -kHalfTrackWidthMeters);
     private final Translation2d kBackLeftLocation = new Translation2d(-kHalfTrackWidthMeters, kHalfTrackWidthMeters);
     private final Translation2d kBackRightLocation = new Translation2d(-kHalfTrackWidthMeters, -kHalfTrackWidthMeters);
-    private static final double kXBalancingP = 0.1;
-    private static final double kXBalancingI = 0.0;
+    private static final double kXBalancingP = 0.028;
+    private static final double kXBalancingI = 0.006;
     private static final double kXBalancingD = 0.0;
-    private static final double kYBalancingP = 0.1;
-    private static final double kYBalancingI = 0.0;
+    private static final double kYBalancingP = 0.028;
+    private static final double kYBalancingI = 0.006;
     private static final double kYBalancingD = 0.0;
     private static final double kRotationP = 0.1;
     private static final double kRotationI = 0.0;
     private static final double kRotationD = 0.0;
 
-    final PIDController m_xBalancingController = new PIDController(kXBalancingP, kXBalancingI, kXBalancingD);
-    final PIDController m_yBalancingController = new PIDController(kYBalancingP, kYBalancingI, kYBalancingD);
-    boolean m_balancing = false;
+    final ProfiledPIDController m_xBalancingController = new ProfiledPIDController(kXBalancingP, kXBalancingI, kXBalancingD, new Constraints(0.2, 0.2));
+    final ProfiledPIDController m_yBalancingController = new ProfiledPIDController(kYBalancingP, kYBalancingI, kYBalancingD, new Constraints(0.2, 0.2));
+    public boolean m_balancing = false;
+    boolean m_invertRollAndPitch = false;
+    boolean m_invertXInput = false;
+    boolean m_invertYInput = false;
 
     final PIDController m_rotationController = new PIDController(kRotationP, kRotationI, kRotationD);
     double m_angleToRotateTo = 0.0;
@@ -107,8 +113,19 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void turnOnBalancing() {
         m_balancing = true;
-        m_xBalancingController.setSetpoint(0);
-        m_yBalancingController.setSetpoint(0);
+        autoBalanceDirection();
+        m_xBalancingController.setGoal(0);
+        m_yBalancingController.setGoal(0);
+    }
+
+    private boolean m_autoBalanceStartAngle = true;
+    private int m_autoBalanceDelayTicks = 0;
+    private int m_autoBalanceDelayTicksMax = 5;
+    private double m_autoBalanceStopAngle = 12.5;
+    private void autoBalanceDirection()
+    {
+        m_autoBalanceDelayTicks = 0;
+        m_autoBalanceStartAngle = m_navX.getPitch() > 0;
     }
 
     public void turnOffBalancing() {
@@ -135,11 +152,51 @@ public class DriveSubsystem extends SubsystemBase {
         m_odometry.update(getAngle(), getPositions());
         
         // TODO try this code
-        // if (m_balancing) {
-        //     // TODO trapezoidal
-        //     autoXValue = m_xBalancingController.calculate(m_navX.getRoll());
-        //     autoYValue = m_yBalancingController.calculate(m_navX.getPitch());
-        // }
+        if (m_balancing) {
+            // TODO trapezoidal
+            double xInput = 0.0;
+            double yInput = 0.0;
+            if(m_invertRollAndPitch) {
+                xInput = m_navX.getRoll();
+                yInput = m_navX.getPitch();
+            }
+            else {
+                xInput = m_navX.getPitch();
+                yInput = m_navX.getRoll();
+            }
+
+            if(m_invertXInput) {
+                xInput *= -1;
+            } 
+            if(m_invertYInput) {
+                yInput *= -1;
+            }
+
+            if (m_autoBalanceDelayTicks > 0 )
+            {
+                m_autoBalanceDelayTicks++;
+                if (m_autoBalanceDelayTicks < m_autoBalanceDelayTicksMax)
+                    return;
+
+                autoBalanceDirection();
+            }
+
+            if ((m_autoBalanceStartAngle && m_navX.getPitch() < m_autoBalanceStopAngle) ||
+                (!m_autoBalanceStartAngle && m_navX.getPitch() > -m_autoBalanceStopAngle))
+            {
+                m_autoBalanceDelayTicks = 1;
+                drive(0, 0, 0, true);
+
+                return;
+            }
+
+            autoXValue = -m_xBalancingController.calculate(xInput);
+            // autoYValue = m_yBalancingController.calculate(yInput);
+            SmartDashboard.putNumber(getName() + "/Balance Auto X", autoXValue);
+            SmartDashboard.putNumber(getName() + "/Balance Auto Y", autoYValue);
+
+            drive(autoXValue, 0, 0, true); // TODO check we want field centric
+        }
 
         // if(m_rotationAlignmentOn) {
         //     // TODO trapezoidal
@@ -153,6 +210,8 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
         SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
         SmartDashboard.putNumber(getName() + "/Pitch", m_navX.getPitch());
+        
+        SmartDashboard.putData(m_yBalancingController);
         // BotPose botpose = Vision.getBotPose();
         // SmartDashboard.putNumber(getName() + "/Distance X", botpose.getX());
         // SmartDashboard.putNumber(getName() + "/Distance Y", botpose.getY());
@@ -164,9 +223,22 @@ public class DriveSubsystem extends SubsystemBase {
         m_frontRight.driveSmartDashboardInit();
         m_backLeft.driveSmartDashboardInit();
         m_backRight.driveSmartDashboardInit();
+        SmartDashboard.putBoolean(getName() + "/Invert Roll and Pitch", m_invertRollAndPitch);
+        SmartDashboard.putBoolean(getName() + "/Invert X", m_invertXInput);
+        SmartDashboard.putBoolean(getName() + "/Invert Y", m_invertYInput);
+        SmartDashboard.putData(getName() + "/X Balancing PID Controller", m_xBalancingController);
+        SmartDashboard.putData(getAngle() + "/Y Balancing PID Controller", m_yBalancingController);
+        SmartDashboard.putNumber(getName() + "/Balance Auto Delay Ticks", 5);
+        SmartDashboard.putNumber(getName() + "/Balance Auto Stop Angle", 5);
     }
 
     public void smartDashboardUpdate() {
+        m_invertRollAndPitch = SmartDashboard.getBoolean(getName() + "/Invert Roll and Pitch", m_invertRollAndPitch);
+        m_invertXInput = SmartDashboard.getBoolean(getName() + "/Invert X", m_invertXInput);
+        m_invertYInput = SmartDashboard.getBoolean(getName() + "/Invert Y", m_invertYInput);
+        m_autoBalanceDelayTicksMax = (int)SmartDashboard.getNumber(getName() + "/Balance Auto Delay Ticks", 5);
+        m_autoBalanceStopAngle = SmartDashboard.getNumber(getName() + "/Balance Auto Stop Angle", 5);
+
         m_frontLeft.smartDashboardUpdate();
         m_frontRight.smartDashboardUpdate();
         m_backLeft.smartDashboardUpdate();

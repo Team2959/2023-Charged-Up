@@ -1,7 +1,10 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Auto/Preloaded Piece": "String Chooser",
+      "/SmartDashboard/Auto/Routine": "String Chooser",
+      "/SmartDashboard/CS": "Scheduler"
     }
   }
 }

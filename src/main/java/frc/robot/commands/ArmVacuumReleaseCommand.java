@@ -13,9 +13,9 @@ public class ArmVacuumReleaseCommand extends SequentialCommandGroup {
     // TODO: handle this command being interrupted somehow
     public ArmVacuumReleaseCommand(PlacementArmSubsystem placementArmSubsystem) {
         addCommands(
-            new InstantCommand(() -> placementArmSubsystem.gamePieceRelease()),
-            new WaitCommand(1),
-            new InstantCommand(() -> placementArmSubsystem.manipulateVacuumRelease(false)));
+                new InstantCommand(() -> placementArmSubsystem.gamePieceRelease()),
+                new WaitCommand(1),
+                new InstantCommand(() -> placementArmSubsystem.manipulateVacuumRelease(false)));
     }
 
 }

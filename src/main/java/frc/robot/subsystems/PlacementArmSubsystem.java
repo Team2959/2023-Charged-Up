@@ -119,8 +119,8 @@ public class PlacementArmSubsystem extends SubsystemBase {
 
     public void onAutoInit() {
         // if(m_quickFixCone) {
-            m_extensionEncoder.setPosition(37);
-            setArmExtensionPosition(37);
+            m_extensionEncoder.setPosition(57);
+            setArmExtensionPosition(57);
             m_armExtensionMotor.set(0);
         // }
     }
@@ -256,16 +256,21 @@ public class PlacementArmSubsystem extends SubsystemBase {
         m_armVacuumRelease1.set(false);
         m_armVacuumRelease2.set(false);
         m_armVacuumRelease3.set(false);
-        m_armVacuumRelease4.set(true);
+        m_armVacuumRelease4.set(false);
         setGamePieceType(GamePieceType.Cone);
     }
 
     public void cubePickUp() {
         m_gripVacuumMotor.set(1);
-        m_armVacuumRelease1.set(false); // TODO check this
-        m_armVacuumRelease2.set(true);
-        m_armVacuumRelease3.set(true);
+        m_armVacuumRelease1.set(false);
+        m_armVacuumRelease2.set(false);
+        m_armVacuumRelease3.set(false);
         m_armVacuumRelease4.set(false);
+
+        // m_armVacuumRelease1.set(false); // TODO check this
+        // m_armVacuumRelease2.set(true);
+        // m_armVacuumRelease3.set(true);
+        // m_armVacuumRelease4.set(false);
         
         // m_armVacuumRelease1.set(false); // TODO check this
         // m_armVacuumRelease2.set(false);

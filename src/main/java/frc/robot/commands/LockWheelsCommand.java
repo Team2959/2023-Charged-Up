@@ -5,7 +5,7 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class LockWheelsCommand extends CommandBase {
     DriveSubsystem m_DriveSubsystem;
-    
+
     public LockWheelsCommand(DriveSubsystem driveSubsystem) {
         m_DriveSubsystem = driveSubsystem;
         addRequirements(driveSubsystem);

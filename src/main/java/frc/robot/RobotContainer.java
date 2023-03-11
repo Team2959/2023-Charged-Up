@@ -51,7 +51,7 @@ public class RobotContainer {
     Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
     Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
     JoystickButton m_lockWheeButton = new JoystickButton(m_rightJoystick, 1);
-    JoystickButton m_wallLineupHoriz = new JoystickButton(m_leftJoystick, 10);
+    JoystickButton m_wallLineupHoriz = new JoystickButton(m_leftJoystick, 11);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
     JoystickButton m_intakeReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kIntakeReleaseButton);
@@ -68,8 +68,8 @@ public class RobotContainer {
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
     JoystickButton m_testButton2 = new JoystickButton(m_buttonBox, RobotMap.kTestButton2);
 
-    JoystickButton m_PickUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kPickUpWallGamePieceButton);
-    JoystickButton m_LineUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
+    // JoystickButton m_PickUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kPickUpWallGamePieceButton);
+    // JoystickButton m_LineUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
     JoystickButton m_groundPickupButtton = new JoystickButton(m_leftJoystick, RobotMap.kGroundPickupButton);
     
 
@@ -154,8 +154,8 @@ public class RobotContainer {
 
         m_lockWheeButton.whileTrue(new LockWheelsCommand(m_driveSubsystem));
 
-        m_LineUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallLineup));
-        m_PickUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallPickup));
+        // m_LineUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallLineup));
+        // m_PickUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallPickup));
 
         // Disabled high button until arm can fully extend for placement
         m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.High));

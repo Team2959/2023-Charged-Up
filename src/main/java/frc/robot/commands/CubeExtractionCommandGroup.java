@@ -9,17 +9,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class CubeExtractionCommandGroup extends SequentialCommandGroup {
-  /** Creates a new CubeExtractionCommandGroup. */
-  public CubeExtractionCommandGroup(IntakeSubsystem intakeSubsystem, PlacementArmSubsystem placementArmSubsystem) {
-    addCommands(
-      new InstantCommand(() -> placementArmSubsystem.cubePickUp()),
-      new ArmExtentionCommand(placementArmSubsystem, 25),
-      new InstantCommand(() -> intakeSubsystem.flipGamePiece()),
-      new ArmRotationCommand(placementArmSubsystem, 90)
-    );
-  }
+    public CubeExtractionCommandGroup(IntakeSubsystem intakeSubsystem, PlacementArmSubsystem placementArmSubsystem) {
+        addCommands(
+                new InstantCommand(() -> placementArmSubsystem.cubePickUp()),
+                new ArmExtentionCommand(placementArmSubsystem, 25),
+                new InstantCommand(() -> intakeSubsystem.flipGamePiece()),
+                new ArmRotationCommand(placementArmSubsystem, 90));
+    }
 }

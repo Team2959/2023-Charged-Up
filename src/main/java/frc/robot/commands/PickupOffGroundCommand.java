@@ -6,9 +6,8 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 public class PickupOffGroundCommand extends SequentialCommandGroup {
     public PickupOffGroundCommand(PlacementArmSubsystem placementArmSubsystem) {
         addCommands(
-            new ArmExtentionCommand(placementArmSubsystem, 0),
-            new ArmRotationCommand(placementArmSubsystem, 95 /* LOW */),
-            new ArmExtentionCommand(placementArmSubsystem, 85)
-        );
+                new ArmExtentionCommand(placementArmSubsystem, 0),
+                new ArmRotationCommand(placementArmSubsystem, 95 /* LOW */),
+                new ArmExtentionCommand(placementArmSubsystem, 85));
     }
 }

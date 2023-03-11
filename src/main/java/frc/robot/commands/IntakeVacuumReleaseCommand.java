@@ -10,13 +10,11 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeVacuumReleaseCommand extends SequentialCommandGroup {
-  /** Creates a new IntakeReleaseCommand. */
-  public IntakeVacuumReleaseCommand(IntakeSubsystem intakeSubsystem) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    addCommands(
-      new InstantCommand(() -> intakeSubsystem.releaseVacuumSeal()),
-      new InstantCommand(() -> intakeSubsystem.stopVacuum()),
-      new WaitCommand(1),
-      new InstantCommand(() -> intakeSubsystem.engageVacuumSeal()));
-}
+    public IntakeVacuumReleaseCommand(IntakeSubsystem intakeSubsystem) {
+        addCommands(
+                new InstantCommand(() -> intakeSubsystem.releaseVacuumSeal()),
+                new InstantCommand(() -> intakeSubsystem.stopVacuum()),
+                new WaitCommand(1),
+                new InstantCommand(() -> intakeSubsystem.engageVacuumSeal()));
+    }
 }

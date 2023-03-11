@@ -40,8 +40,8 @@ public class SwerveModule {
     private static final int kEncoderResolution = 4096;
     private static final double kGearboxRatio = 1.0 / 6.12; // One turn of the wheel is 6.86 turns of the motor
     private static final double kDrivePositionFactor = (2.0 * Math.PI * kWheelRadius * kGearboxRatio);
-    private static final double kDriveCurrentLimitAmps = 80.0;
-    private static final double kTurnCurrentLimitAmps = 20.0; 
+    private static final int kDriveCurrentLimitAmps = 70;
+    private static final int kTurnCurrentLimitAmps = 20; 
 
     public SwerveModule(int driveMotor, int turnMotor, int dutyCycle, double turnOffset, String name)
     {
@@ -53,8 +53,8 @@ public class SwerveModule {
         m_driveMotor.setIdleMode(IdleMode.kBrake);
         m_turnMotor.setIdleMode(IdleMode.kBrake);
 
-        m_driveMotor.setSmartCurrentLimit((int) kDriveCurrentLimitAmps);
-        m_turnMotor.setSmartCurrentLimit((int) kTurnCurrentLimitAmps);
+        m_driveMotor.setSmartCurrentLimit(kDriveCurrentLimitAmps);
+        m_turnMotor.setSmartCurrentLimit(kTurnCurrentLimitAmps);
 
         m_name = name;
 

@@ -9,34 +9,32 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PlacementArmSubsystem;
 
 public class TestArmExtensionCommand extends CommandBase {
-  private PlacementArmSubsystem m_placementArmSubsystem;
+    private PlacementArmSubsystem m_placementArmSubsystem;
 
-  /** Creates a new TestArmExtensionCommand. */
-  public TestArmExtensionCommand(PlacementArmSubsystem placementArmSubsystem) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    m_placementArmSubsystem = placementArmSubsystem;
-    addRequirements(placementArmSubsystem);
-    SmartDashboard.putNumber("Test Arm Extension Target Position", 0);
-  }
+    /** Creates a new TestArmExtensionCommand. */
+    public TestArmExtensionCommand(PlacementArmSubsystem placementArmSubsystem) {
+        // Use addRequirements() here to declare subsystem dependencies.
+        m_placementArmSubsystem = placementArmSubsystem;
+        addRequirements(placementArmSubsystem);
+        SmartDashboard.putNumber("Test Arm Extension Target Position", 0);
+    }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    double target = SmartDashboard.getNumber("Test Arm Extension Target Position", 0);
-    m_placementArmSubsystem.setArmExtensionPosition(target);
-  }
+    @Override
+    public void initialize() {
+        double target = SmartDashboard.getNumber("Test Arm Extension Target Position", 0);
+        m_placementArmSubsystem.setArmExtensionPosition(target);
+    }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+    @Override
+    public void execute() {
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+    @Override
+    public void end(boolean interrupted) {
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return m_placementArmSubsystem.isArmExtensionAtSetpoint();
-  }
+    @Override
+    public boolean isFinished() {
+        return m_placementArmSubsystem.isArmExtensionAtSetpoint();
+    }
 }

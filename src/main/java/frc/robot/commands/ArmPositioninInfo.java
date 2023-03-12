@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import javax.lang.model.util.ElementScanner14;
-
 import frc.robot.subsystems.PlacementArmSubsystem.GamePieceType;
 
 public final class ArmPositioninInfo {

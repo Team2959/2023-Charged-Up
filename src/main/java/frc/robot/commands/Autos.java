@@ -77,14 +77,14 @@ public final class Autos {
                         placementArmSubsystem.cubePickUp();
                     }
                 }),
-                new WaitCommand(1),
-                new ArmRotationCommand(placementArmSubsystem, 55),
-                new WaitCommand(1),
-                new ArmExtentionCommand(placementArmSubsystem, 0),
+                new WaitCommand(1), // remove?
+                new ArmRotationCommand(placementArmSubsystem, 55), // remove?
+                new WaitCommand(1), // reduce 0.25?
+                new ArmExtentionCommand(placementArmSubsystem, 0), // 25, so not as far?
                 new LineupArmCommand(placementArmSubsystem, ArmPositioningType.High),
-                new WaitCommand(0.5),
+                new WaitCommand(0.5), // why wait? or reduce
                 new ArmVacuumReleaseCommand(placementArmSubsystem),
-                new WaitCommand(2));
+                new WaitCommand(2)); // see if can reduce!! 0.5?
         return readyPiece.andThen(runPath("Place Game Piece", driveSubsystem))
                 .andThen(new ArmToLoadingCommand(placementArmSubsystem, intakeSubsystem));
     }

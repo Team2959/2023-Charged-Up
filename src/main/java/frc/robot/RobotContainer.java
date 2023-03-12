@@ -8,7 +8,6 @@ import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CubeExtractionCommandGroup;
 import frc.robot.commands.DropIntakeOrientaterCommand;
-import frc.robot.commands.IntakeVacuumReleaseCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.LockWheelsCommand;
 import frc.robot.commands.PickupOffGroundCommand;
@@ -27,12 +26,10 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem.GamePieceType;
 import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -56,7 +53,6 @@ public class RobotContainer {
     JoystickButton m_wallLineupHoriz = new JoystickButton(m_leftJoystick, 11);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
-    JoystickButton m_intakeReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kIntakeReleaseButton);
     JoystickButton m_highGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kHighGamePeiceButton);
     JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kMidGamePeiceButton);
     JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePeiceButton);
@@ -169,36 +165,21 @@ public class RobotContainer {
 // - -> left
 // + -> forward
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
-        m_intakeReleaseButton.whileTrue(new IntakeVacuumReleaseCommand(m_IntakeSubsystem));
 
         m_groundPickupButtton.onTrue(new PickupOffGroundCommand(m_PlacementArmSubsystem));
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem, m_IntakeSubsystem));
         m_balJoystickButton.whileTrue(new AutoBalanceCommand(m_driveSubsystem));
 
-        // m_testButton.onTrue(new InstantCommand(() -> {
-        //     m_IntakeSubsystem.flipGamePiece();
-        //     if (m_IntakeSubsystem.isVacuumEngaged()) {
-        //         m_IntakeSubsystem.stopVacuum();
-        //     } else {
-        //         m_IntakeSubsystem.startVacuum();
-        //     }
-        // }));
-        m_testButton2.onTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
-        m_testButton.onTrue(new TestArmExtensionCommand(m_PlacementArmSubsystem));
-
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
 
-        new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceIsReadyToFlip())
-                .onTrue(Commands.waitSeconds(2)
-                .andThen(new InstantCommand(() -> m_IntakeSubsystem.flipGamePiece())));
-        // new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceIsReadyToLoad())
-        //         .onTrue(new LoadGamePieceUpCommand(m_IntakeSubsystem));
+        m_testButton2.onTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
+        m_testButton.onTrue(new TestArmExtensionCommand(m_PlacementArmSubsystem));
 
-        m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem, false));
+        m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem));
         m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
-        m_cubeEjectionButton.onTrue(new CubeExtractionCommandGroup(m_IntakeSubsystem, m_PlacementArmSubsystem));
+        m_cubeEjectionButton.onTrue(new CubeExtractionCommandGroup(m_PlacementArmSubsystem));
     }
 
     public Command getAutonomousCommand() {

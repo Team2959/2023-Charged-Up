@@ -18,7 +18,7 @@ public class AutoBalanceCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_DriveSubsystem.m_balancing = false;
+        m_DriveSubsystem.turnOffBalancing();
         m_DriveSubsystem.drive(0, 0, 0, false);
     }
 

@@ -18,17 +18,14 @@ public final class RobotMap {
     public static final int kExteriorFeederVictorSpxMotor = 5;
     public static final int kArmRotatorSparkMaxMotor = 7;
     public static final int kArmExtensionSparkMaxMotor = 8;
-    public static final int kFlipperSparkMaxMotor = 9;
 
     // PWM motor addresses
     public static final int kInteriorFeederSparkMotor = 4;
-    public static final int kFlipperVacuumSparkMotor = 1;
     public static final int kGripVacuumSparkMotor = 2;
 
     // REV Pneumatic Hub solenoid addresses
     public static final int kConeOrientater = 1;
     public static final int kIntakeArm = 2;
-    public static final int kIntakeVacuumRelease = 3;
     public static final int kArmVacuumRelease1 = 4;
     public static final int kArmVacuumRelease2 = 5;
     public static final int kArmVacuumRelease3 = 6;
@@ -49,7 +46,6 @@ public final class RobotMap {
     public static final int kLeftJoystick = 0;
     public static final int kRightJoystick = 1;
     public static final int kButtonBox = 2;
-    public static final int kXBoxController = 3;
 
     // Driver Buttons
     public static final int kToggleIntakeButton = 2;
@@ -64,7 +60,6 @@ public final class RobotMap {
     public static final int kLowGamePeiceButton = 12;
     public static final int kArmReleaseButton = 1;
     public static final int kReturnArmToLoadingButton = 4;
-    public static final int kIntakeReleaseButton = 3;
     public static final int kReverseIntakeButton = 10;
     public static final int kReverseExteriorIntakeButton = 6;
     public static final int kGamePieceConeButton = 7;

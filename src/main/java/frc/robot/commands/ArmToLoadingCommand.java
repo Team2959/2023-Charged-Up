@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PlacementArmSubsystem;
@@ -12,7 +11,6 @@ import frc.robot.subsystems.PlacementArmSubsystem;
 public class ArmToLoadingCommand extends SequentialCommandGroup {
     public ArmToLoadingCommand(PlacementArmSubsystem placementArmSubsystem, IntakeSubsystem intakeSubsystem) {
         addCommands(
-                new InstantCommand(() -> intakeSubsystem.unflipGamePiece()),
                 new ArmExtentionCommand(placementArmSubsystem, 0),
                 new ArmRotationCommand(placementArmSubsystem, PlacementArmSubsystem.kArmHomePosition + 10));
     }

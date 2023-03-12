@@ -5,16 +5,14 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class ReverseAllIntakeCommand extends InstantCommand {
     IntakeSubsystem m_intakeSubsystem;
-    boolean m_exceptFlipper;
 
-    public ReverseAllIntakeCommand(IntakeSubsystem intakeSubsystem, boolean exceptFlipper) {
+    public ReverseAllIntakeCommand(IntakeSubsystem intakeSubsystem) {
         m_intakeSubsystem = intakeSubsystem;
-        m_exceptFlipper = exceptFlipper;
     }
 
     @Override
     public void initialize() {
-        m_intakeSubsystem.reverseAll(m_exceptFlipper);
+        m_intakeSubsystem.reverseAll();
     }
 
     @Override

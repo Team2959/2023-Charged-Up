@@ -20,10 +20,12 @@ import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.ToggleIntakeCommand;
 import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
+import frc.robot.subsystems.ArmExtensionSubsystem;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem;
+import frc.robot.subsystems.ArmRotationSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PlacementArmSubsystem;
-import frc.robot.subsystems.PlacementArmSubsystem.GamePieceType;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 import cwtech.util.Conditioning;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -39,7 +41,9 @@ public class RobotContainer {
     private static double kDriveXExponent = 2; //1.7;
     // The robot's subsystems and commands are defined here...
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
-    public final PlacementArmSubsystem m_PlacementArmSubsystem = new PlacementArmSubsystem();
+    public final ArmGamePieceControlSubsystem m_ArmGamePieceSubsystem = new ArmGamePieceControlSubsystem();
+    public final ArmRotationSubsystem m_ArmRotationSubsystem = new ArmRotationSubsystem();
+    public final ArmExtensionSubsystem m_ArmExtensionSubsystem = new ArmExtensionSubsystem();
     public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 
     public final SendableChooser<Command> m_autoChooser = Autos.sendableChooser(this);
@@ -77,7 +81,7 @@ public class RobotContainer {
     Conditioning m_turnConditioning = new Conditioning();
     double m_speedMultiplier = 0.70;
 
-    SendableChooser<PlacementArmSubsystem.GamePieceType> m_preloadedPieceChooser = new SendableChooser<>();
+    SendableChooser<ArmGamePieceControlSubsystem.GamePieceType> m_preloadedPieceChooser = new SendableChooser<>();
 
     /**
      * The container form the robot. Contains subsystems, OI devices, and commands.
@@ -112,7 +116,8 @@ public class RobotContainer {
         SmartDashboard.putNumber("Drive Y/Exponent", kDriveYExponent);
 
         m_IntakeSubsystem.smartDashboardInit();
-        m_PlacementArmSubsystem.smartDashboardInit();
+        m_ArmRotationSubsystem.smartDashboardInit();
+        m_ArmExtensionSubsystem.smartDashboardInit();
         m_driveSubsystem.smartDashboardInit();
     }
 
@@ -123,7 +128,8 @@ public class RobotContainer {
         }, 1, 0.502);
         m_robot.addPeriodic(() -> {
             m_IntakeSubsystem.smartDashboardUpdate();
-            m_PlacementArmSubsystem.smartDashboardUpdate();
+            m_ArmRotationSubsystem.smartDashboardUpdate();
+            m_ArmExtensionSubsystem.smartDashboardUpdate();
         }, 1, 0.303);
         kDriveXExponent = SmartDashboard.getNumber("Drive X/Exponent", kDriveXExponent);
         kDriveYExponent = SmartDashboard.getNumber("Drive Y/Exponent", kDriveYExponent);
@@ -146,40 +152,47 @@ public class RobotContainer {
 
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
 
-        m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.conePickUp()));
-        m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_PlacementArmSubsystem.cubePickUp()));
+        m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_ArmGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)));
+        m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_ArmGamePieceSubsystem.gamePiecePickup(GamePieceType.Cube)));
 
-        m_wallLineupHoriz.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallHorizLineup));
+        m_wallLineupHoriz.onTrue(new LineupArmCommand(
+            m_ArmRotationSubsystem, m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem,
+            ArmPositioningType.WallHorizLineup));
 
         m_lockWheeButton.whileTrue(new LockWheelsCommand(m_driveSubsystem));
 
         // m_LineUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallLineup));
         // m_PickUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallPickup));
 
-        // Disabled high button until arm can fully extend for placement
-        m_highGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.High));
-        m_midGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Mid));
-        m_lowGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.Low));
-
+        m_highGamePieceButton.onTrue(new LineupArmCommand(
+            m_ArmRotationSubsystem, m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem,
+            ArmPositioningType.High));
+        m_midGamePieceButton.onTrue(new LineupArmCommand(
+            m_ArmRotationSubsystem, m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem,
+            ArmPositioningType.Mid));
+        m_lowGamePieceButton.onTrue(new LineupArmCommand(
+            m_ArmRotationSubsystem, m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem,
+            ArmPositioningType.Low));
 
 // - -> left
 // + -> forward
-        m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_PlacementArmSubsystem));
+        m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_ArmGamePieceSubsystem));
 
-        m_groundPickupButtton.onTrue(new PickupOffGroundCommand(m_PlacementArmSubsystem));
+        m_groundPickupButtton.onTrue(new PickupOffGroundCommand(m_ArmRotationSubsystem, m_ArmExtensionSubsystem));
 
-        m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_PlacementArmSubsystem, m_IntakeSubsystem));
+        m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_ArmRotationSubsystem, m_ArmExtensionSubsystem));
         m_balJoystickButton.whileTrue(new AutoBalanceCommand(m_driveSubsystem));
 
         new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
                 .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
 
-        m_testButton2.onTrue(new TestArmRotationCommand(m_PlacementArmSubsystem));
-        m_testButton.onTrue(new TestArmExtensionCommand(m_PlacementArmSubsystem));
-
         m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem));
         m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
-        m_cubeEjectionButton.onTrue(new CubeExtractionCommandGroup(m_PlacementArmSubsystem));
+        m_cubeEjectionButton.onTrue(new CubeExtractionCommandGroup(m_ArmRotationSubsystem,
+            m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem));
+
+        m_testButton.onTrue(new TestArmExtensionCommand(m_ArmExtensionSubsystem));
+        m_testButton2.onTrue(new TestArmRotationCommand(m_ArmRotationSubsystem));
     }
 
     public Command getAutonomousCommand() {

@@ -5,13 +5,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.ArmExtensionSubsystem;
+import frc.robot.subsystems.ArmRotationSubsystem;
 
+// ToDo? make parallel for improved speed?
 public class ArmToLoadingCommand extends SequentialCommandGroup {
-    public ArmToLoadingCommand(PlacementArmSubsystem placementArmSubsystem, IntakeSubsystem intakeSubsystem) {
+    public ArmToLoadingCommand(ArmRotationSubsystem armRotationSubsystem, ArmExtensionSubsystem armExtensionSubsystem) {
         addCommands(
-                new ArmExtentionCommand(placementArmSubsystem, 0),
-                new ArmRotationCommand(placementArmSubsystem, PlacementArmSubsystem.kArmHomePosition + 10));
+                new ArmExtentionCommand(armExtensionSubsystem, 0),
+                new ArmRotationCommand(armRotationSubsystem, ArmRotationSubsystem.kArmHomePosition + 10));
     }
 }

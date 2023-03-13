@@ -6,13 +6,19 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.ArmRotationSubsystem;
+import frc.robot.subsystems.ArmExtensionSubsystem;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 
 public class CubeExtractionCommandGroup extends SequentialCommandGroup {
-    public CubeExtractionCommandGroup(PlacementArmSubsystem placementArmSubsystem) {
+    public CubeExtractionCommandGroup(ArmRotationSubsystem armRotationSubsystem,
+        ArmExtensionSubsystem armExtensionSubsystem,
+        ArmGamePieceControlSubsystem armGamePieceControlSubsystem)
+    {
         addCommands(
-                new InstantCommand(() -> placementArmSubsystem.cubePickUp()),
-                new ArmExtentionCommand(placementArmSubsystem, 25),
-                new ArmRotationCommand(placementArmSubsystem, 90));
+                new InstantCommand(() -> armGamePieceControlSubsystem.gamePiecePickup(GamePieceType.Cube)),
+                new ArmExtentionCommand(armExtensionSubsystem, 25),
+                new ArmRotationCommand(armRotationSubsystem, 90));
     }
 }

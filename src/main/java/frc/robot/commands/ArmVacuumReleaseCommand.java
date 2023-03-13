@@ -7,15 +7,15 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem;
 
 public class ArmVacuumReleaseCommand extends SequentialCommandGroup {
     // TODO: handle this command being interrupted somehow
-    public ArmVacuumReleaseCommand(PlacementArmSubsystem placementArmSubsystem) {
+    public ArmVacuumReleaseCommand(ArmGamePieceControlSubsystem armGamePieceControlSubsystem) {
         addCommands(
-                new InstantCommand(() -> placementArmSubsystem.gamePieceRelease()),
+                new InstantCommand(() -> armGamePieceControlSubsystem.gamePieceRelease()),
                 new WaitCommand(1),
-                new InstantCommand(() -> placementArmSubsystem.manipulateVacuumRelease(false)));
+                new InstantCommand(() -> armGamePieceControlSubsystem.resetVacuumSoloenoids()));
     }
 
 }

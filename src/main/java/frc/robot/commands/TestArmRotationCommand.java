@@ -6,22 +6,22 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.ArmRotationSubsystem;
 
 public class TestArmRotationCommand extends CommandBase {
-    private PlacementArmSubsystem m_placementArmSubsystem;
+    private ArmRotationSubsystem m_armRotationSubsystem;
 
-    public TestArmRotationCommand(PlacementArmSubsystem placementArmSubsystem) {
-        m_placementArmSubsystem = placementArmSubsystem;
-        addRequirements(placementArmSubsystem);
-        SmartDashboard.putNumber("Test Arm Rotation Target Position", PlacementArmSubsystem.kArmHomePosition);
+    public TestArmRotationCommand(ArmRotationSubsystem armRotationSubsystem) {
+        m_armRotationSubsystem = armRotationSubsystem;
+        addRequirements(armRotationSubsystem);
+        SmartDashboard.putNumber("Test Arm Rotation Target Position", ArmRotationSubsystem.kArmHomePosition);
     }
 
     @Override
     public void initialize() {
         double target = SmartDashboard.getNumber("Test Arm Rotation Target Position",
-                PlacementArmSubsystem.kArmHomePosition);
-        m_placementArmSubsystem.setArmDegrees(target);
+            ArmRotationSubsystem.kArmHomePosition);
+        m_armRotationSubsystem.setArmDegrees(target);
     }
 
     @Override
@@ -34,6 +34,6 @@ public class TestArmRotationCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return m_placementArmSubsystem.isArmRotatorAtSetpoint();
+        return m_armRotationSubsystem.isArmRotatorAtSetpoint();
     }
 }

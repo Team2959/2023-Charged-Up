@@ -6,12 +6,19 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
-import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.ArmExtensionSubsystem;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem;
+import frc.robot.subsystems.ArmRotationSubsystem;
 
+// ToDo?: Make parallel with extension constraints? -> improve speed
 public class LineupArmCommand extends SequentialCommandGroup {
-    public LineupArmCommand(PlacementArmSubsystem placementArmSubsystem,
+    public LineupArmCommand(ArmRotationSubsystem armRotationSubsystem,
+            ArmExtensionSubsystem armExtensionSubsystem,
+            ArmGamePieceControlSubsystem armGamePieceControlSubsystem,
             ArmPositioningType positioningType) {
-        addCommands(new ArmRotationByArmPositionTypeCommand(placementArmSubsystem, positioningType));
-        addCommands(new ArmExtentionCommand(placementArmSubsystem, ArmPositioninInfo.getArmDistance(positioningType, placementArmSubsystem.getGamePieceType())));
+        addCommands(new ArmRotationByGamePieceAndPositionCommand(armRotationSubsystem,
+            armGamePieceControlSubsystem, positioningType));
+        addCommands(new ArmExtensionByGamePieceAndPositionCommand(armExtensionSubsystem,
+            armGamePieceControlSubsystem, positioningType));
     }
 }

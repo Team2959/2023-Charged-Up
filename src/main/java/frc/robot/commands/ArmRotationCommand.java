@@ -5,22 +5,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.ArmRotationSubsystem;
 
 public class ArmRotationCommand extends CommandBase {
-    private PlacementArmSubsystem m_placementArmSubsystem;
+    private ArmRotationSubsystem m_ArmRotationSubsystem;
     private double m_angle;
 
-    public ArmRotationCommand(PlacementArmSubsystem placementArmSubsystem, double angleInDegrees) {
-        m_placementArmSubsystem = placementArmSubsystem;
+    public ArmRotationCommand(ArmRotationSubsystem armRotationSubsystem, double angleInDegrees) {
+        m_ArmRotationSubsystem = armRotationSubsystem;
         m_angle = angleInDegrees;
 
-        addRequirements(placementArmSubsystem);
+        addRequirements(armRotationSubsystem);
     }
 
     @Override
     public void initialize() {
-        m_placementArmSubsystem.setArmDegrees(m_angle);
+        m_ArmRotationSubsystem.setArmDegrees(m_angle);
     }
 
     @Override
@@ -30,11 +30,11 @@ public class ArmRotationCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         if (interrupted)
-            m_placementArmSubsystem.stopArmRotatorMotor();
+        m_ArmRotationSubsystem.stopArmRotatorMotor();
     }
 
     @Override
     public boolean isFinished() {
-        return m_placementArmSubsystem.isArmRotatorAtSetpoint();
+        return m_ArmRotationSubsystem.isArmRotatorAtSetpoint();
     }
 }

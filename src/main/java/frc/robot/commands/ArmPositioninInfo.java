@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.PlacementArmSubsystem.GamePieceType;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 
 public final class ArmPositioninInfo {
     public enum ArmPositioningType {
@@ -38,7 +38,6 @@ public final class ArmPositioninInfo {
             case High:
                 if (gamePieceType == GamePieceType.Cone)
                     return 165;
-                    // return 167;
                 else
                     return 150;
             case Mid:
@@ -53,10 +52,10 @@ public final class ArmPositioninInfo {
             case WallPickup:
                 return 160;
             case WallHorizLineup:
-            if(gamePieceType == GamePieceType.Cone) 
-                return 153;
-            else
-                return 147;
+                if(gamePieceType == GamePieceType.Cone) 
+                    return 153;
+                else
+                    return 147;
             default:
                 return 0;
         }

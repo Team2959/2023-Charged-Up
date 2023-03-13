@@ -1,13 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.PlacementArmSubsystem;
+import frc.robot.subsystems.ArmExtensionSubsystem;
+import frc.robot.subsystems.ArmRotationSubsystem;
 
 public class PickupOffGroundCommand extends SequentialCommandGroup {
-    public PickupOffGroundCommand(PlacementArmSubsystem placementArmSubsystem) {
+    public PickupOffGroundCommand(ArmRotationSubsystem armRotationSubsystem, ArmExtensionSubsystem armExtensionSubsystem) {
         addCommands(
-                new ArmExtentionCommand(placementArmSubsystem, 0),
-                new ArmRotationCommand(placementArmSubsystem, 95 /* LOW */),
-                new ArmExtentionCommand(placementArmSubsystem, 85));
+                new ArmExtentionCommand(armExtensionSubsystem, 0),
+                new ArmRotationCommand(armRotationSubsystem, 95 /* LOW */),
+                new ArmExtentionCommand(armExtensionSubsystem, 85));
     }
 }

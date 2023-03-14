@@ -87,7 +87,7 @@ public class SwerveModule {
         m_turnEncoder.setPositionConversionFactor(2.0 * Math.PI);
     }
 
-    public void driveSmartDashboardInit() {
+    public void smartDashboardInit() {
         SmartDashboard.putNumber(m_name + "/Drive P", m_drivePIDController.getP());
         SmartDashboard.putNumber(m_name + "/Drive I", m_drivePIDController.getI());
         SmartDashboard.putNumber(m_name + "/Drive D", m_drivePIDController.getD());
@@ -127,6 +127,11 @@ public class SwerveModule {
         return initalPositionInRadiansScaled;
     }
 
+    void setSmartMotion(double maxVel, double maxAccel) {
+        m_drivePIDController.setSmartMotionMaxVelocity(maxVel, 0);
+        m_drivePIDController.setSmartMotionMaxAccel(maxAccel, 0);
+    }
+
     public double getVelocity()
     {
         return m_driveEncoder.getVelocity();
@@ -145,6 +150,7 @@ public class SwerveModule {
         SwerveModuleState state = SwerveModuleState.optimize(referenceState, new Rotation2d(m_turnEncoder.getPosition()));
 
         m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
+        // m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kSmartVelocity);
 
         // if(Math.abs(state.speedMetersPerSecond - 0) < 0.001)
         {

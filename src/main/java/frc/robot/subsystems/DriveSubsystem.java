@@ -24,6 +24,8 @@ import frc.robot.RobotMap;
 
 public class DriveSubsystem extends SubsystemBase {
 
+    private static final int kSmartMotionAccel = 3;
+    private static final int kSmartMotionVel = 3;
     private SwerveModule m_frontLeft;
     private SwerveModule m_frontRight;
     private SwerveModule m_backLeft;
@@ -193,19 +195,31 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void smartDashboardInit() {
-        m_frontLeft.driveSmartDashboardInit();
-        m_frontRight.driveSmartDashboardInit();
-        m_backLeft.driveSmartDashboardInit();
-        m_backRight.driveSmartDashboardInit();
+        m_frontLeft.smartDashboardInit();
+        m_frontRight.smartDashboardInit();
+        m_backLeft.smartDashboardInit();
+        m_backRight.smartDashboardInit();
 
         SmartDashboard.putData(getName() + "/X Balancing PID Controller", m_xBalancingController);
         SmartDashboard.putNumber(getName() + "/Balance Auto Delay Ticks", 5);
         SmartDashboard.putNumber(getName() + "/Balance Auto Stop Angle", 5);
+
+        SmartDashboard.putNumber(getName() + "/Smart Motion Vel", kSmartMotionVel);
+        SmartDashboard.putNumber(getName() + "/Smart Motion Accel", kSmartMotionAccel);
     }
 
     public void smartDashboardUpdate() {
         m_autoBalanceDelayTicksMax = (int)SmartDashboard.getNumber(getName() + "/Balance Auto Delay Ticks", 5);
         m_autoBalanceStopAngle = SmartDashboard.getNumber(getName() + "/Balance Auto Stop Angle", 5);
+
+        var maxVel = SmartDashboard.getNumber(getName() + "/Smart Motion Vel", kSmartMotionVel);
+        var maxAccel = SmartDashboard.getNumber(getName() + "/Smart Motion Accel", kSmartMotionAccel);
+
+        m_frontLeft.setSmartMotion(maxVel, maxAccel);
+        m_frontRight.setSmartMotion(maxVel, maxAccel);
+        m_backLeft.setSmartMotion(maxVel, maxAccel);
+        m_backRight.setSmartMotion(maxVel, maxAccel);
+
 
         m_frontLeft.smartDashboardUpdate();
         m_frontRight.smartDashboardUpdate();

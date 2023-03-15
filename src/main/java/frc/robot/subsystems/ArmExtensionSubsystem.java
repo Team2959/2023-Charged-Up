@@ -19,8 +19,10 @@ import frc.robot.RobotMap;
 public class ArmExtensionSubsystem extends SubsystemBase {
     private static final int kSmartMaxVel = 7500;
     private static final int kSmartMaxAccel = 10000;
-    private static final double kArmExtensionP = 0.000075;
-    private static final double kArmExtensionI = 0.000001;
+    private static final double kArmExtensionP = 0.02;  // orig kP from St Joe: 0.02
+    private static final double kArmExtensionI = 0;  // orig KI from St Joe: 0
+    // private static final double kArmExtensionP = 0.000075;
+    // private static final double kArmExtensionI = 0.000001;
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
     private static final double kArmExtensionIzone = 0;
@@ -50,9 +52,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setFF(kArmExtensionFF);
         m_armExtensionMotorPidController.setIZone(kArmExtensionIzone);
         // https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java
-        m_armExtensionMotorPidController.setSmartMotionMaxAccel(kSmartMaxAccel, 0); //RPM ->
-        // x * 60 == x Rev Per Sec
-        m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kSmartMaxVel, 0); //RPM
+        // m_armExtensionMotorPidController.setSmartMotionMaxAccel(kSmartMaxAccel, 0);
+        // m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kSmartMaxVel, 0);
 
         // m_extensionEncoder.setPosition(0);
         // setArmExtensionPosition(getArmExtensionPosition());
@@ -95,11 +96,12 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         // rope sensor control
         // m_ropeSensor.setGoingForward(distance > m_lastArmExtensionTarget);
         // m_armExtensionMotorPidController.setSetpoint(distance);
+
         // Regular position control
-        // m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
+        m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
+
         // Smart Motion position control
-        m_armExtensionMotorPidController.setReference(distance,
-        CANSparkMax.ControlType.kSmartMotion);
+        // m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kSmartMotion);
 
         m_lastArmExtensionTarget = distance;
     }
@@ -134,23 +136,19 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setP(SmartDashboard.getNumber(getName() + "/Arm Extension P", kArmExtensionP));
         m_armExtensionMotorPidController.setI(SmartDashboard.getNumber(getName() + "/Arm Extension I", kArmExtensionI));
         m_armExtensionMotorPidController.setD(SmartDashboard.getNumber(getName() + "/Arm Extension D", kArmExtensionD));
-        m_armExtensionMotorPidController
-                .setFF(SmartDashboard.getNumber(getName() + "/Arm Extension FF", kArmExtensionFF));
-        m_armExtensionMotorPidController
-                .setIZone(SmartDashboard.getNumber(getName() + "/Arm Extension Izone", kArmExtensionIzone));
+        m_armExtensionMotorPidController.setFF(SmartDashboard.getNumber(getName() + "/Arm Extension FF", kArmExtensionFF));
+        m_armExtensionMotorPidController.setIZone(SmartDashboard.getNumber(getName() + "/Arm Extension Izone", kArmExtensionIzone));
 
         if (SmartDashboard.getBoolean(getName() + "/Arm Extension Prof Const Enable", false))
-         {
-                    var maxAccelExtension = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Accel", kSmartMaxAccel);
-                    var maxVelExtension = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Vel", kSmartMaxVel);
-                    m_armExtensionMotorPidController.setSmartMotionMaxAccel(maxAccelExtension, 0);
-                    m_armExtensionMotorPidController.setSmartMotionMaxVelocity(maxVelExtension, 0);
-                    // m_armExtensionMotorProfiledPidController.setConstraints(new Constraints(maxVelRot, maxAccelRot));
+        {
+            var maxAccelExtension = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Accel", kSmartMaxAccel);
+            var maxVelExtension = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Vel", kSmartMaxVel);
+            // m_armExtensionMotorPidController.setSmartMotionMaxAccel(maxAccelExtension, 0);
+            // m_armExtensionMotorPidController.setSmartMotionMaxVelocity(maxVelExtension, 0);
+            // m_armExtensionMotorProfiledPidController.setConstraints(new Constraints(maxVelRot, maxAccelRot));
         }
 
         SmartDashboard.putNumber(getName() + "/Arm Extension Velocity", m_extensionEncoder.getVelocity());
         SmartDashboard.putNumber(getName() + "/Arm Extension Position", m_extensionEncoder.getPosition());
-
-    
     }
 }

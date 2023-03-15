@@ -142,7 +142,8 @@ public class RobotContainer {
     }
 
     public void smartDashboardUpdate() {
-        // Math.max(0.5, Math.abs(m_leftJoystick.getThrottle()));
+        // m_speedMultiplier = Math.max(0.5, Math.abs(m_leftJoystick.getThrottle()));
+        // SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
         m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
     }
 

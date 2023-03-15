@@ -28,11 +28,12 @@ public class ArmRotationSubsystem extends SubsystemBase {
   private CANSparkMax m_armRotatorMotor = new CANSparkMax(RobotMap.kArmRotatorSparkMaxMotor, MotorType.kBrushless);
   private DigitalInput m_armRotatorEncoderDigitalInput = new DigitalInput(RobotMap.kRotatorArmEncoderPulseWidthDIO);
   private DutyCycle m_armRotatorEncoderDutyCycle = new DutyCycle(m_armRotatorEncoderDigitalInput);
-  // current, should be deleted when ProfilePID works
+
   private ProfiledPIDController m_armRotatorMotorProfiledPidController =
     new ProfiledPIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD,
         new Constraints(kArmRotatorMaxVelocity, kArmRotatorMaxAccel));
-private SparkMaxRelativeEncoder m_armRotatorEncoder = (SparkMaxRelativeEncoder) m_armRotatorMotor.getEncoder();
+
+  private SparkMaxRelativeEncoder m_armRotatorEncoder = (SparkMaxRelativeEncoder) m_armRotatorMotor.getEncoder();
 
   public ArmRotationSubsystem() {
     m_armRotatorMotor.setIdleMode(IdleMode.kBrake);
@@ -44,21 +45,12 @@ private SparkMaxRelativeEncoder m_armRotatorEncoder = (SparkMaxRelativeEncoder) 
   public void periodic() {
     SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", getArmAngle());
 
-        // TODO try profiled
-        double rawProfiled = m_armRotatorMotorProfiledPidController.calculate(getArmAngle());
-        m_armRotatorMotor.set(rawProfiled);
-        SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", rawProfiled);
-
-        // double raw =  m_armRotatorMotorPidController.calculate(getArmAngle());
-        // var diff = Math.abs(raw);
-        // if (diff > kRotationLimitContinue)
-        //     raw /= kRotationLimitDivisor;
-        // SmartDashboard.putNumber(getName() + "/Arm Rotator Raw Output", raw);
-        // // m_armRotatorMotor.set(raw);
+    double rawProfiled = m_armRotatorMotorProfiledPidController.calculate(getArmAngle());
+    m_armRotatorMotor.set(rawProfiled);
+    SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", rawProfiled);
   }
 
   public void setArmDegrees(double degrees) {
-    // simple arm PID control
     // profiled PID control
     m_armRotatorMotorProfiledPidController.setGoal(degrees);
     m_lastArmRotationTarget = degrees;

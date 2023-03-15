@@ -84,6 +84,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber(getName() + "/Arm Extension Profiled Raw Output", rawProfiled);
 
         SmartDashboard.putNumber(getName() + "/Arm Extension Raw Output", m_armExtensionMotor.get());
+        SmartDashboard.putNumber(getName() + "/Arm Extension Applied Output", m_armExtensionMotor.getAppliedOutput());
+        SmartDashboard.putNumber(getName() + "/Arm Extension Output Current", m_armExtensionMotor.getOutputCurrent());
 
         // If switch back to rope encoder
         // m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));

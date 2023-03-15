@@ -10,8 +10,6 @@ import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -19,10 +17,10 @@ import frc.robot.RobotMap;
 public class ArmExtensionSubsystem extends SubsystemBase {
     private static final int kSmartMaxVel = 7500;
     private static final int kSmartMaxAccel = 10000;
-    private static final double kArmExtensionP = 0.02;  // orig kP from St Joe: 0.02
-    private static final double kArmExtensionI = 0;  // orig KI from St Joe: 0
-    // private static final double kArmExtensionP = 0.000075;
-    // private static final double kArmExtensionI = 0.000001;
+    // private static final double kArmExtensionP = 0.02;  // orig kP from St Joe: 0.02
+    // private static final double kArmExtensionI = 0;  // orig KI from St Joe: 0
+    private static final double kArmExtensionP = 0.000075;
+    private static final double kArmExtensionI = 0.000001;
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
     private static final double kArmExtensionIzone = 0;
@@ -33,10 +31,6 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     private SparkMaxRelativeEncoder m_extensionEncoder;
     private SparkMaxPIDController m_armExtensionMotorPidController;
     private double m_lastArmExtensionTarget = 0; // Arm starts fully retracted
-
-    // private ProfiledPIDController m_armExtensionMotorProfiledPidController =
-    // new ProfiledPIDController(kArmExtensionP, kArmExtensionI, kArmExtensionD,
-    //     new Constraints(kArmExtensionMaxVelocity, kArmExtensionMaxAccel));
 
     /** Creates a new ArmExtensionSubsystem. */
     public ArmExtensionSubsystem() {
@@ -52,8 +46,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         m_armExtensionMotorPidController.setFF(kArmExtensionFF);
         m_armExtensionMotorPidController.setIZone(kArmExtensionIzone);
         // https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java
-        // m_armExtensionMotorPidController.setSmartMotionMaxAccel(kSmartMaxAccel, 0);
-        // m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kSmartMaxVel, 0);
+        m_armExtensionMotorPidController.setSmartMotionMaxAccel(kSmartMaxAccel, 0);
+        m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kSmartMaxVel, 0);
 
         // m_extensionEncoder.setPosition(0);
         // setArmExtensionPosition(getArmExtensionPosition());
@@ -79,11 +73,6 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber(getName() + "/Arm Extension Ticks", getArmExtensionPosition());
 
-        // double rawProfiled = m_armExtensionMotorProfiledPidController.calculate(getArmExtensionPosition());
-        // m_armExtensionMotor.set(rawProfiled);
-        // SmartDashboard.putNumber(getName() + "/Arm Extension Profiled Raw Output", rawProfiled);
-
-        SmartDashboard.putNumber(getName() + "/Arm Extension Raw Output", m_armExtensionMotor.get());
         SmartDashboard.putNumber(getName() + "/Arm Extension Applied Output", m_armExtensionMotor.getAppliedOutput());
         SmartDashboard.putNumber(getName() + "/Arm Extension Output Current", m_armExtensionMotor.getOutputCurrent());
 
@@ -92,18 +81,17 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     }
 
     public void setArmExtensionPosition(double distance) {
-        // m_armExtensionMotor.set(0); // stop motor so us modifying the going forward
-        // doesn't screw things up
+        // m_armExtensionMotor.set(0); // stop motor so us modifying the going forward doesn't screw things up
 
         // rope sensor control
         // m_ropeSensor.setGoingForward(distance > m_lastArmExtensionTarget);
         // m_armExtensionMotorPidController.setSetpoint(distance);
 
         // Regular position control
-        m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
+        // m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
 
         // Smart Motion position control
-        // m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kSmartMotion);
+        m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kSmartMotion);
 
         m_lastArmExtensionTarget = distance;
     }
@@ -145,9 +133,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         {
             var maxAccelExtension = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Accel", kSmartMaxAccel);
             var maxVelExtension = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Vel", kSmartMaxVel);
-            // m_armExtensionMotorPidController.setSmartMotionMaxAccel(maxAccelExtension, 0);
-            // m_armExtensionMotorPidController.setSmartMotionMaxVelocity(maxVelExtension, 0);
-            // m_armExtensionMotorProfiledPidController.setConstraints(new Constraints(maxVelRot, maxAccelRot));
+            m_armExtensionMotorPidController.setSmartMotionMaxAccel(maxAccelExtension, 0);
+            m_armExtensionMotorPidController.setSmartMotionMaxVelocity(maxVelExtension, 0);
         }
 
         SmartDashboard.putNumber(getName() + "/Arm Extension Velocity", m_extensionEncoder.getVelocity());

@@ -53,7 +53,7 @@ public class RobotContainer {
     Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
     Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
     Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
-    JoystickButton m_lockWheeButton = new JoystickButton(m_rightJoystick, 1);
+    JoystickButton m_lockWheeButton = new JoystickButton(m_rightJoystick, 3);
     JoystickButton m_wallLineupHoriz = new JoystickButton(m_leftJoystick, 11);
     JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
@@ -74,6 +74,8 @@ public class RobotContainer {
     // JoystickButton m_PickUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kPickUpWallGamePieceButton);
     // JoystickButton m_LineUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
     JoystickButton m_groundPickupButtton = new JoystickButton(m_leftJoystick, RobotMap.kGroundPickupButton);
+
+    JoystickButton m_armReleaseButtonRT = new JoystickButton(m_rightJoystick, RobotMap.kArmReleaseButton);
     
 
     Conditioning m_driveXConditioning = new Conditioning();
@@ -178,6 +180,7 @@ public class RobotContainer {
 // - -> left
 // + -> forward
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_ArmGamePieceSubsystem));
+        m_armReleaseButtonRT.whileTrue(new ArmVacuumReleaseCommand(m_ArmGamePieceSubsystem));
 
         m_groundPickupButtton.onTrue(new PickupOffGroundCommand(m_ArmRotationSubsystem, m_ArmExtensionSubsystem));
 

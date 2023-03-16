@@ -51,6 +51,8 @@ public class ArmRotationSubsystem extends SubsystemBase {
   }
 
   public void setArmDegrees(double degrees) {
+    degrees = Math.min(220, degrees);
+    degrees = Math.max(-75, degrees);
     // profiled PID control
     m_armRotatorMotorProfiledPidController.setGoal(degrees);
     m_lastArmRotationTarget = degrees;
@@ -65,7 +67,10 @@ public class ArmRotationSubsystem extends SubsystemBase {
   }
 
   public double getArmAngle() {
-    return m_armRotatorEncoderDutyCycle.getOutput() * 360;
+    var angleInDegress = m_armRotatorEncoderDutyCycle.getOutput() * 360;
+    if (angleInDegress > 240)
+      angleInDegress -= 360;
+    return angleInDegress;
   }
 
   public void smartDashboardInit() {

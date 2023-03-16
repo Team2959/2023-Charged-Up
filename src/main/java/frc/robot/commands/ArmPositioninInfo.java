@@ -7,8 +7,6 @@ public final class ArmPositioninInfo {
         High,
         Mid,
         Low,
-        WallLineup,
-        WallPickup,
         WallHorizLineup,
     };
 
@@ -23,9 +21,6 @@ public final class ArmPositioninInfo {
                     return 10;
             case Low:
                 return 30;
-            case WallLineup:
-            case WallPickup:
-                return 60;
             case WallHorizLineup:
                 return 0;
             default:
@@ -47,15 +42,8 @@ public final class ArmPositioninInfo {
                     return 130;
             case Low:
                 return 115;
-            case WallLineup:
-                return 180;
-            case WallPickup:
-                return 160;
             case WallHorizLineup:
-                if(gamePieceType == GamePieceType.Cone) 
-                    return 153;
-                else
-                    return 147;
+                return 147;
             default:
                 return 0;
         }

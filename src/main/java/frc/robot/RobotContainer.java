@@ -7,12 +7,9 @@ package frc.robot;
 import frc.robot.commands.ArmToLoadingCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CubeExtractionCommandGroup;
-import frc.robot.commands.DropIntakeOrientaterCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.LockWheelsCommand;
 import frc.robot.commands.PickupOffGroundCommand;
-import frc.robot.commands.ReverseAllIntakeCommand;
-import frc.robot.commands.ReverseExteriorWheelsCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.TestArmExtensionCommand;
 import frc.robot.commands.TestArmRotationCommand;
@@ -34,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
     private static double kDriveYExponent = 2; //1.4;
@@ -53,30 +49,30 @@ public class RobotContainer {
     Joystick m_leftJoystick = new Joystick(RobotMap.kLeftJoystick);
     Joystick m_rightJoystick = new Joystick(RobotMap.kRightJoystick);
     Joystick m_buttonBox = new Joystick(RobotMap.kButtonBox);
-    JoystickButton m_lockWheeButton = new JoystickButton(m_rightJoystick, 3);
-    JoystickButton m_wallLineupHoriz = new JoystickButton(m_leftJoystick, 11);
-    JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kToggleIntakeButton);
+
+    // right driver joystick buttons
+    JoystickButton m_IntakeButton = new JoystickButton(m_rightJoystick, RobotMap.kRightToggleIntakeButton);
+    JoystickButton m_armReleaseButtonRT = new JoystickButton(m_rightJoystick, RobotMap.kRightTriggerFire);
+    JoystickButton m_lockWheeButton = new JoystickButton(m_rightJoystick, RobotMap.kRightLockWheels);
+    JoystickButton m_balJoystickButton = new JoystickButton(m_rightJoystick, RobotMap.kRightBalance);
+
+    // left driver joystick buttons
+    JoystickButton m_wallLineupHoriz = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
+    JoystickButton m_leftGamePieceConeButton = new JoystickButton(m_leftJoystick, RobotMap.kLeftGamePieceConeButton);
+    JoystickButton m_cubeEjectionButton = new JoystickButton(m_leftJoystick, RobotMap.kCubeEjectionButton);
+    JoystickButton m_groundPickupButtton = new JoystickButton(m_leftJoystick, RobotMap.kGroundPickupButton);
+
+    // co-pilot box buttons
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
     JoystickButton m_highGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kHighGamePeiceButton);
     JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kMidGamePeiceButton);
     JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePeiceButton);
     JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
-    JoystickButton m_reverseIntakeButton = new JoystickButton(m_buttonBox, RobotMap.kReverseIntakeButton);
-    JoystickButton m_reverseExteriorIntakeButton = new JoystickButton(m_buttonBox,
-            RobotMap.kReverseExteriorIntakeButton);
-    JoystickButton m_gamePieceConeButton = new JoystickButton(m_leftJoystick, RobotMap.kGamePieceConeButton);
-    JoystickButton m_cubeEjectionButton = new JoystickButton(m_leftJoystick, RobotMap.kCubeEjectionButton);
     JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
+    JoystickButton m_gamePieceConeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceConeButton);
+
     JoystickButton m_testButton = new JoystickButton(m_buttonBox, RobotMap.kTestButton);
     JoystickButton m_testButton2 = new JoystickButton(m_buttonBox, RobotMap.kTestButton2);
-    JoystickButton m_balJoystickButton = new JoystickButton(m_rightJoystick, 11);
-
-    // JoystickButton m_PickUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kPickUpWallGamePieceButton);
-    // JoystickButton m_LineUpWallGamePieceButton = new JoystickButton(m_leftJoystick, RobotMap.kLineUpWallGamePieceButton);
-    JoystickButton m_groundPickupButtton = new JoystickButton(m_leftJoystick, RobotMap.kGroundPickupButton);
-
-    JoystickButton m_armReleaseButtonRT = new JoystickButton(m_rightJoystick, RobotMap.kArmReleaseButton);
-    
 
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
@@ -155,6 +151,7 @@ public class RobotContainer {
 
         m_IntakeButton.onTrue(new ToggleIntakeCommand(m_IntakeSubsystem));
 
+        m_leftGamePieceConeButton.onTrue(new InstantCommand(() -> m_ArmGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)));
         m_gamePieceConeButton.onTrue(new InstantCommand(() -> m_ArmGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)));
         m_gamePieceCubeButton.onTrue(new InstantCommand(() -> m_ArmGamePieceSubsystem.gamePiecePickup(GamePieceType.Cube)));
 
@@ -163,9 +160,6 @@ public class RobotContainer {
             ArmPositioningType.WallHorizLineup));
 
         m_lockWheeButton.whileTrue(new LockWheelsCommand(m_driveSubsystem));
-
-        // m_LineUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallLineup));
-        // m_PickUpWallGamePieceButton.onTrue(new LineupArmCommand(m_PlacementArmSubsystem, ArmPositioningType.WallPickup));
 
         m_highGamePieceButton.onTrue(new LineupArmCommand(
             m_ArmRotationSubsystem, m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem,
@@ -177,8 +171,6 @@ public class RobotContainer {
             m_ArmRotationSubsystem, m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem,
             ArmPositioningType.Low));
 
-// - -> left
-// + -> forward
         m_armReleaseButton.whileTrue(new ArmVacuumReleaseCommand(m_ArmGamePieceSubsystem));
         m_armReleaseButtonRT.whileTrue(new ArmVacuumReleaseCommand(m_ArmGamePieceSubsystem));
 
@@ -187,11 +179,6 @@ public class RobotContainer {
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_ArmRotationSubsystem, m_ArmExtensionSubsystem));
         m_balJoystickButton.whileTrue(new AutoBalanceCommand(m_driveSubsystem));
 
-        new Trigger(() -> m_IntakeSubsystem.intakeIsDown() && m_IntakeSubsystem.gamePieceDetected())
-                .whileTrue(new DropIntakeOrientaterCommand(m_IntakeSubsystem));
-
-        m_reverseIntakeButton.whileTrue(new ReverseAllIntakeCommand(m_IntakeSubsystem));
-        m_reverseExteriorIntakeButton.whileTrue(new ReverseExteriorWheelsCommand(m_IntakeSubsystem));
         m_cubeEjectionButton.onTrue(new CubeExtractionCommandGroup(m_ArmRotationSubsystem,
             m_ArmExtensionSubsystem, m_ArmGamePieceSubsystem));
 

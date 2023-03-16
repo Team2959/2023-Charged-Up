@@ -15,16 +15,13 @@ public final class RobotMap {
     public static final int kBackLeftTurnCANSparkMaxMotor = 12;
     public static final int kBackRightTurnCANSparkMaxMotor = 13;
     public static final int kFrontRightTurnCANSparkMaxMotor = 14;
-    public static final int kExteriorFeederVictorSpxMotor = 5;
     public static final int kArmRotatorSparkMaxMotor = 7;
     public static final int kArmExtensionSparkMaxMotor = 8;
 
     // PWM motor addresses
-    public static final int kInteriorFeederSparkMotor = 4;
     public static final int kGripVacuumSparkMotor = 2;
 
     // REV Pneumatic Hub solenoid addresses
-    public static final int kConeOrientater = 1;
     public static final int kIntakeArm = 2;
     public static final int kArmVacuumRelease1 = 4;
     public static final int kArmVacuumRelease2 = 5;
@@ -37,10 +34,7 @@ public final class RobotMap {
     public static final int kBackLeftTurnPulseWidthDigIO = 2;
     public static final int kBackRightTurnPulseWidthDigIO = 3;
     public static final int kFrontRightTurnPulseWidthDigIO = 4;
-    public static final int kGamePieceInSwitch = 5;
-    public static final int kGamePieceUprightSwitch = 6;
     public static final int kRotatorArmEncoderPulseWidthDIO = 8;
-    public static final int kGamePieceDetectedSwitch = 9;
 
     // Operator input USB ports
     public static final int kLeftJoystick = 0;
@@ -48,11 +42,15 @@ public final class RobotMap {
     public static final int kButtonBox = 2;
 
     // Driver Buttons
-    public static final int kToggleIntakeButton = 2;
-    public static final int kLineUpWallGamePieceButton = 11;
-    public static final int kPickUpWallGamePieceButton = 12;
+    public static final int kLeftGamePieceConeButton = 7;
     public static final int kCubeEjectionButton = 8;
     public static final int kGroundPickupButton = 9;
+    public static final int kLineUpWallGamePieceButton = 11;
+
+    public static final int kRightTriggerFire = 1;
+    public static final int kRightToggleIntakeButton = 2;
+    public static final int kRightLockWheels = 3;
+    public static final int kRightBalance = 11;
 
     // Co-Piolet Button board
     public static final int kHighGamePeiceButton = 8;
@@ -60,9 +58,7 @@ public final class RobotMap {
     public static final int kLowGamePeiceButton = 12;
     public static final int kArmReleaseButton = 1;
     public static final int kReturnArmToLoadingButton = 4;
-    public static final int kReverseIntakeButton = 10;
-    public static final int kReverseExteriorIntakeButton = 6;
-    public static final int kGamePieceConeButton = 7;
+    public static final int kGamePieceConeButton = 11;
     public static final int kGamePieceCubeButton = 5;
     public static final int kTestButton = 7;
     public static final int kTestButton2 = 2;

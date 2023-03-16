@@ -19,21 +19,21 @@ public class SwerveModule {
     private static final double kDriveD = 0.001;
     private static final double kDriveFF = 0.02;
     private static final double kDriveIZone = 600;
-    private static final double kTurnP = 0.4;
-    private static final double kTurnI = 0.00001;
-    private static final double kTurnD = 0.0;
-    private static final double kTurnFF = 0.0;
-    private static final double kTurnIZone = 1.0;
+    private static final double kSteerP = 0.4;
+    private static final double kSteerI = 0.00001;
+    private static final double kSteerD = 0.0;
+    private static final double kSteerFF = 0.0;
+    private static final double kSteerIZone = 1.0;
 
     private CANSparkMax m_driveMotor;
-    private CANSparkMax m_turnMotor;
+    private CANSparkMax m_steerMotor;
     private DigitalInput m_dutyCycleInput;
     private DutyCycle m_dutyCycleEncoder;
     private SparkMaxRelativeEncoder m_driveEncoder;
-    private SparkMaxAlternateEncoder m_turnEncoder;
+    private SparkMaxAlternateEncoder m_steerEncoder;
     private SparkMaxPIDController m_drivePIDController;
-    private SparkMaxPIDController m_turnPIDController;
-    private final double m_turnOffset;
+    private SparkMaxPIDController m_steerPIDController;
+    private final double m_steerOffset;
     private final String m_name;
 
     private static final double kWheelRadius = 2.0 * 0.0254; // 2" * 0.0254 m / inch
@@ -41,33 +41,33 @@ public class SwerveModule {
     private static final double kGearboxRatio = 1.0 / 6.12; // One turn of the wheel is 6.86 turns of the motor
     private static final double kDrivePositionFactor = (2.0 * Math.PI * kWheelRadius * kGearboxRatio);
     private static final int kDriveCurrentLimitAmps = 70;
-    private static final int kTurnCurrentLimitAmps = 20; 
+    private static final int kSteerCurrentLimitAmps = 20; 
 
-    public SwerveModule(int driveMotor, int turnMotor, int dutyCycle, double turnOffset, String name)
+    public SwerveModule(int driveMotor, int steerMotor, int dutyCycle, double steerOffset, String name)
     {
         m_driveMotor = new CANSparkMax(driveMotor, CANSparkMax.MotorType.kBrushless);
-        m_turnMotor = new CANSparkMax(turnMotor, CANSparkMax.MotorType.kBrushless);
+        m_steerMotor = new CANSparkMax(steerMotor, CANSparkMax.MotorType.kBrushless);
         m_driveMotor.restoreFactoryDefaults();
-        m_turnMotor.restoreFactoryDefaults();
+        m_steerMotor.restoreFactoryDefaults();
 
         m_driveMotor.setIdleMode(IdleMode.kBrake);
-        m_turnMotor.setIdleMode(IdleMode.kBrake);
+        m_steerMotor.setIdleMode(IdleMode.kBrake);
 
         m_driveMotor.setSmartCurrentLimit(kDriveCurrentLimitAmps);
-        m_turnMotor.setSmartCurrentLimit(kTurnCurrentLimitAmps);
+        m_steerMotor.setSmartCurrentLimit(kSteerCurrentLimitAmps);
 
         m_name = name;
 
-        m_turnOffset = turnOffset;
+        m_steerOffset = steerOffset;
 
         m_dutyCycleInput = new DigitalInput(dutyCycle);
         m_dutyCycleEncoder = new DutyCycle(m_dutyCycleInput);
 
         m_driveEncoder = (SparkMaxRelativeEncoder) m_driveMotor.getEncoder();
-        m_turnEncoder = (SparkMaxAlternateEncoder) m_turnMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, kEncoderResolution);
+        m_steerEncoder = (SparkMaxAlternateEncoder) m_steerMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, kEncoderResolution);
     
         m_drivePIDController = m_driveMotor.getPIDController();
-        m_turnPIDController = m_turnMotor.getPIDController();
+        m_steerPIDController = m_steerMotor.getPIDController();
 
         m_driveEncoder.setPositionConversionFactor(kDrivePositionFactor);
         m_driveEncoder.setVelocityConversionFactor(kDrivePositionFactor / 60.0);
@@ -78,13 +78,13 @@ public class SwerveModule {
         m_drivePIDController.setFF(kDriveFF);
         m_drivePIDController.setIZone(kDriveIZone);
 
-        m_turnPIDController.setFeedbackDevice(m_turnEncoder);
-        m_turnPIDController.setP(kTurnP);
-        m_turnPIDController.setI(kTurnI);
-        m_turnPIDController.setD(kTurnD);
-        m_turnPIDController.setIZone(kTurnIZone);
+        m_steerPIDController.setFeedbackDevice(m_steerEncoder);
+        m_steerPIDController.setP(kSteerP);
+        m_steerPIDController.setI(kSteerI);
+        m_steerPIDController.setD(kSteerD);
+        m_steerPIDController.setIZone(kSteerIZone);
 
-        m_turnEncoder.setPositionConversionFactor(2.0 * Math.PI);
+        m_steerEncoder.setPositionConversionFactor(2.0 * Math.PI);
     }
 
     public void smartDashboardInit() {
@@ -93,17 +93,17 @@ public class SwerveModule {
         SmartDashboard.putNumber(m_name + "/Drive D", m_drivePIDController.getD());
         SmartDashboard.putNumber(m_name + "/Drive IZone", m_drivePIDController.getIZone());
         SmartDashboard.putNumber(m_name + "/Drive FF", m_drivePIDController.getFF());
-        SmartDashboard.putNumber(m_name + "/Turn P", m_turnPIDController.getP());
-        SmartDashboard.putNumber(m_name + "/Turn I", m_turnPIDController.getI());
-        SmartDashboard.putNumber(m_name + "/Turn D", m_turnPIDController.getD());
-        SmartDashboard.putNumber(m_name + "/Turn IZone", m_turnPIDController.getIZone());
-        SmartDashboard.putNumber(m_name + "/Turn FF", m_turnPIDController.getFF());
+        SmartDashboard.putNumber(m_name + "/Turn P", m_steerPIDController.getP());
+        SmartDashboard.putNumber(m_name + "/Turn I", m_steerPIDController.getI());
+        SmartDashboard.putNumber(m_name + "/Turn D", m_steerPIDController.getD());
+        SmartDashboard.putNumber(m_name + "/Turn IZone", m_steerPIDController.getIZone());
+        SmartDashboard.putNumber(m_name + "/Turn FF", m_steerPIDController.getFF());
     }
 
     public void smartDashboardUpdate() {
         SmartDashboard.putNumber(m_name + "/Drive Encoder Velocity", m_driveEncoder.getVelocity());
         SmartDashboard.putNumber(m_name + "/Drive Encoder Position", m_driveEncoder.getPosition()); 
-        SmartDashboard.putNumber(m_name + "/Turn Motor Position", m_turnEncoder.getPosition());
+        SmartDashboard.putNumber(m_name + "/Turn Motor Position", m_steerEncoder.getPosition());
         SmartDashboard.putNumber(m_name + "/Turn Digital IO", m_dutyCycleEncoder.getOutput());
 
        m_drivePIDController.setP (SmartDashboard.getNumber(m_name + "/Drive P", kDriveP));
@@ -112,25 +112,25 @@ public class SwerveModule {
        m_drivePIDController.setIZone (SmartDashboard.getNumber(m_name + "/Drive IZone", kDriveIZone));
        m_drivePIDController.setFF (SmartDashboard.getNumber(m_name + "/Drive FF", kDriveFF));
 
-       m_turnPIDController.setP (SmartDashboard.getNumber(m_name + "/Turn P", kTurnP));
-       m_turnPIDController.setI (SmartDashboard.getNumber(m_name + "/Turn I", kTurnI));
-       m_turnPIDController.setD (SmartDashboard.getNumber(m_name + "/Turn D", kTurnD));
-       m_turnPIDController.setIZone (SmartDashboard.getNumber(m_name + "/Turn IZone", kTurnIZone));
-       m_turnPIDController.setFF (SmartDashboard.getNumber(m_name + "/Turn FF", kTurnFF));
+       m_steerPIDController.setP (SmartDashboard.getNumber(m_name + "/Turn P", kSteerP));
+       m_steerPIDController.setI (SmartDashboard.getNumber(m_name + "/Turn I", kSteerI));
+       m_steerPIDController.setD (SmartDashboard.getNumber(m_name + "/Turn D", kSteerD));
+       m_steerPIDController.setIZone (SmartDashboard.getNumber(m_name + "/Turn IZone", kSteerIZone));
+       m_steerPIDController.setFF (SmartDashboard.getNumber(m_name + "/Turn FF", kSteerFF));
     }
 
     public double getAbsoluteEncoderPosition()
     {
         double initalPosition = m_dutyCycleEncoder.getOutput();
         double initalPositionInRadians = initalPosition * 2.0 * Math.PI;
-        double initalPositionInRadiansScaled = new Rotation2d(initalPositionInRadians - m_turnOffset).getRadians();
+        double initalPositionInRadiansScaled = new Rotation2d(initalPositionInRadians - m_steerOffset).getRadians();
         return initalPositionInRadiansScaled;
     }
 
-    void setSmartMotion(double maxVel, double maxAccel) {
-        m_drivePIDController.setSmartMotionMaxVelocity(maxVel, 0);
-        m_drivePIDController.setSmartMotionMaxAccel(maxAccel, 0);
-    }
+    // public void setSmartMotion(double maxVel, double maxAccel) {
+    //     m_drivePIDController.setSmartMotionMaxVelocity(maxVel, 0);
+    //     m_drivePIDController.setSmartMotionMaxAccel(maxAccel, 0);
+    // }
 
     public double getVelocity()
     {
@@ -139,7 +139,7 @@ public class SwerveModule {
 
     public SwerveModulePosition getPosition()
     {
-        return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_turnEncoder.getPosition()));
+        return new SwerveModulePosition(m_driveEncoder.getPosition(), new Rotation2d(m_steerEncoder.getPosition()));
     }
 
     /*
@@ -147,10 +147,9 @@ public class SwerveModule {
      */
     public void setDesiredState(SwerveModuleState referenceState)
     {
-        SwerveModuleState state = SwerveModuleState.optimize(referenceState, new Rotation2d(m_turnEncoder.getPosition()));
+        SwerveModuleState state = SwerveModuleState.optimize(referenceState, new Rotation2d(m_steerEncoder.getPosition()));
 
-        m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-        // m_drivePIDController.setReference(state.speedMetersPerSecond * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kSmartVelocity);
+        setDriveVelocity(state.speedMetersPerSecond);
 
         // if(Math.abs(state.speedMetersPerSecond - 0) < 0.001)
         {
@@ -158,12 +157,23 @@ public class SwerveModule {
             // return;
         }
 
-        var currentPosition = m_turnEncoder.getPosition();
-        Rotation2d delta = state.angle.minus(new Rotation2d(currentPosition));
-        double setpoint = currentPosition + delta.getRadians();
-        SmartDashboard.putNumber(m_name + "/Setpoint", setpoint);
+        var currentAngleInRadians = m_steerEncoder.getPosition();
+        Rotation2d delta = state.angle.minus(new Rotation2d(currentAngleInRadians));
         SmartDashboard.putNumber(m_name + "/State Angle", state.angle.getRadians());
-        m_turnPIDController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
+        double angleSetpointInRadians = currentAngleInRadians + delta.getRadians();
+        setSteerAngleInRadians(angleSetpointInRadians);
+    }
+
+    private void setDriveVelocity(double targetSpeed)
+    {
+        m_drivePIDController.setReference(targetSpeed * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
+        // m_drivePIDController.setReference(targetSpeed * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kSmartVelocity);
+    }
+
+    private void setSteerAngleInRadians(double targetAngleInRadians)
+    {
+        SmartDashboard.putNumber(m_name + "/Setpoint", targetAngleInRadians);
+        m_steerPIDController.setReference(targetAngleInRadians, CANSparkMax.ControlType.kPosition);
     }
 
     /*
@@ -172,12 +182,13 @@ public class SwerveModule {
      */
     public void resetAngleEncoderToAbsolute()
     {
-        m_turnEncoder.setPosition(getAbsoluteEncoderPosition());
+        m_steerEncoder.setPosition(getAbsoluteEncoderPosition());
     }
 
-    public void setAngle(double i) {
-        m_turnPIDController.setP(i);
+    public void lockWheelAtAngleInDegrees(double degrees)
+    {
+        setDriveVelocity(0);
+        var angleInRadians = degrees * Math.PI / 180.0;
+        setSteerAngleInRadians(angleInRadians);
     }
 }
-
-

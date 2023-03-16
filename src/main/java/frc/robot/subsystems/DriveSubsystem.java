@@ -204,22 +204,21 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber(getName() + "/Balance Auto Delay Ticks", 5);
         SmartDashboard.putNumber(getName() + "/Balance Auto Stop Angle", 5);
 
-        SmartDashboard.putNumber(getName() + "/Smart Motion Vel", kSmartMotionVel);
-        SmartDashboard.putNumber(getName() + "/Smart Motion Accel", kSmartMotionAccel);
+        // SmartDashboard.putNumber(getName() + "/Smart Motion Vel", kSmartMotionVel);
+        // SmartDashboard.putNumber(getName() + "/Smart Motion Accel", kSmartMotionAccel);
     }
 
     public void smartDashboardUpdate() {
         m_autoBalanceDelayTicksMax = (int)SmartDashboard.getNumber(getName() + "/Balance Auto Delay Ticks", 5);
         m_autoBalanceStopAngle = SmartDashboard.getNumber(getName() + "/Balance Auto Stop Angle", 5);
 
-        var maxVel = SmartDashboard.getNumber(getName() + "/Smart Motion Vel", kSmartMotionVel);
-        var maxAccel = SmartDashboard.getNumber(getName() + "/Smart Motion Accel", kSmartMotionAccel);
+        // var maxVel = SmartDashboard.getNumber(getName() + "/Smart Motion Vel", kSmartMotionVel);
+        // var maxAccel = SmartDashboard.getNumber(getName() + "/Smart Motion Accel", kSmartMotionAccel);
 
-        m_frontLeft.setSmartMotion(maxVel, maxAccel);
-        m_frontRight.setSmartMotion(maxVel, maxAccel);
-        m_backLeft.setSmartMotion(maxVel, maxAccel);
-        m_backRight.setSmartMotion(maxVel, maxAccel);
-
+        // m_frontLeft.setSmartMotion(maxVel, maxAccel);
+        // m_frontRight.setSmartMotion(maxVel, maxAccel);
+        // m_backLeft.setSmartMotion(maxVel, maxAccel);
+        // m_backRight.setSmartMotion(maxVel, maxAccel);
 
         m_frontLeft.smartDashboardUpdate();
         m_frontRight.smartDashboardUpdate();
@@ -280,11 +279,10 @@ public class DriveSubsystem extends SubsystemBase {
         return swerveStates;
     }
 
-    public void turn180() {
-        m_frontLeft.setAngle(90);
-        m_frontRight.setAngle(90);
-        m_backLeft.setAngle(90);
-        m_backRight.setAngle(90);
+    public void stopAndLockWheels() {
+        m_frontLeft.lockWheelAtAngleInDegrees(45);
+        m_frontRight.lockWheelAtAngleInDegrees(-45);
+        m_backLeft.lockWheelAtAngleInDegrees(-45);
+        m_backRight.lockWheelAtAngleInDegrees(45);
     }
-
 }

@@ -13,7 +13,7 @@ public class LockWheelsCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        m_DriveSubsystem.turn180();
+        m_DriveSubsystem.stopAndLockWheels();
     }
 
     @Override

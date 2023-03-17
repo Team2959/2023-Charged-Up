@@ -13,14 +13,14 @@ public final class ArmPositioninInfo {
     public static double getArmDistance(ArmPositioningType armPosition, GamePieceType gamePieceType) {
         switch (armPosition) {
             case High:
-                return 115;
+                return 90;
             case Mid:
                 if(gamePieceType == GamePieceType.Cone)
-                    return 50;
-                else
                     return 10;
+                else
+                    return 0;
             case Low:
-                return 30;
+                return 0;
             case WallHorizLineup:
                 return 0;
             default:
@@ -32,16 +32,16 @@ public final class ArmPositioninInfo {
         switch (armPosition) {
             case High:
                 if (gamePieceType == GamePieceType.Cone)
-                    return 165;
+                    return 160;
                 else
-                    return 150;
+                    return 152;
             case Mid:
                 if (gamePieceType == GamePieceType.Cone)
-                    return 153;
+                    return 143;
                 else
                     return 130;
             case Low:
-                return 115;
+                return 100;
             case WallHorizLineup:
                 return 147;
             default:

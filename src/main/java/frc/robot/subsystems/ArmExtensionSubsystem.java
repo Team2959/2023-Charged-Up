@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class ArmExtensionSubsystem extends SubsystemBase {
-    private static final int kSmartMaxVel = 7500;
-    private static final int kSmartMaxAccel = 10000;
+    private static final int kSmartMaxVel = 2000;
+    private static final int kSmartMaxAccel = 4000;
     // private static final double kArmExtensionP = 0.02;  // orig kP from St Joe: 0.02
     // private static final double kArmExtensionI = 0;  // orig KI from St Joe: 0
     private static final double kArmExtensionP = 0.000075;

@@ -49,19 +49,22 @@ public final class RobotMap {
     public static final int kRightLockWheels = 3;
     public static final int kRightBalance = 11;
 
+    // Right Joystick Test
+    public static final int kTestButtonExtension = 7;
+    public static final int kTestButtonRotation = 9;
+
     // Co-Piolet Button board
     public static final int kHighGamePieceButton = 8;
     public static final int kMidGamePieceButton = 9;
     public static final int kLowGamePieceButton = 12;
     public static final int kArmReleaseButton = 1;
-    public static final int kReturnArmToLoadingButton = 4;
+    public static final int kReturnArmToHomeButton = 4;
     public static final int kGamePieceConeButton = 11;
     public static final int kGamePieceCubeButton = 5;
-    public static final int kTestButtonExtension = 7;
-    public static final int kTestButtonRotation = 9;
-    public static final int kBumpArmAngleDownButton = 0;
-    public static final int kBumpArmAngleUpButton = 0;
-    public static final int kLineUpWallGamePieceButton = 0;
+
+    public static final int kBumpArmAngleDownButton = 10;
+    public static final int kBumpArmAngleUpButton = 9;
+    public static final int kLineUpWallGamePieceButton = 3;
 
 
     // Zeroed values, should be in radians

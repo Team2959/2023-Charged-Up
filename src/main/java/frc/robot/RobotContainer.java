@@ -77,7 +77,7 @@ public class RobotContainer {
     JoystickButton m_frontUnloadButton = new JoystickButton(m_buttonBox, RobotMap.kFrontUnloadButton);
     JoystickButton m_backUnloadButton = new JoystickButton(m_buttonBox, RobotMap.kBackUnloadButton);
 
-    JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToLoadingButton);
+    JoystickButton m_returnArmToLoadingButton = new JoystickButton(m_buttonBox, RobotMap.kReturnArmToHomeButton);
 
     JoystickButton m_gamePieceCubeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceCubeButton);
     JoystickButton m_gamePieceConeButton = new JoystickButton(m_buttonBox, RobotMap.kGamePieceConeButton);

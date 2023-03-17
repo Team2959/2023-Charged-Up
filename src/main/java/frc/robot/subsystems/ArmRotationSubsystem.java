@@ -41,6 +41,10 @@ public class ArmRotationSubsystem extends SubsystemBase {
     setArmDegrees(kArmHomePosition);
   }
 
+  public double lastArmRotationTarget() {
+    return m_lastArmRotationTarget;
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", getArmAngle());

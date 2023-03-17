@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem;
 
 public class ArmVacuumReleaseCommand extends SequentialCommandGroup {
-    // TODO: handle this command being interrupted somehow
     public ArmVacuumReleaseCommand(ArmGamePieceControlSubsystem armGamePieceControlSubsystem) {
         addCommands(
                 new InstantCommand(() -> armGamePieceControlSubsystem.gamePieceRelease()),

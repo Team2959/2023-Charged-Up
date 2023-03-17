@@ -42,10 +42,7 @@ public final class RobotMap {
     public static final int kButtonBox = 2;
 
     // Driver Buttons
-    public static final int kLeftGamePieceConeButton = 7;
-    public static final int kCubeEjectionButton = 8;
-    public static final int kGroundPickupButton = 9;
-    public static final int kLineUpWallGamePieceButton = 11;
+    public static final int kGroundPickupButton = 11;
 
     public static final int kRightTriggerFire = 1;
     public static final int kRightToggleIntakeButton = 2;
@@ -53,15 +50,19 @@ public final class RobotMap {
     public static final int kRightBalance = 11;
 
     // Co-Piolet Button board
-    public static final int kHighGamePeiceButton = 8;
-    public static final int kMidGamePeiceButton = 9;
-    public static final int kLowGamePeiceButton = 12;
+    public static final int kHighGamePieceButton = 8;
+    public static final int kMidGamePieceButton = 9;
+    public static final int kLowGamePieceButton = 12;
     public static final int kArmReleaseButton = 1;
     public static final int kReturnArmToLoadingButton = 4;
     public static final int kGamePieceConeButton = 11;
     public static final int kGamePieceCubeButton = 5;
-    public static final int kTestButton = 7;
-    public static final int kTestButton2 = 2;
+    public static final int kTestButtonExtension = 7;
+    public static final int kTestButtonRotation = 9;
+    public static final int kBumpArmAngleDownButton = 0;
+    public static final int kBumpArmAngleUpButton = 0;
+    public static final int kLineUpWallGamePieceButton = 0;
+
 
     // Zeroed values, should be in radians
     // source is google document in Electrical for team - module data
@@ -69,4 +70,7 @@ public final class RobotMap {
     public static final double kZeroedFrontRight = 5.526;   // for FR module 5
     public static final double kZeroedBackLeft = 5.681;     // for BL module 2
     public static final double kZeroedBackRight = 1.815;    // for BR module 3
+    public static final int kFrontUnloadButton = 0;
+    public static final int kBackUnloadButton = 0;
+    
 };

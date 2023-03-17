@@ -27,33 +27,20 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 
 public final class Autos {
-    /** Example static factory for an autonomous command. */
-    public static CommandBase exampleAuto() {
-        return null;
-    }
-
     public static SendableChooser<Command> sendableChooser(RobotContainer container) {
         SendableChooser<Command> sendableChooser = new SendableChooser<>();
         sendableChooser.addOption("Nothing", new WaitCommand(0));
-        // sendableChooser.addOption("Test Bump", new
-        // BumpCubeCommand(container.m_PlacementArmSubsystem));
-        sendableChooser.addOption("Basic Cube Not Over Charging Station",
-                (new BumpCubeCommand(container.m_ArmRotationSubsystem, container.m_ArmExtensionSubsystem)
-                        .andThen(runPath("Basic Cube", container.m_driveSubsystem))));
-        sendableChooser.addOption("Basic Cube Over Charging Station",
-                (new BumpCubeCommand(container.m_ArmRotationSubsystem, container.m_ArmExtensionSubsystem)
-                        .andThen(runPath("Basic Cube", container.m_driveSubsystem))));
         sendableChooser.setDefaultOption("Place Cone Auto",
                 placeGamePiece(GamePieceType.Cone, container.m_driveSubsystem,
-                        container.m_ArmRotationSubsystem,
-                        container.m_ArmExtensionSubsystem,
-                        container.m_ArmGamePieceSubsystem,
-                         container.m_IntakeSubsystem));
+                        container.m_armRotationSubsystem,
+                        container.m_armExtensionSubsystem,
+                        container.m_armGamePieceSubsystem,
+                         container.m_intakeSubsystem));
         sendableChooser.addOption("Place Cone and Balance NOT TESTED", placeGamePieceAndBalance(
             GamePieceType.Cone, container.m_driveSubsystem,
-            container.m_ArmRotationSubsystem,
-            container.m_ArmExtensionSubsystem,
-            container.m_ArmGamePieceSubsystem));
+            container.m_armRotationSubsystem,
+            container.m_armExtensionSubsystem,
+            container.m_armGamePieceSubsystem));
         sendableChooser.addOption("Drive Only", runPath("Place Game Piece", container.m_driveSubsystem));
         // sendableChooser.addOption("Basic Cube 1",
         // (new CubeExtractionCommandGroup(container.m_IntakeSubsystem,

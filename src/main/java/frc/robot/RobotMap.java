@@ -54,17 +54,19 @@ public final class RobotMap {
     public static final int kTestButtonRotation = 9;
 
     // Co-Piolet Button board
-    public static final int kHighGamePieceButton = 8;
-    public static final int kMidGamePieceButton = 9;
-    public static final int kLowGamePieceButton = 12;
-    public static final int kArmReleaseButton = 1;
-    public static final int kReturnArmToHomeButton = 4;
-    public static final int kGamePieceConeButton = 11;
-    public static final int kGamePieceCubeButton = 5;
+    public static final int kHighGamePieceButton = 1;
+    public static final int kMidGamePieceButton = 3;
+    public static final int kLowGamePieceButton = 10;
+    public static final int kArmReleaseButton = 11;
+    public static final int kReturnArmToHomeButton = 12;
+    public static final int kGamePieceConeButton = 8;
+    public static final int kGamePieceCubeButton = 9;
+    public static final int kBumpArmAngleDownButton = 7;
+    public static final int kBumpArmAngleUpButton = 2;
+    public static final int kLineUpWallGamePieceButton = 4;
+    public static final int kFrontUnloadButton = 6;
+    public static final int kBackUnloadButton = 5;
 
-    public static final int kBumpArmAngleDownButton = 10;
-    public static final int kBumpArmAngleUpButton = 9;
-    public static final int kLineUpWallGamePieceButton = 3;
 
 
     // Zeroed values, should be in radians
@@ -73,7 +75,6 @@ public final class RobotMap {
     public static final double kZeroedFrontRight = 5.526;   // for FR module 5
     public static final double kZeroedBackLeft = 5.681;     // for BL module 2
     public static final double kZeroedBackRight = 1.815;    // for BR module 3
-    public static final int kFrontUnloadButton = 0;
-    public static final int kBackUnloadButton = 0;
+    
     
 };

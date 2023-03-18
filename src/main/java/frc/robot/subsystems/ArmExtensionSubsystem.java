@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 
 public class ArmExtensionSubsystem extends SubsystemBase {
     private static final int kSmartMaxVel = 2000;
@@ -23,14 +24,13 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     private static final double kArmExtensionI = 0.000001;
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
-    private static final double kArmExtensionIzone = 0;
+    private static final double kArmExtensionIzone = 20;
 
     private CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor,
             MotorType.kBrushless);
-    // RopeSensor m_ropeSensor = new RopeSensor(RobotMap.kRopeEncoderDigIO);
     private SparkMaxRelativeEncoder m_extensionEncoder;
     private SparkMaxPIDController m_armExtensionMotorPidController;
-    private double m_lastArmExtensionTarget = 0; // Arm starts fully retracted
+    private double m_lastArmExtensionTarget = 0; // Arm by default starts fully retracted, unless onAutoInit() is called
 
     /** Creates a new ArmExtensionSubsystem. */
     public ArmExtensionSubsystem() {
@@ -48,24 +48,27 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         // https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java
         m_armExtensionMotorPidController.setSmartMotionMaxAccel(kSmartMaxAccel, 0);
         m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kSmartMaxVel, 0);
-
-        // m_extensionEncoder.setPosition(0);
-        // setArmExtensionPosition(getArmExtensionPosition());
     }
 
-    // public void setupRopeSensor(Robot robot) {
-    // m_ropeSensor.setup(robot);
-    // }
-
     private static int kConeExtensionAutoStartPosition = 57;
+    private static int kCubeExtensionAutoStartPosition = 50; // TODO: check this value
 
-    public void onAutoInit() {
-        // ToDo: handle diffferent autos, cube as well as cone
-        // if(m_quickFixCone) {
-        m_extensionEncoder.setPosition(kConeExtensionAutoStartPosition);
-        setArmExtensionPosition(kConeExtensionAutoStartPosition);
+    public void onAutoInit(GamePieceType gamePieceType) {
+        if(gamePieceType == GamePieceType.Cone) {
+            m_extensionEncoder.setPosition(kConeExtensionAutoStartPosition);
+            setArmExtensionPosition(kConeExtensionAutoStartPosition);
+        }
+        else if(gamePieceType == GamePieceType.Cube) {
+            m_extensionEncoder.setPosition(kCubeExtensionAutoStartPosition);
+            setArmExtensionPosition(kCubeExtensionAutoStartPosition);
+        } else {
+            // Assume nothing is preloaded and we are at zero
+            m_extensionEncoder.setPosition(0);
+            setArmExtensionPosition(0);
+        }
+
         m_armExtensionMotor.set(0);
-        // }
+
     }
 
     @Override

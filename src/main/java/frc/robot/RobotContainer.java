@@ -90,7 +90,7 @@ public class RobotContainer {
     Conditioning m_turnConditioning = new Conditioning();
     double m_speedMultiplier = 0.70;
 
-    SendableChooser<ArmGamePieceControlSubsystem.GamePieceType> m_preloadedPieceChooser = new SendableChooser<>();
+    public SendableChooser<ArmGamePieceControlSubsystem.GamePieceType> m_preloadedPieceChooser = new SendableChooser<>();
 
     /**
      * The container form the robot. Contains subsystems, OI devices, and commands.

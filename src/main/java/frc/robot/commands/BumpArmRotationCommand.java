@@ -20,6 +20,7 @@ public class BumpArmRotationCommand extends InstantCommand {
 
     @Override
     public boolean isFinished() {
-        return m_armRotationSubsystem.isArmRotatorAtSetpoint();
+        // return m_armRotationSubsystem.isArmRotatorAtSetpoint();
+        return true;
     }
 }

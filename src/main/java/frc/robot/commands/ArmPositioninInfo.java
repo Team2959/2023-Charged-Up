@@ -43,7 +43,10 @@ public final class ArmPositioninInfo {
             case Low:
                 return 100;
             case WallHorizLineup:
-                return 147;
+                if(gamePieceType == GamePieceType.Cone)
+                    return 147;
+                else
+                    return 150;
             default:
                 return 0;
         }

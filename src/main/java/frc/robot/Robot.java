@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         m_robotContainer.m_driveSubsystem.initalize();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        m_robotContainer.m_armExtensionSubsystem.onAutoInit();
+        m_robotContainer.m_armExtensionSubsystem.onAutoInit(m_robotContainer.m_preloadedPieceChooser.getSelected());
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {

@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -29,10 +31,12 @@ public class ArmRotationSubsystem extends SubsystemBase {
   private DigitalInput m_armRotatorEncoderDigitalInput = new DigitalInput(RobotMap.kRotatorArmEncoderPulseWidthDIO);
   private DutyCycle m_armRotatorEncoderDutyCycle = new DutyCycle(m_armRotatorEncoderDigitalInput);
 
-  private ProfiledPIDController m_armRotatorMotorProfiledPidController =
-    new ProfiledPIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD,
-        new Constraints(kArmRotatorMaxVelocity, kArmRotatorMaxAccel));
+  private ProfiledPIDController m_armRotatorMotorProfiledPidController = new ProfiledPIDController(kArmRotatorP,
+      kArmRotatorI, kArmRotatorD,
+      new Constraints(kArmRotatorMaxVelocity, kArmRotatorMaxAccel));
 
+  private boolean m_armSmartMotion = true;
+  private PIDController m_armRotatorController = new PIDController(kArmRotatorP, kArmRotatorI, kArmRotatorD);
   private SparkMaxRelativeEncoder m_armRotatorEncoder = (SparkMaxRelativeEncoder) m_armRotatorMotor.getEncoder();
 
   public ArmRotationSubsystem() {
@@ -49,17 +53,30 @@ public class ArmRotationSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber(getName() + "/Arm Rotation Encoder Position", getArmAngle());
 
-    double rawProfiled = m_armRotatorMotorProfiledPidController.calculate(getArmAngle());
-    m_armRotatorMotor.set(rawProfiled);
-    SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", rawProfiled);
+    if (m_armSmartMotion) {
+      double rawProfiled = m_armRotatorMotorProfiledPidController.calculate(getArmAngle());
+      m_armRotatorMotor.set(rawProfiled);
+      SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", rawProfiled);
+    } else {
+      double raw = m_armRotatorController.calculate(getArmAngle());
+      m_armRotatorMotor.set(raw);
+      SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", raw);
+    }
+    
   }
 
-  public void setArmDegrees(double degrees) {
+  public void setArmDegrees(double degrees, boolean isSmartMotion) {
+    m_armSmartMotion = isSmartMotion;
     degrees = Math.min(220, degrees);
     degrees = Math.max(-75, degrees);
     // profiled PID control
     m_armRotatorMotorProfiledPidController.setGoal(degrees);
+    m_armRotatorController.setSetpoint(degrees);
     m_lastArmRotationTarget = degrees;
+  }
+
+  public void setArmDegrees(double degrees) {
+    setArmDegrees(degrees, true);
   }
 
   public void stopArmRotatorMotor() {
@@ -85,14 +102,13 @@ public class ArmRotationSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(getName() + "/Arm Rotator P", m_armRotatorMotorProfiledPidController.getP());
     SmartDashboard.putNumber(getName() + "/Arm Rotator I", m_armRotatorMotorProfiledPidController.getI());
     SmartDashboard.putNumber(getName() + "/Arm Rotator D", m_armRotatorMotorProfiledPidController.getD());
-}
+  }
 
-public void smartDashboardUpdate() {
-    if (SmartDashboard.getBoolean(getName() + "/Arm Rot Prof Const Enable", false))
-    {
-        var maxAccelRot = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Accel", kArmRotatorMaxAccel);
-        var maxVelRot = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Vel", kArmRotatorMaxVelocity);
-        m_armRotatorMotorProfiledPidController.setConstraints(new Constraints(maxVelRot, maxAccelRot));
+  public void smartDashboardUpdate() {
+    if (SmartDashboard.getBoolean(getName() + "/Arm Rot Prof Const Enable", false)) {
+      var maxAccelRot = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Accel", kArmRotatorMaxAccel);
+      var maxVelRot = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Vel", kArmRotatorMaxVelocity);
+      m_armRotatorMotorProfiledPidController.setConstraints(new Constraints(maxVelRot, maxAccelRot));
     }
 
     var rotP = SmartDashboard.getNumber(getName() + "/Arm Rotator P", kArmRotatorP);

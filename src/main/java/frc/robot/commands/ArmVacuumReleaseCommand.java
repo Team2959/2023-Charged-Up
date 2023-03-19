@@ -8,13 +8,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem.UnloadType;
 
 public class ArmVacuumReleaseCommand extends SequentialCommandGroup {
     public ArmVacuumReleaseCommand(ArmGamePieceControlSubsystem armGamePieceControlSubsystem) {
         addCommands(
-                new InstantCommand(() -> armGamePieceControlSubsystem.gamePieceRelease()),
-                new WaitCommand(1),
-                new InstantCommand(() -> armGamePieceControlSubsystem.resetVacuumSoloenoids()));
+            new InstantCommand(() -> armGamePieceControlSubsystem.gamePieceRelease()),
+            new InstantCommand(() -> armGamePieceControlSubsystem.setUnloadType(UnloadType.Front)),
+            new WaitCommand(1),
+            new InstantCommand(() -> armGamePieceControlSubsystem.resetVacuumSoloenoids()));
     }
-
 }

@@ -21,7 +21,6 @@ public class ArmGamePieceControlSubsystem extends SubsystemBase {
         Back,
     };
 
-
     private UnloadType m_unloadType = UnloadType.Front;
     private GamePieceType m_GamePieceType = GamePieceType.Unknown;
 

@@ -67,14 +67,10 @@ public final class RobotMap {
     public static final int kFrontUnloadButton = 6;
     public static final int kBackUnloadButton = 5;
 
-
-
     // Zeroed values, should be in radians
     // source is google document in Electrical for team - module data
     public static final double kZeroedFrontLeft = 5.343;    // for FL module 1
     public static final double kZeroedFrontRight = 5.526;   // for FR module 5
     public static final double kZeroedBackLeft = 5.681;     // for BL module 2
     public static final double kZeroedBackRight = 1.815;    // for BR module 3
-    
-    
 };

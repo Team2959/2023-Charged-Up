@@ -48,6 +48,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         // https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java
         m_armExtensionMotorPidController.setSmartMotionMaxAccel(kSmartMaxAccel, 0);
         m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kSmartMaxVel, 0);
+        // m_armExtensionMotorPidController.setSmartMotionAllowedClosedLoopError(xx, 0);
     }
 
     private static int kConeExtensionAutoStartPosition = 57;
@@ -68,7 +69,6 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         }
 
         m_armExtensionMotor.set(0);
-
     }
 
     @Override
@@ -123,6 +123,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber(getName() + "/Arm Extension Max Accel", kSmartMaxAccel);
         SmartDashboard.putNumber(getName() + "/Arm Extension Max Vel", kSmartMaxVel);
+        SmartDashboard.putNumber(getName() + "/Arm Extension Closed Loop Error", 0);
     }
 
     public void smartDashboardUpdate() {
@@ -138,7 +139,10 @@ public class ArmExtensionSubsystem extends SubsystemBase {
             var maxVelExtension = SmartDashboard.getNumber(getName() + "/Arm Rotator Max Vel", kSmartMaxVel);
             m_armExtensionMotorPidController.setSmartMotionMaxAccel(maxAccelExtension, 0);
             m_armExtensionMotorPidController.setSmartMotionMaxVelocity(maxVelExtension, 0);
-        }
+
+            var error = SmartDashboard.getNumber(getName() + "/Arm Rotator Closed Loop Error", 0);
+            // m_armExtensionMotorPidController.setSmartMotionAllowedClosedLoopError(error, 0);
+    }
 
         SmartDashboard.putNumber(getName() + "/Arm Extension Velocity", m_extensionEncoder.getVelocity());
         SmartDashboard.putNumber(getName() + "/Arm Extension Position", m_extensionEncoder.getPosition());

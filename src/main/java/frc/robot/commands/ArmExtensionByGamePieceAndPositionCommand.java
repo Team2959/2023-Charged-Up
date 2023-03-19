@@ -30,7 +30,8 @@ public class ArmExtensionByGamePieceAndPositionCommand extends CommandBase {
   public void initialize() {
     m_armExtensionSubsystem.setArmExtensionPosition(
       ArmPositioninInfo.getArmDistance(m_positioningType,
-        m_armGamePieceControlSubsystem.getGamePieceType()));
+        m_armGamePieceControlSubsystem.getGamePieceType(),
+        m_armGamePieceControlSubsystem.getUnloadType()));
   }
 
   // Called every time the scheduler runs while the command is scheduled.

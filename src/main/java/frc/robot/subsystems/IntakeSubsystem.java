@@ -20,12 +20,6 @@ public class IntakeSubsystem extends SubsystemBase
     return m_intakeArm.get();
   }
 
-  public void smartDashboardInit() {
-  }
-
-  public void smartDashboardUpdate() {
-  }
-
   public void toggleIntakeSubsystem()
   {
     if (m_intakeArm.get())

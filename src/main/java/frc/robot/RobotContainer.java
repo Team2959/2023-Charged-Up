@@ -5,9 +5,8 @@
 package frc.robot;
 
 import frc.robot.commands.ArmReleaseConeCommand;
-import frc.robot.commands.ArmReleaseCubeCommand;
-import frc.robot.commands.ArmRotationCommand;
 import frc.robot.commands.ArmToLoadingCommand;
+import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.BumpArmRotationCommand;
 import frc.robot.commands.LineupArmCommand;
@@ -16,9 +15,7 @@ import frc.robot.commands.PickupOffGroundCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.TestArmExtensionCommand;
 import frc.robot.commands.TestArmRotationCommand;
-import frc.robot.commands.ArmVacuumReleaseCommand;
 import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.commands.ToggleIntakeCommand;
 import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
 import frc.robot.subsystems.ArmExtensionSubsystem;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem;
@@ -35,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class RobotContainer {
@@ -122,10 +118,9 @@ public class RobotContainer {
     public void smartDashboardInit() {
         SmartDashboard.putNumber("Test Arm Extension Target Position", 0);
         SmartDashboard.putNumber("Test Arm Rotation Target Position", 60);
-        SmartDashboard.putNumber("Drive X/Exponent", kDriveXExponent);
-        SmartDashboard.putNumber("Drive Y/Exponent", kDriveYExponent);
+        // SmartDashboard.putNumber("Drive X/Exponent", kDriveXExponent);
+        // SmartDashboard.putNumber("Drive Y/Exponent", kDriveYExponent);
 
-        m_intakeSubsystem.smartDashboardInit();
         m_armRotationSubsystem.smartDashboardInit();
         m_armExtensionSubsystem.smartDashboardInit();
         m_driveSubsystem.smartDashboardInit();
@@ -137,7 +132,6 @@ public class RobotContainer {
             smartDashboardUpdate();
         }, 1, 0.502);
         m_robot.addPeriodic(() -> {
-            m_intakeSubsystem.smartDashboardUpdate();
             m_armRotationSubsystem.smartDashboardUpdate();
             m_armExtensionSubsystem.smartDashboardUpdate();
         }, 1, 0.303);
@@ -149,23 +143,27 @@ public class RobotContainer {
     }
 
     public void smartDashboardUpdate() {
+        // restore if give driver/co-pilot more speed multiplier control
+        // m_speedMultiplier = Math.max(0.5, Math.abs(m_leftJoystick.getThrottle()));
+        // SmartDashboard.putNumber("Speed Multiplier", m_speedMultiplier);
         m_speedMultiplier = SmartDashboard.getNumber("Speed Multiplier", m_speedMultiplier);
-        kDriveXExponent = SmartDashboard.getNumber("Drive X/Exponent", kDriveXExponent);
-        kDriveYExponent = SmartDashboard.getNumber("Drive Y/Exponent", kDriveYExponent);
-        m_driveXConditioning.setExponent(kDriveXExponent);
-        m_driveYConditioning.setExponent(kDriveYExponent);
+
+        // kDriveXExponent = SmartDashboard.getNumber("Drive X/Exponent", kDriveXExponent);
+        // kDriveYExponent = SmartDashboard.getNumber("Drive Y/Exponent", kDriveYExponent);
+        // m_driveXConditioning.setExponent(kDriveXExponent);
+        // m_driveYConditioning.setExponent(kDriveYExponent);
     }
 
     private void configureBindings() {
         m_driveSubsystem.setDefaultCommand(new TeleOpDriveCommand(m_driveSubsystem,
                 () -> getDriveXInput(), () -> getDriveYInput(), () -> getTurnInput(), () -> m_robot.isTeleopEnabled()));
 
-        m_intakeButton.onTrue(new ToggleIntakeCommand(m_intakeSubsystem));
+        m_intakeButton.onTrue(new InstantCommand(() -> m_intakeSubsystem.toggleIntakeSubsystem()));
 
-        m_gamePieceConeButton
-                .onTrue(new InstantCommand(() -> m_armGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)));
-        m_gamePieceCubeButton
-                .onTrue(new InstantCommand(() -> m_armGamePieceSubsystem.gamePiecePickup(GamePieceType.Cube)));
+        m_gamePieceConeButton.onTrue(new InstantCommand(() ->
+            m_armGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)));
+        m_gamePieceCubeButton.onTrue(new InstantCommand(() ->
+            m_armGamePieceSubsystem.gamePiecePickup(GamePieceType.Cube)));
 
         m_wallLineupHoriz.onTrue(new LineupArmCommand(
                 m_armRotationSubsystem, m_armExtensionSubsystem, m_armGamePieceSubsystem,
@@ -183,17 +181,15 @@ public class RobotContainer {
                 m_armRotationSubsystem, m_armExtensionSubsystem, m_armGamePieceSubsystem,
                 ArmPositioningType.Low));
 
-        Command armReleaseCommand = Commands.either(
+        var armReleaseCommand = Commands.either(
                 new ArmReleaseConeCommand(m_armGamePieceSubsystem, m_armRotationSubsystem),
-                new ArmReleaseCubeCommand(m_armGamePieceSubsystem),
+                new ArmVacuumReleaseCommand(m_armGamePieceSubsystem),
                 () -> m_armGamePieceSubsystem.getGamePieceType() == GamePieceType.Cone);
         m_armReleaseButton.whileTrue(armReleaseCommand);
         m_armReleaseButtonRT.whileTrue(armReleaseCommand);
 
-        m_bumpArmAngleUp.onTrue(
-                new BumpArmRotationCommand(m_armRotationSubsystem, 2));
-        m_bumpArmAngleDown.onTrue(
-                new BumpArmRotationCommand(m_armRotationSubsystem, -2));
+        m_bumpArmAngleUp.onTrue(new BumpArmRotationCommand(m_armRotationSubsystem, 2));
+        m_bumpArmAngleDown.onTrue(new BumpArmRotationCommand(m_armRotationSubsystem, -2));
 
         m_frontUnloadButton.onTrue(new InstantCommand(() -> m_armGamePieceSubsystem.setUnloadType(UnloadType.Front)));
         m_backUnloadButton.onTrue(new InstantCommand(() -> m_armGamePieceSubsystem.setUnloadType(UnloadType.Back)));

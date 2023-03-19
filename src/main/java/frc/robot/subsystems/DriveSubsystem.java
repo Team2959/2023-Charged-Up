@@ -185,7 +185,7 @@ public class DriveSubsystem extends SubsystemBase {
             return;
 
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
-        SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
+        // SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
         SmartDashboard.putNumber(getName() + "/Pitch", m_navX.getPitch());
         
         // BotPose botpose = Vision.getBotPose();
@@ -195,10 +195,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void smartDashboardInit() {
-        m_frontLeft.smartDashboardInit();
-        m_frontRight.smartDashboardInit();
-        m_backLeft.smartDashboardInit();
-        m_backRight.smartDashboardInit();
+        // m_frontLeft.smartDashboardInit();
+        // m_frontRight.smartDashboardInit();
+        // m_backLeft.smartDashboardInit();
+        // m_backRight.smartDashboardInit();
 
         SmartDashboard.putData(getName() + "/X Balancing PID Controller", m_xBalancingController);
         SmartDashboard.putNumber(getName() + "/Balance Auto Delay Ticks", 5);
@@ -220,10 +220,10 @@ public class DriveSubsystem extends SubsystemBase {
         // m_backLeft.setSmartMotion(maxVel, maxAccel);
         // m_backRight.setSmartMotion(maxVel, maxAccel);
 
-        m_frontLeft.smartDashboardUpdate();
-        m_frontRight.smartDashboardUpdate();
-        m_backLeft.smartDashboardUpdate();
-        m_backRight.smartDashboardUpdate();
+        // m_frontLeft.smartDashboardUpdate();
+        // m_frontRight.smartDashboardUpdate();
+        // m_backLeft.smartDashboardUpdate();
+        // m_backRight.smartDashboardUpdate();
     }
 
     public void drive(double xMetersPerSecond, double yMetersPerSecond,

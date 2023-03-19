@@ -27,7 +27,9 @@ public class ArmRotationByGamePieceAndPositionCommand extends CommandBase {
     @Override
     public void initialize() {
         m_armRotationSubsystem.setArmDegrees(
-            ArmPositioninInfo.getArmAngle(m_positioningType, m_armGamePieceControlSubsystem.getGamePieceType()));
+            ArmPositioninInfo.getArmAngle(m_positioningType,
+                m_armGamePieceControlSubsystem.getGamePieceType(),
+                m_armGamePieceControlSubsystem.getUnloadType()));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
+import frc.robot.subsystems.ArmGamePieceControlSubsystem.UnloadType;
 
 public final class ArmPositioninInfo {
     public enum ArmPositioningType {
@@ -10,9 +11,14 @@ public final class ArmPositioninInfo {
         WallHorizLineup,
     };
 
-    public static double getArmDistance(ArmPositioningType armPosition, GamePieceType gamePieceType) {
+    public static double getArmDistance(
+        ArmPositioningType armPosition,
+        GamePieceType gamePieceType,
+        UnloadType unloadSide)
+    {
         switch (armPosition) {
             case High:
+                // return unloadSide == UnloadType.Front ? 90 : 110;
                 return 90;
             case Mid:
                 if(gamePieceType == GamePieceType.Cone)
@@ -28,7 +34,11 @@ public final class ArmPositioninInfo {
         }
     }
 
-    public static double getArmAngle(ArmPositioningType armPosition, GamePieceType gamePieceType) {
+    public static double getArmAngle(
+        ArmPositioningType armPosition,
+        GamePieceType gamePieceType,
+        UnloadType unloadSide)
+    {
         switch (armPosition) {
             case High:
                 if (gamePieceType == GamePieceType.Cone)

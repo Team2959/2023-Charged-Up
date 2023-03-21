@@ -9,6 +9,8 @@ public final class ArmPositioninInfo {
         Mid,
         Low,
         WallHorizLineup,
+        FloorPickup,
+        SlidingWallPickup,
     };
 
     public static double getArmDistance(

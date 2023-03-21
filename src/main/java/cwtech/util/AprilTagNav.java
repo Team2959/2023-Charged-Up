@@ -2,7 +2,6 @@ package cwtech.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -66,17 +65,23 @@ public class AprilTagNav {
     }
 
     public AprilTagNav() throws IOException {
+        System.err.println("Started April Tag Loading..");
         File fieldCsv = new File(Filesystem.getDeployDirectory(), "field.csv");
         BufferedReader reader = new BufferedReader(new FileReader(fieldCsv));
         String line;
+        boolean firstLine = true;
         while ((line = reader.readLine()) != null) {
+            if(firstLine) {
+                firstLine = false;
+                continue;
+            }
             String[] element = line.split(",");
             String fullName = element[0];
             boolean isRed = false;
             boolean isBlue = false;
-            if (fullName.indexOf("Red") > 0) {
+            if (fullName.toLowerCase().indexOf("red") >= 0) {
                 isRed = true;
-            } else if (fullName.indexOf("Blue") > 0) {
+            } else if (fullName.toLowerCase().indexOf("blue") >= 0) {
                 isBlue = true;
             }
 
@@ -94,9 +99,9 @@ public class AprilTagNav {
 
             Pose2d pose2d = new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(degrees));
 
-            System.out.printf(
-                    "Registered Item: isRed: %b, isBlue: %b, x: %4.2f, y: %4.2f, degrees: %4.2f, fieldElementType: %10s\n",
-                    isRed, isBlue, x, y, degrees, typeToString(fieldElementType));
+            System.err.printf(
+                    "Registered Item: name: %s, genericName: %s isRed: %b, isBlue: %b, x: %4.2f, y: %4.2f, degrees: %4.2f, fieldElementType: %s\n",
+                    fullName, genericName, isRed, isBlue, x, y, degrees, typeToString(fieldElementType));
             if (isRed) {
                 redField.put(genericName, pose2d);
             } else if (isBlue) {

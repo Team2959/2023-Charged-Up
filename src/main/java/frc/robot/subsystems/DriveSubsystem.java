@@ -23,9 +23,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class DriveSubsystem extends SubsystemBase {
-
-    private static final int kSmartMotionAccel = 3;
-    private static final int kSmartMotionVel = 3;
     private SwerveModule m_frontLeft;
     private SwerveModule m_frontRight;
     private SwerveModule m_backLeft;

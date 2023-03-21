@@ -5,7 +5,10 @@
 package frc.robot.subsystems;
 
 import cwtech.util.SolenoidV2;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
@@ -29,9 +32,11 @@ public class ArmGamePieceControlSubsystem extends SubsystemBase {
     private SolenoidV2 m_armVacuumRelease2 = new SolenoidV2(RobotMap.kArmVacuumRelease2);
     private SolenoidV2 m_armVacuumRelease3 = new SolenoidV2(RobotMap.kArmVacuumRelease3);
     private SolenoidV2 m_armVacuumRelease4 = new SolenoidV2(RobotMap.kArmVacuumRelease4);
+    PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev); 
 
     /** Creates a new ArmGamePieceControlSubsystem. */
     public ArmGamePieceControlSubsystem() {
+         
     }
 
     public void setUnloadType(UnloadType unloadType) {
@@ -45,6 +50,9 @@ public class ArmGamePieceControlSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        // TODO: remove this when done with testing for voltage draw and determine correct channel
+        // SmartDashboard.putNumber(getName() + "/Vaccum Voltage", pdp.getCurrent(0));
+
     }
 
     public void gamePiecePickup(GamePieceType gamePieceType) {

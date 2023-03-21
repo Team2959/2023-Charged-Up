@@ -22,6 +22,7 @@ import frc.robot.subsystems.ArmGamePieceControlSubsystem;
 import frc.robot.subsystems.ArmRotationSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem.UnloadType;
 import cwtech.util.Conditioning;
@@ -43,6 +44,7 @@ public class RobotContainer {
     public final ArmRotationSubsystem m_armRotationSubsystem = new ArmRotationSubsystem();
     public final ArmExtensionSubsystem m_armExtensionSubsystem = new ArmExtensionSubsystem();
     public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+    public final Vision m_vision = new Vision();
     public final SendableChooser<Command> m_autoChooser = Autos.sendableChooser(this);
 
     Robot m_robot;

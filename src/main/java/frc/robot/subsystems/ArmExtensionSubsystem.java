@@ -25,6 +25,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
     private static final double kArmExtensionIzone = 20;
+    private static final double kSmartAllowedError = 0;
 
     private CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor,
             MotorType.kBrushless);
@@ -36,6 +37,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     public ArmExtensionSubsystem() {
         m_armExtensionMotor.restoreFactoryDefaults();
         m_armExtensionMotor.setIdleMode(IdleMode.kBrake);
+        // m_armExtensionMotor.setIdleMode(IdleMode.kCoast);
 
         m_extensionEncoder = (SparkMaxRelativeEncoder) m_armExtensionMotor.getEncoder();
         m_armExtensionMotorPidController = m_armExtensionMotor.getPIDController();
@@ -48,11 +50,15 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         // https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java
         m_armExtensionMotorPidController.setSmartMotionMaxAccel(kSmartMaxAccel, 0);
         m_armExtensionMotorPidController.setSmartMotionMaxVelocity(kSmartMaxVel, 0);
-        // m_armExtensionMotorPidController.setSmartMotionAllowedClosedLoopError(xx, 0);
+        
+        // TODO: try this out, but we don't want it on yet as it could hurt tuning
+        // m_armExtensionMotorPidController.setSmartMotionAllowedClosedLoopError(kSmartAllowedError, 0);
+        
     }
 
-    private static int kConeExtensionAutoStartPosition = 57;
-    private static int kCubeExtensionAutoStartPosition = 50; // TODO: check this value
+    // TODO: retune for carbon fiber
+    private static int kConeExtensionAutoStartPosition = 54;
+    private static int kCubeExtensionAutoStartPosition = 30;
 
     public void onAutoInit(GamePieceType gamePieceType) {
         if(gamePieceType == GamePieceType.Cone) {
@@ -78,22 +84,9 @@ public class ArmExtensionSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber(getName() + "/Arm Extension Applied Output", m_armExtensionMotor.getAppliedOutput());
         SmartDashboard.putNumber(getName() + "/Arm Extension Output Current", m_armExtensionMotor.getOutputCurrent());
-
-        // If switch back to rope encoder
-        // m_armExtensionMotor.set(m_armExtensionMotorPidController.calculate(getArmExtensionPosition()));
     }
 
     public void setArmExtensionPosition(double distance) {
-        // m_armExtensionMotor.set(0); // stop motor so us modifying the going forward doesn't screw things up
-
-        // rope sensor control
-        // m_ropeSensor.setGoingForward(distance > m_lastArmExtensionTarget);
-        // m_armExtensionMotorPidController.setSetpoint(distance);
-
-        // Regular position control
-        // m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kPosition);
-
-        // Smart Motion position control
         m_armExtensionMotorPidController.setReference(distance, CANSparkMax.ControlType.kSmartMotion);
 
         m_lastArmExtensionTarget = distance;
@@ -141,6 +134,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
             m_armExtensionMotorPidController.setSmartMotionMaxVelocity(maxVelExtension, 0);
 
             var error = SmartDashboard.getNumber(getName() + "/Arm Rotator Closed Loop Error", 0);
+            // TODO: enabled this for testing closed loop error
             // m_armExtensionMotorPidController.setSmartMotionAllowedClosedLoopError(error, 0);
     }
 

@@ -41,6 +41,8 @@ public class ArmRotationSubsystem extends SubsystemBase {
 
   public ArmRotationSubsystem() {
     m_armRotatorMotor.setIdleMode(IdleMode.kBrake);
+    // m_armRotatorMotor.setIdleMode(IdleMode.kCoast);
+
 
     setArmDegrees(kArmHomePosition);
   }

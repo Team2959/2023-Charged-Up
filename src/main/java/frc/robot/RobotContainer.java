@@ -60,7 +60,6 @@ public class RobotContainer {
     JoystickButton m_balanceJoystickButton = new JoystickButton(m_rightJoystick, RobotMap.kRightBalance);
 
     // left driver joystick buttons
-    JoystickButton m_groundPickupButtton = new JoystickButton(m_leftJoystick, RobotMap.kGroundPickupButton);
 
     // co-pilot box buttons
     JoystickButton m_armReleaseButton = new JoystickButton(m_buttonBox, RobotMap.kArmReleaseButton);
@@ -69,6 +68,8 @@ public class RobotContainer {
     JoystickButton m_midGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kMidGamePieceButton);
     JoystickButton m_lowGamePieceButton = new JoystickButton(m_buttonBox, RobotMap.kLowGamePieceButton);
     JoystickButton m_wallLineupHoriz = new JoystickButton(m_buttonBox, RobotMap.kLineUpWallGamePieceButton);
+    JoystickButton m_groundPickupButtton = new JoystickButton(m_buttonBox, RobotMap.kGroundPickupButton);
+    
 
     JoystickButton m_bumpArmAngleUp = new JoystickButton(m_buttonBox, RobotMap.kBumpArmAngleUpButton);
     JoystickButton m_bumpArmAngleDown = new JoystickButton(m_buttonBox, RobotMap.kBumpArmAngleDownButton);
@@ -182,6 +183,10 @@ public class RobotContainer {
         m_lowGamePieceButton.onTrue(new LineupArmCommand(
                 m_armRotationSubsystem, m_armExtensionSubsystem, m_armGamePieceSubsystem,
                 ArmPositioningType.Low));
+                
+        m_groundPickupButtton.onTrue(new PickupOffGroundCommand(
+                m_armRotationSubsystem, m_armExtensionSubsystem, m_armGamePieceSubsystem, 
+                ArmPositioningType.FloorPickup));
 
         var armReleaseCommand = Commands.either(
                 new ArmReleaseConeCommand(m_armGamePieceSubsystem, m_armRotationSubsystem),
@@ -195,8 +200,6 @@ public class RobotContainer {
 
         m_frontUnloadButton.onTrue(new InstantCommand(() -> m_armGamePieceSubsystem.setUnloadType(UnloadType.Front)));
         m_backUnloadButton.onTrue(new InstantCommand(() -> m_armGamePieceSubsystem.setUnloadType(UnloadType.Back)));
-
-        m_groundPickupButtton.onTrue(new PickupOffGroundCommand(m_armRotationSubsystem, m_armExtensionSubsystem));
 
         m_returnArmToLoadingButton.onTrue(new ArmToLoadingCommand(m_armRotationSubsystem, m_armExtensionSubsystem));
         m_balanceJoystickButton.whileTrue(new AutoBalanceCommand(m_driveSubsystem));

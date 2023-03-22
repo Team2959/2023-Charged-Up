@@ -16,15 +16,15 @@ import frc.robot.RobotMap;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 
 public class ArmExtensionSubsystem extends SubsystemBase {
-    private static final int kSmartMaxVel = 2000;
+    private static final int kSmartMaxVel = 4000;
     private static final int kSmartMaxAccel = 4000;
     // private static final double kArmExtensionP = 0.02;  // orig kP from St Joe: 0.02
     // private static final double kArmExtensionI = 0;  // orig KI from St Joe: 0
-    private static final double kArmExtensionP = 0.000075;
+    private static final double kArmExtensionP = 0.00035;
     private static final double kArmExtensionI = 0.000001;
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
-    private static final double kArmExtensionIzone = 20;
+    private static final double kArmExtensionIzone = 0;
     private static final double kSmartAllowedError = 0;
 
     private CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor,
@@ -136,7 +136,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
             var error = SmartDashboard.getNumber(getName() + "/Arm Rotator Closed Loop Error", 0);
             // TODO: enabled this for testing closed loop error
             // m_armExtensionMotorPidController.setSmartMotionAllowedClosedLoopError(error, 0);
-    }
+        }
 
         SmartDashboard.putNumber(getName() + "/Arm Extension Velocity", m_extensionEncoder.getVelocity());
         SmartDashboard.putNumber(getName() + "/Arm Extension Position", m_extensionEncoder.getPosition());

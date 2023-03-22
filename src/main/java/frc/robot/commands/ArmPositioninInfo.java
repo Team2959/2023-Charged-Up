@@ -21,16 +21,21 @@ public final class ArmPositioninInfo {
         switch (armPosition) {
             case High:
                 // return unloadSide == UnloadType.Front ? 90 : 110;
-                return 90;
+                return 100;
             case Mid:
                 if(gamePieceType == GamePieceType.Cone)
-                    return 10;
+                    return 23;
                 else
-                    return 0;
+                    return 10;
             case Low:
                 return 0;
             case WallHorizLineup:
                 return 0;
+            case FloorPickup:
+            if(gamePieceType == GamePieceType.Cone)
+                return 105;
+            else
+                return 85;
             default:
                 return 0;
         }
@@ -56,9 +61,14 @@ public final class ArmPositioninInfo {
                 return 100;
             case WallHorizLineup:
                 if(gamePieceType == GamePieceType.Cone)
-                    return 147;
+                    return 145;
                 else
-                    return 150;
+                    return 147;
+            case FloorPickup:
+                if(gamePieceType == GamePieceType.Cone)
+                    return 40;
+                else
+                    return 85;
             default:
                 return 0;
         }

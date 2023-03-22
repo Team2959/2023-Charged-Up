@@ -42,7 +42,7 @@ public final class RobotMap {
     public static final int kButtonBox = 2;
 
     // Driver Buttons
-    public static final int kGroundPickupButton = 11;
+    
 
     public static final int kRightTriggerFire = 1;
     public static final int kRightToggleIntakeButton = 2;
@@ -64,8 +64,12 @@ public final class RobotMap {
     public static final int kBumpArmAngleDownButton = 7;
     public static final int kBumpArmAngleUpButton = 2;
     public static final int kLineUpWallGamePieceButton = 4;
-    public static final int kFrontUnloadButton = 6;
-    public static final int kBackUnloadButton = 5;
+    public static final int kGroundPickupButton = 5;
+  
+
+
+    public static final int kFrontUnloadButton = 7; //Left Joystick
+    public static final int kBackUnloadButton = 9; //Left Joystick
 
     // Zeroed values, should be in radians
     // source is google document in Electrical for team - module data

@@ -18,15 +18,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
-import frc.robot.subsystems.ArmExtensionSubsystem;
-import frc.robot.subsystems.ArmGamePieceControlSubsystem;
-import frc.robot.subsystems.ArmRotationSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 
 public final class Autos {
-    private static final double kRestractExtensionAtStartUpPosition = -8;
+    private static final double kRestractExtensionAtStartUpPosition = 0;
 
     public static SendableChooser<Command> sendableChooser(RobotContainer container) {
         SendableChooser<Command> sendableChooser = new SendableChooser<>();
@@ -36,6 +32,7 @@ public final class Autos {
         sendableChooser.addOption("Place And Leave And Balance", placeAndLeaveAndBalance(container));
         sendableChooser.addOption("Place And Balance", placeAndBalance(container));
         sendableChooser.addOption("Drive Only", runPath("Place Game Piece", container.m_driveSubsystem));
+        sendableChooser.addOption("Place And Leave And Locate Cone", placeAndLeaveAndLocateCone(container));
         return sendableChooser;
     }
 
@@ -159,6 +156,16 @@ public final class Autos {
                 placePiece(container),
                 runPath("Place And Balance", container.m_driveSubsystem),
                 new AutoBalanceCommand(container.m_driveSubsystem));
+    }
+
+    // NOTE: only works with hardcoded cone value right now
+    public static Command placeAndLeaveAndLocateCone(RobotContainer container) {
+        return Commands.sequence(
+            placePiece(container),
+            runPath("Place And Leave and Locate Piece", container.m_driveSubsystem),
+            new InstantCommand(() -> container.m_armGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)),
+            new LineupArmCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem, container.m_armGamePieceSubsystem, ArmPositioningType.FloorPickup)
+        );
     }
 
     private Autos() {

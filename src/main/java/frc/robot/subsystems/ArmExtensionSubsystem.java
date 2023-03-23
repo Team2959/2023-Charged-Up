@@ -20,7 +20,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     private static final int kSmartMaxAccel = 4000;
     // private static final double kArmExtensionP = 0.02;  // orig kP from St Joe: 0.02
     // private static final double kArmExtensionI = 0;  // orig KI from St Joe: 0
-    private static final double kArmExtensionP = 0.00035;
+    private static final double kArmExtensionP = 0.000075; //CF 0.00035
     private static final double kArmExtensionI = 0.000001;
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
@@ -57,8 +57,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     }
 
     // TODO: retune for carbon fiber
-    private static int kConeExtensionAutoStartPosition = 54;
-    private static int kCubeExtensionAutoStartPosition = 30;
+    private static int kConeExtensionAutoStartPosition = 58;
+    private static int kCubeExtensionAutoStartPosition = 36;
 
     public void onAutoInit(GamePieceType gamePieceType) {
         if(gamePieceType == GamePieceType.Cone) {
@@ -82,8 +82,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber(getName() + "/Arm Extension Ticks", getArmExtensionPosition());
 
-        SmartDashboard.putNumber(getName() + "/Arm Extension Applied Output", m_armExtensionMotor.getAppliedOutput());
-        SmartDashboard.putNumber(getName() + "/Arm Extension Output Current", m_armExtensionMotor.getOutputCurrent());
+        // SmartDashboard.putNumber(getName() + "/Arm Extension Applied Output", m_armExtensionMotor.getAppliedOutput());
+        // SmartDashboard.putNumber(getName() + "/Arm Extension Output Current", m_armExtensionMotor.getOutputCurrent());
     }
 
     public void setArmExtensionPosition(double distance) {

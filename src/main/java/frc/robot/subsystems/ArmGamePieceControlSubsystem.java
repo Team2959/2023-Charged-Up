@@ -52,7 +52,7 @@ public class ArmGamePieceControlSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // TODO: remove this when done with testing for voltage draw and determine correct channel
-        SmartDashboard.putNumber(getName() + "/Vaccum Current", pdp.getCurrent(13));
+        // SmartDashboard.putNumber(getName() + "/Vaccum Current", pdp.getCurrent(13));
 
     }
 

@@ -11,7 +11,6 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.BumpArmRotationCommand;
 import frc.robot.commands.LineupArmCommand;
 import frc.robot.commands.LockWheelsCommand;
-import frc.robot.commands.PickupOffGroundCommand;
 import frc.robot.commands.TeleOpDriveCommand;
 import frc.robot.commands.TestArmExtensionCommand;
 import frc.robot.commands.TestArmRotationCommand;
@@ -134,10 +133,10 @@ public class RobotContainer {
             m_driveSubsystem.smartDashboardUpdate();
             smartDashboardUpdate();
         }, 1, 0.502);
-        m_robot.addPeriodic(() -> {
-            m_armRotationSubsystem.smartDashboardUpdate();
-            m_armExtensionSubsystem.smartDashboardUpdate();
-        }, 1, 0.303);
+        // m_robot.addPeriodic(() -> {
+        //     m_armRotationSubsystem.smartDashboardUpdate();
+        //     m_armExtensionSubsystem.smartDashboardUpdate();
+        // }, 1, 0.303);
 
     }
 
@@ -184,7 +183,7 @@ public class RobotContainer {
                 m_armRotationSubsystem, m_armExtensionSubsystem, m_armGamePieceSubsystem,
                 ArmPositioningType.Low));
                 
-        m_groundPickupButtton.onTrue(new PickupOffGroundCommand(
+        m_groundPickupButtton.onTrue(new LineupArmCommand(
                 m_armRotationSubsystem, m_armExtensionSubsystem, m_armGamePieceSubsystem, 
                 ArmPositioningType.FloorPickup));
 

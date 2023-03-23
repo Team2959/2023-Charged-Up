@@ -20,8 +20,8 @@ import frc.robot.RobotMap;
 
 public class ArmRotationSubsystem extends SubsystemBase {
   public static final double kArmHomePosition = 60;
-  private static final double kArmRotatorP = 0.03;
-  private static final double kArmRotatorI = 0.00001;
+  private static final double kArmRotatorP = 0.02;
+  private static final double kArmRotatorI = 0.00002;
   private static final double kArmRotatorD = 0;
   private static final double kArmRotatorMaxVelocity = 500; // degrees per second
   private static final double kArmRotatorMaxAccel = 500; // degrees per second per second
@@ -58,11 +58,11 @@ public class ArmRotationSubsystem extends SubsystemBase {
     if (m_armSmartMotion) {
       double rawProfiled = m_armRotatorMotorProfiledPidController.calculate(getArmAngle());
       m_armRotatorMotor.set(rawProfiled);
-      SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", rawProfiled);
+      // SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", rawProfiled);
     } else {
       double raw = m_armRotatorController.calculate(getArmAngle());
       m_armRotatorMotor.set(raw);
-      SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", raw);
+      // SmartDashboard.putNumber(getName() + "/Arm Rotator Profiled Raw Output", raw);
     }
     
   }
@@ -86,7 +86,7 @@ public class ArmRotationSubsystem extends SubsystemBase {
   }
 
   public boolean isArmRotatorAtSetpoint() {
-    return Math.abs(m_lastArmRotationTarget - getArmAngle()) < 2;
+    return Math.abs(m_lastArmRotationTarget - getArmAngle()) < 3;
   }
 
   public double getArmAngle() {

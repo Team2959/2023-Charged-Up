@@ -16,6 +16,8 @@ public class LineupArmCommand extends SequentialCommandGroup {
             ArmExtensionSubsystem armExtensionSubsystem,
             ArmGamePieceControlSubsystem armGamePieceControlSubsystem,
             ArmPositioningType positioningType) {
+        addCommands(
+            new ArmExtentionCommand(armExtensionSubsystem, 0));
         addCommands(new ArmRotationByGamePieceAndPositionCommand(armRotationSubsystem,
             armGamePieceControlSubsystem, positioningType));
         addCommands(new ArmExtensionByGamePieceAndPositionCommand(armExtensionSubsystem,

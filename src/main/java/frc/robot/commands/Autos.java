@@ -132,7 +132,7 @@ public final class Autos {
                     var currentGamePiece = container.m_preloadedPieceChooser.getSelected();
                     container.m_armGamePieceSubsystem.gamePiecePickup(currentGamePiece);
                 }),
-                new WaitCommand(0.5),
+                new WaitCommand(1),
                 new ArmExtentionCommand(container.m_armExtensionSubsystem, kRestractExtensionAtStartUpPosition),
                 new LineupArmCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem,
                         container.m_armGamePieceSubsystem, ArmPositioningType.High),

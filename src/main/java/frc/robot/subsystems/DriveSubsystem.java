@@ -20,6 +20,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.SPI.Port;
 import frc.robot.RobotMap;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -65,7 +66,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
-        m_navX = new AHRS(I2C.Port.kMXP);
+        m_navX = new AHRS(Port.kMXP);
+        // m_navX = new AHRS(I2C.Port.kMXP);
 
         m_kinematics = new SwerveDriveKinematics(kFrontLeftLocation, kFrontRightLocation, kBackLeftLocation,
                 kBackRightLocation);
@@ -114,12 +116,18 @@ public class DriveSubsystem extends SubsystemBase {
     private void autoBalanceDirection()
     {
         m_autoBalanceDelayTicks = 0;
-        m_autoBalanceStartAngle = m_navX.getPitch() > 0;
+        // m_autoBalanceStartAngle = m_navX.getPitch() > 0;
+        m_autoBalanceStartAngle = getRoll() > 0;
+    }
+
+    public double getRoll() {
+        return m_navX.getRoll() + 1.4;
     }
 
     private void autoBalanceDrive()
     {
-        var pitch = m_navX.getPitch();
+        // var pitch = m_navX.getPitch();
+        var pitch = getRoll();
 
         if (m_autoBalanceDelayTicks > 0 )
         {
@@ -134,12 +142,14 @@ public class DriveSubsystem extends SubsystemBase {
             (!m_autoBalanceStartAngle && pitch > -m_autoBalanceStopAngle))
         {
             m_autoBalanceDelayTicks = 1;
+            // stopAndLockWheels();
             drive(0, 0, 0, true);
+            
 
             return;
         }
 
-        var xValue = -m_xBalancingController.calculate(pitch);
+        var xValue = m_xBalancingController.calculate(pitch);
         SmartDashboard.putNumber(getName() + "/Balance Auto X", xValue);
 
         drive(xValue, 0, 0, true);
@@ -182,7 +192,8 @@ public class DriveSubsystem extends SubsystemBase {
             return;
 
         SmartDashboard.putNumber(getName() + "/Angle", getAngle().getDegrees());
-        // SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
+        SmartDashboard.putNumber(getName() + "/Roll", m_navX.getRoll());
+        SmartDashboard.putNumber(getName() + "/Corrected Roll", getRoll());
         SmartDashboard.putNumber(getName() + "/Pitch", m_navX.getPitch());
         
         // BotPose botpose = Vision.getBotPose();
@@ -198,8 +209,8 @@ public class DriveSubsystem extends SubsystemBase {
         // m_backRight.smartDashboardInit();
 
         SmartDashboard.putData(getName() + "/X Balancing PID Controller", m_xBalancingController);
-        SmartDashboard.putNumber(getName() + "/Balance Auto Delay Ticks", 5);
-        SmartDashboard.putNumber(getName() + "/Balance Auto Stop Angle", 5);
+        SmartDashboard.putNumber(getName() + "/Balance Auto Delay Ticks", m_autoBalanceDelayTicksMax);
+        SmartDashboard.putNumber(getName() + "/Balance Auto Stop Angle", m_autoBalanceStopAngle);
 
         // SmartDashboard.putNumber(getName() + "/Smart Motion Vel", kSmartMotionVel);
         // SmartDashboard.putNumber(getName() + "/Smart Motion Accel", kSmartMotionAccel);
@@ -230,7 +241,8 @@ public class DriveSubsystem extends SubsystemBase {
         //     yMetersPerSecond = autoYValue * DriveSubsystem.kMaxSpeedMetersPerSecond;
         // }
         // if(m_rotationAlignmentOn) {
-        //     rotationRadiansPerSecond = Math.toRadians(autoRotateValue * 360);
+            // var autoRotateValue = m_rotationController.calculate(getAngle().getDegrees());
+            // rotationRadiansPerSecond = Math.toRadians(autoRotateValue * 360);
         // }
 
 

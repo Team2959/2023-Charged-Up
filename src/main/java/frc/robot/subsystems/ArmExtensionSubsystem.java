@@ -57,8 +57,8 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     }
 
     // TODO: retune for carbon fiber
-    private static int kConeExtensionAutoStartPosition = 58;
-    private static int kCubeExtensionAutoStartPosition = 36;
+    private static int kConeExtensionAutoStartPosition = 58 + 19;
+    private static int kCubeExtensionAutoStartPosition = 36 + 19;
 
     public void onAutoInit(GamePieceType gamePieceType) {
         if(gamePieceType == GamePieceType.Cone) {

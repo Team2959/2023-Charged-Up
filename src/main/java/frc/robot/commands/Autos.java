@@ -32,6 +32,7 @@ public final class Autos {
         sendableChooser.addOption("Place And Leave Right", placeAndLeaveRight(container));
         sendableChooser.addOption("Place And Leave And Balance", placeAndLeaveAndBalance(container));
         sendableChooser.addOption("Place And Balance", placeAndBalance(container));
+        sendableChooser.addOption("Place Mid And Balance", placeMidAndBalance(container));
         sendableChooser.addOption("Drive Only", runPath("Place Game Piece", container.m_driveSubsystem));
         sendableChooser.addOption("Place And Leave And Locate Cone", placeAndLeaveAndLocateCone(container));
         return sendableChooser;
@@ -105,7 +106,7 @@ public final class Autos {
     }
 
     public static Command runPath(String name, DriveSubsystem driveSubsystem) {
-        var trajectory = PathPlanner.loadPath(name, new PathConstraints(4, 1));
+        var trajectory = PathPlanner.loadPath(name, new PathConstraints(4, 2));
         SwerveAutoBuilder builder = new SwerveAutoBuilder(
                 driveSubsystem::getPose,
                 driveSubsystem::resetOdometry,
@@ -127,6 +128,10 @@ public final class Autos {
     }
 
     public static Command placePiece(RobotContainer container, boolean retractToo) {
+        return placePiece(container, retractToo, ArmPositioningType.High);
+    }
+
+    public static Command placePiece(RobotContainer container, boolean retractToo, ArmPositioningType armPosition) {
         return Commands.sequence(
                 new InstantCommand(() -> {
                     var currentGamePiece = container.m_preloadedPieceChooser.getSelected();
@@ -135,13 +140,13 @@ public final class Autos {
                 new WaitCommand(1),
                 new ArmExtentionCommand(container.m_armExtensionSubsystem, kRestractExtensionAtStartUpPosition),
                 new LineupArmCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem,
-                        container.m_armGamePieceSubsystem, ArmPositioningType.High),
+                        container.m_armGamePieceSubsystem, armPosition),
                 Commands.either(new ArmVacuumReleaseCommand(container.m_armGamePieceSubsystem),
                         new ArmReleaseConeCommand(container.m_armGamePieceSubsystem, container.m_armRotationSubsystem),
                         () -> {
                             return container.m_preloadedPieceChooser.getSelected() == GamePieceType.Cube;
                         }),
-                new WaitCommand(0.1),
+                // new WaitCommand(0.1),
                 retractToo ? new ArmToLoadingCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem)
                         : Commands.none());
     }
@@ -156,6 +161,17 @@ public final class Autos {
         return Commands.sequence(
                 placePiece(container),
                 runPath("Place And Leave Right", container.m_driveSubsystem));
+    }
+
+    public static Command placeMidAndBalance(RobotContainer container) {
+        return Commands.sequence(
+            placePiece(container, false, ArmPositioningType.Mid),
+            Commands.sequence(
+                runPath("Place And Balance", container.m_driveSubsystem),
+                new InstantCommand(() -> container.m_driveSubsystem.stopAndLockWheels()),
+                new AutoBalanceCommand(container.m_driveSubsystem)
+            ).alongWith(new ArmToLoadingCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem))
+        );
     }
 
     public static Command placeAndLeaveAndBalance(RobotContainer container) {

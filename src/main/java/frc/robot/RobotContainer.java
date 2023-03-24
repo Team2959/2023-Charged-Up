@@ -106,6 +106,7 @@ public class RobotContainer {
 
         m_preloadedPieceChooser.addOption("Cone", GamePieceType.Cone);
         m_preloadedPieceChooser.addOption("Cube", GamePieceType.Cube);
+        m_preloadedPieceChooser.addOption("None", GamePieceType.Unknown);
         SmartDashboard.putData("Auto/Preloaded Piece", m_preloadedPieceChooser);
         SmartDashboard.putData("CS", CommandScheduler.getInstance());
         SmartDashboard.putData("Auto/Routine", m_autoChooser);

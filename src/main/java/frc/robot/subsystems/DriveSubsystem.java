@@ -112,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
     private boolean m_autoBalanceStartAngle = true;
     private int m_autoBalanceDelayTicks = 0;
     private int m_autoBalanceDelayTicksMax = 5;
-    private double m_autoBalanceStopAngle = 12.5;
+    private double m_autoBalanceStopAngle = 12;
     private void autoBalanceDirection()
     {
         m_autoBalanceDelayTicks = 0;

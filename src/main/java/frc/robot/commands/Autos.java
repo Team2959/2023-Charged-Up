@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.ArmPositioninInfo.ArmPositioningType;
 import frc.robot.subsystems.DriveSubsystem;
@@ -36,44 +37,53 @@ public final class Autos {
         return sendableChooser;
     }
 
-    // public static Command placeGamePiece(GamePieceType gamePieceType, DriveSubsystem driveSubsystem,
-    //         ArmRotationSubsystem armRotationSubsystem,
-    //         ArmExtensionSubsystem armExtensionSubsystem,
-    //         ArmGamePieceControlSubsystem armGamePieceControlSubsystem,
-    //         IntakeSubsystem intakeSubsystem) {
-    //     Command readyPiece = Commands.sequence(
-    //             new InstantCommand(() -> {
-    //                 armGamePieceControlSubsystem.gamePiecePickup(gamePieceType);
-    //             }),
-    //             new WaitCommand(0.5), // remove?
-    //             new ArmExtentionCommand(armExtensionSubsystem, kRestractExtensionAtStartUpPosition),
-    //             new LineupArmCommand(armRotationSubsystem, armExtensionSubsystem, armGamePieceControlSubsystem,
-    //                     ArmPositioningType.High),
-    //             new WaitCommand(0.5), // why wait? or reduce
-    //             new ArmVacuumReleaseCommand(armGamePieceControlSubsystem),
-    //             new WaitCommand(0.5)); // see if can reduce!! 0.5?
-    //     return readyPiece.andThen(runPath("Place Game Piece", driveSubsystem))
-    //             .alongWith(new ArmToLoadingCommand(armRotationSubsystem, armExtensionSubsystem));
+    // public static Command placeGamePiece(GamePieceType gamePieceType,
+    // DriveSubsystem driveSubsystem,
+    // ArmRotationSubsystem armRotationSubsystem,
+    // ArmExtensionSubsystem armExtensionSubsystem,
+    // ArmGamePieceControlSubsystem armGamePieceControlSubsystem,
+    // IntakeSubsystem intakeSubsystem) {
+    // Command readyPiece = Commands.sequence(
+    // new InstantCommand(() -> {
+    // armGamePieceControlSubsystem.gamePiecePickup(gamePieceType);
+    // }),
+    // new WaitCommand(0.5), // remove?
+    // new ArmExtentionCommand(armExtensionSubsystem,
+    // kRestractExtensionAtStartUpPosition),
+    // new LineupArmCommand(armRotationSubsystem, armExtensionSubsystem,
+    // armGamePieceControlSubsystem,
+    // ArmPositioningType.High),
+    // new WaitCommand(0.5), // why wait? or reduce
+    // new ArmVacuumReleaseCommand(armGamePieceControlSubsystem),
+    // new WaitCommand(0.5)); // see if can reduce!! 0.5?
+    // return readyPiece.andThen(runPath("Place Game Piece", driveSubsystem))
+    // .alongWith(new ArmToLoadingCommand(armRotationSubsystem,
+    // armExtensionSubsystem));
     // }
 
-    // public static Command placeGamePieceAndBalance(GamePieceType gamePieceType, DriveSubsystem driveSubsystem,
-    //         ArmRotationSubsystem armRotationSubsystem,
-    //         ArmExtensionSubsystem armExtensionSubsystem,
-    //         ArmGamePieceControlSubsystem armGamePieceControlSubsystem) {
-    //     Command readyPiece = Commands.sequence(
-    //             new InstantCommand(() -> {
-    //                 armGamePieceControlSubsystem.gamePiecePickup(gamePieceType);
-    //             }),
-    //             new WaitCommand(0.5),   // remove?
-    //             new ArmExtentionCommand(armExtensionSubsystem, kRestractExtensionAtStartUpPosition),
-    //             new LineupArmCommand(armRotationSubsystem, armExtensionSubsystem, armGamePieceControlSubsystem,
-    //                     ArmPositioningType.High),
-    //             new WaitCommand(0.5),   // why wait?
-    //             new ArmVacuumReleaseCommand(armGamePieceControlSubsystem),
-    //             new WaitCommand(0.5));  // remove/reduce?
-    //     return readyPiece.andThen(runPath("Place Game Piece And Balance", driveSubsystem))
-    //             .alongWith(new ArmToLoadingCommand(armRotationSubsystem, armExtensionSubsystem))
-    //             .andThen(new AutoBalanceCommand(driveSubsystem));
+    // public static Command placeGamePieceAndBalance(GamePieceType gamePieceType,
+    // DriveSubsystem driveSubsystem,
+    // ArmRotationSubsystem armRotationSubsystem,
+    // ArmExtensionSubsystem armExtensionSubsystem,
+    // ArmGamePieceControlSubsystem armGamePieceControlSubsystem) {
+    // Command readyPiece = Commands.sequence(
+    // new InstantCommand(() -> {
+    // armGamePieceControlSubsystem.gamePiecePickup(gamePieceType);
+    // }),
+    // new WaitCommand(0.5), // remove?
+    // new ArmExtentionCommand(armExtensionSubsystem,
+    // kRestractExtensionAtStartUpPosition),
+    // new LineupArmCommand(armRotationSubsystem, armExtensionSubsystem,
+    // armGamePieceControlSubsystem,
+    // ArmPositioningType.High),
+    // new WaitCommand(0.5), // why wait?
+    // new ArmVacuumReleaseCommand(armGamePieceControlSubsystem),
+    // new WaitCommand(0.5)); // remove/reduce?
+    // return readyPiece.andThen(runPath("Place Game Piece And Balance",
+    // driveSubsystem))
+    // .alongWith(new ArmToLoadingCommand(armRotationSubsystem,
+    // armExtensionSubsystem))
+    // .andThen(new AutoBalanceCommand(driveSubsystem));
     // }
 
     public static Command runPath(String name, HashMap<String, Command> events, DriveSubsystem driveSubsystem) {
@@ -113,6 +123,10 @@ public final class Autos {
     }
 
     public static Command placePiece(RobotContainer container) {
+        return placePiece(container, true);
+    }
+
+    public static Command placePiece(RobotContainer container, boolean retractToo) {
         return Commands.sequence(
                 new InstantCommand(() -> {
                     var currentGamePiece = container.m_preloadedPieceChooser.getSelected();
@@ -128,8 +142,8 @@ public final class Autos {
                             return container.m_preloadedPieceChooser.getSelected() == GamePieceType.Cube;
                         }),
                 new WaitCommand(0.1),
-                new ArmToLoadingCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem)
-        );
+                retractToo ? new ArmToLoadingCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem)
+                        : Commands.none());
     }
 
     public static Command placeAndLeaveLeft(RobotContainer container) {
@@ -153,19 +167,21 @@ public final class Autos {
 
     public static Command placeAndBalance(RobotContainer container) {
         return Commands.sequence(
-                placePiece(container),
-                runPath("Place And Balance", container.m_driveSubsystem),
-                new AutoBalanceCommand(container.m_driveSubsystem));
+                placePiece(container, false),
+                Commands.sequence(runPath("Place And Balance", container.m_driveSubsystem),
+                        new AutoBalanceCommand(container.m_driveSubsystem))
+                .alongWith(
+                        new ArmToLoadingCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem)));
     }
 
     // NOTE: only works with hardcoded cone value right now
     public static Command placeAndLeaveAndLocateCone(RobotContainer container) {
         return Commands.sequence(
-            placePiece(container),
-            runPath("Place And Leave and Locate Piece", container.m_driveSubsystem),
-            new InstantCommand(() -> container.m_armGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)),
-            new LineupArmCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem, container.m_armGamePieceSubsystem, ArmPositioningType.FloorPickup)
-        );
+                placePiece(container),
+                runPath("Place And Leave and Locate Piece", container.m_driveSubsystem),
+                new InstantCommand(() -> container.m_armGamePieceSubsystem.gamePiecePickup(GamePieceType.Cone)),
+                new LineupArmCommand(container.m_armRotationSubsystem, container.m_armExtensionSubsystem,
+                        container.m_armGamePieceSubsystem, ArmPositioningType.FloorPickup));
     }
 
     private Autos() {

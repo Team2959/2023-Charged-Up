@@ -52,6 +52,8 @@ public final class RobotMap {
     // Right Joystick Test
     public static final int kTestButtonExtension = 7;
     public static final int kTestButtonRotation = 9;
+    public static final int kResetNavXButton = 10;
+
 
     // Co-Piolet Button board
     public static final int kHighGamePieceButton = 1;

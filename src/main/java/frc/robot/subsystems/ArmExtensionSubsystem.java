@@ -16,11 +16,11 @@ import frc.robot.RobotMap;
 import frc.robot.subsystems.ArmGamePieceControlSubsystem.GamePieceType;
 
 public class ArmExtensionSubsystem extends SubsystemBase {
-    private static final int kSmartMaxVel = 4000;
-    private static final int kSmartMaxAccel = 4000;
+    private static final int kSmartMaxVel = 10000;
+    private static final int kSmartMaxAccel = 10000;
     // private static final double kArmExtensionP = 0.02;  // orig kP from St Joe: 0.02
     // private static final double kArmExtensionI = 0;  // orig KI from St Joe: 0
-    private static final double kArmExtensionP = 0.000075; //CF 0.00035
+    private static final double kArmExtensionP = 0.00035; //CF 0.00035 ALUM: 0.000075
     private static final double kArmExtensionI = 0.000001;
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;

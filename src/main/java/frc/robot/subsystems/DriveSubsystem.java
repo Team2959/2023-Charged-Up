@@ -282,4 +282,8 @@ public class DriveSubsystem extends SubsystemBase {
         m_backLeft.lockWheelAtAngleInDegrees(-45);
         m_backRight.lockWheelAtAngleInDegrees(45);
     }
+
+    public void resetNavX() {
+        m_navX.reset();
+    }
 }

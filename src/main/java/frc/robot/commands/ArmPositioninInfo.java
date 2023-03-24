@@ -49,7 +49,7 @@ public final class ArmPositioninInfo {
         switch (armPosition) {
             case High:
                 if (gamePieceType == GamePieceType.Cone)
-                    return 160;
+                    return 160 + 4;
                 else
                     return 152;
             case Mid:
@@ -61,9 +61,9 @@ public final class ArmPositioninInfo {
                 return 100;
             case WallHorizLineup:
                 if(gamePieceType == GamePieceType.Cone)
-                    return 145;
+                    return 145 + 4;
                 else
-                    return 147;
+                    return 147 + 4;
             case FloorPickup:
                 if(gamePieceType == GamePieceType.Cone)
                     return 40;

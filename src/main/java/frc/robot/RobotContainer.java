@@ -83,6 +83,8 @@ public class RobotContainer {
     JoystickButton m_testButtonExtension = new JoystickButton(m_rightJoystick, RobotMap.kTestButtonExtension);
     JoystickButton m_testButtonRotation = new JoystickButton(m_rightJoystick, RobotMap.kTestButtonRotation);
 
+    JoystickButton m_resetNavX = new JoystickButton(m_rightJoystick, RobotMap.kResetNavXButton);
+
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
     Conditioning m_turnConditioning = new Conditioning();
@@ -133,10 +135,10 @@ public class RobotContainer {
             m_driveSubsystem.smartDashboardUpdate();
             smartDashboardUpdate();
         }, 1, 0.502);
-        // m_robot.addPeriodic(() -> {
-        //     m_armRotationSubsystem.smartDashboardUpdate();
-        //     m_armExtensionSubsystem.smartDashboardUpdate();
-        // }, 1, 0.303);
+        m_robot.addPeriodic(() -> {
+            m_armRotationSubsystem.smartDashboardUpdate();
+            m_armExtensionSubsystem.smartDashboardUpdate();
+        }, 1, 0.303);
 
     }
 
@@ -186,6 +188,10 @@ public class RobotContainer {
         m_groundPickupButtton.onTrue(new LineupArmCommand(
                 m_armRotationSubsystem, m_armExtensionSubsystem, m_armGamePieceSubsystem, 
                 ArmPositioningType.FloorPickup));
+
+        m_resetNavX.onTrue(new InstantCommand(() -> {
+            m_driveSubsystem.resetNavX();
+        }));
 
         var armReleaseCommand = Commands.either(
                 new ArmReleaseConeCommand(m_armGamePieceSubsystem, m_armRotationSubsystem),

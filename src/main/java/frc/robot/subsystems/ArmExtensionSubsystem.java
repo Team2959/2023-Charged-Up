@@ -25,7 +25,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
     private static final double kArmExtensionD = 0;
     private static final double kArmExtensionFF = 0;
     private static final double kArmExtensionIzone = 0;
-    private static final double kSmartAllowedError = 0;
+    // private static final double kSmartAllowedError = 0;
 
     private CANSparkMax m_armExtensionMotor = new CANSparkMax(RobotMap.kArmExtensionSparkMaxMotor,
             MotorType.kBrushless);
@@ -134,7 +134,7 @@ public class ArmExtensionSubsystem extends SubsystemBase {
             m_armExtensionMotorPidController.setSmartMotionMaxAccel(maxAccelExtension, 0);
             m_armExtensionMotorPidController.setSmartMotionMaxVelocity(maxVelExtension, 0);
 
-            var error = SmartDashboard.getNumber(getName() + "/Arm Rotator Closed Loop Error", 0);
+            // var error = SmartDashboard.getNumber(getName() + "/Arm Rotator Closed Loop Error", 0);
             // TODO: enabled this for testing closed loop error
             // m_armExtensionMotorPidController.setSmartMotionAllowedClosedLoopError(error, 0);
         }

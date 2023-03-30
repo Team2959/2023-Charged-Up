@@ -86,7 +86,7 @@ public class ArmRotationSubsystem extends SubsystemBase {
   }
 
   public boolean isArmRotatorAtSetpoint() {
-    return Math.abs(m_lastArmRotationTarget - getArmAngle()) < 3;
+    return Math.abs(m_lastArmRotationTarget - getArmAngle()) < 5;
   }
 
   public double getArmAngle() {

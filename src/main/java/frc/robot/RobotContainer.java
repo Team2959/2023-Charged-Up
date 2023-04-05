@@ -88,7 +88,7 @@ public class RobotContainer {
     Conditioning m_driveXConditioning = new Conditioning();
     Conditioning m_driveYConditioning = new Conditioning();
     Conditioning m_turnConditioning = new Conditioning();
-    double m_speedMultiplier = 0.70;
+    double m_speedMultiplier = 0.30;
 
     public SendableChooser<ArmGamePieceControlSubsystem.GamePieceType> m_preloadedPieceChooser = new SendableChooser<>();
 
@@ -133,13 +133,13 @@ public class RobotContainer {
 
     public void registerSmartDashboardCalls() {
         m_robot.addPeriodic(() -> {
-            m_driveSubsystem.smartDashboardUpdate();
+            // m_driveSubsystem.smartDashboardUpdate();
             smartDashboardUpdate();
         }, 1, 0.502);
-        m_robot.addPeriodic(() -> {
-            m_armRotationSubsystem.smartDashboardUpdate();
-            m_armExtensionSubsystem.smartDashboardUpdate();
-        }, 1, 0.303);
+        // m_robot.addPeriodic(() -> {
+        //     m_armRotationSubsystem.smartDashboardUpdate();
+        //     m_armExtensionSubsystem.smartDashboardUpdate();
+        // }, 1, 0.303);
 
     }
 
@@ -234,6 +234,7 @@ public class RobotContainer {
 
     public double getTurnInput() {
         return m_turnConditioning.condition(-m_rightJoystick.getX())
-                * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond;
+                * DriveSubsystem.kMaxAngularSpeedRadiansPerSecond
+                * m_speedMultiplier;
     }
 }

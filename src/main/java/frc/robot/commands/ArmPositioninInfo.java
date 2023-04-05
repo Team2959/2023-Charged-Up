@@ -66,7 +66,7 @@ public final class ArmPositioninInfo {
                     return 147 + 4;
             case FloorPickup:
                 if(gamePieceType == GamePieceType.Cone)
-                    return 40;
+                    return 43;
                 else
                     return 85;
             default:

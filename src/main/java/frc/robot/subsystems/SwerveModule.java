@@ -41,7 +41,7 @@ public class SwerveModule {
     private static final double kGearboxRatio = 1.0 / 6.12; // One turn of the wheel is 6.86 turns of the motor
     private static final double kDrivePositionFactor = (2.0 * Math.PI * kWheelRadius * kGearboxRatio);
     private static final int kDriveCurrentLimitAmps = 70;
-    private static final int kSteerCurrentLimitAmps = 20; 
+    private static final int kSteerCurrentLimitAmps = 40; 
 
     public SwerveModule(int driveMotor, int steerMotor, int dutyCycle, double steerOffset, String name)
     {

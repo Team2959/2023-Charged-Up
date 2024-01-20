@@ -3,17 +3,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -41,11 +34,11 @@ public class SwerveModuleCanCoder {
     private final String m_name;
 
     private static final double kWheelRadius = 2.0 * 0.0254; // 2" * 0.0254 m / inch
-    private static final int kEncoderResolution = 4096;
     private static final double kGearboxRatio = 1.0 / 6.12; // One turn of the wheel is 6.86 turns of the motor
     private static final double kDrivePositionFactor = (2.0 * Math.PI * kWheelRadius * kGearboxRatio);
     private static final int kDriveCurrentLimitAmps = 70;
     private static final int kSteerCurrentLimitAmps = 40; 
+    private static final double kSteerMotorRotationsPerRevolution = 12.75;
 
     // https://github.com/Team364/BaseFalconSwerve/blob/main/src/main/java/frc/robot/SwerveModule.java
     public SwerveModuleCanCoder(int driveMotor, int steerMotor, int steerAbsoluteEncoder, double steerOffset, String name)
@@ -66,7 +59,6 @@ public class SwerveModuleCanCoder {
         m_steerOffset = steerOffset;
 
         m_steerAbsoluteEncoder = new CANCoder(steerAbsoluteEncoder);
-        configureSteerAbsoluteEncoder();
 
         m_driveEncoder = (SparkMaxRelativeEncoder) m_driveMotor.getEncoder();
         m_steerEncoder = (SparkMaxRelativeEncoder) m_steerMotor.getEncoder();
@@ -89,18 +81,7 @@ public class SwerveModuleCanCoder {
         m_steerPIDController.setD(kSteerD);
         m_steerPIDController.setIZone(kSteerIZone);
 
-        // m_steerEncoder.setPositionConversionFactor(2.0 * Math.PI);
-    }
-
-    private void configureSteerAbsoluteEncoder() {
-        var swerveCanCoderConfig = new CANCoderConfiguration();
-        swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        // swerveCanCoderConfig.sensorDirection = Constants.Swerve.canCoderInvert;
-        swerveCanCoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-
-        m_steerAbsoluteEncoder.configFactoryDefault();
-        m_steerAbsoluteEncoder.configAllSettings(swerveCanCoderConfig);
+        m_steerEncoder.setPositionConversionFactor(2 * Math.PI / kSteerMotorRotationsPerRevolution);
     }
 
     public void smartDashboardInit() {
@@ -145,11 +126,6 @@ public class SwerveModuleCanCoder {
         return initalPositionInRadiansScaled;
     }
 
-    // public void setSmartMotion(double maxVel, double maxAccel) {
-    //     m_drivePIDController.setSmartMotionMaxVelocity(maxVel, 0);
-    //     m_drivePIDController.setSmartMotionMaxAccel(maxAccel, 0);
-    // }
-
     public double getVelocity()
     {
         return m_driveEncoder.getVelocity();
@@ -170,10 +146,10 @@ public class SwerveModuleCanCoder {
         setDriveVelocity(state.speedMetersPerSecond);
 
         // if(Math.abs(state.speedMetersPerSecond - 0) < 0.001)
-        {
-            // Leave because we don't want wheel to go back to zero, because we are stopped
-            // return;
-        }
+        // {
+        //     Leave because we don't want wheel to go back to zero, because we are stopped
+        //     return;
+        // }
 
         var currentAngleInRadians = m_steerEncoder.getPosition();
         Rotation2d delta = state.angle.minus(new Rotation2d(currentAngleInRadians));
@@ -185,7 +161,6 @@ public class SwerveModuleCanCoder {
     private void setDriveVelocity(double targetSpeed)
     {
         m_drivePIDController.setReference(targetSpeed * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-        // m_drivePIDController.setReference(targetSpeed * DriveSubsystem.kMaxSpeedMetersPerSecond, CANSparkMax.ControlType.kSmartVelocity);
     }
 
     private void setSteerAngleInRadians(double targetAngleInRadians)

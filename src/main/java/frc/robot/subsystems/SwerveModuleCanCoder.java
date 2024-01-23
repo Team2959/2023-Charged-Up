@@ -38,7 +38,7 @@ public class SwerveModuleCanCoder {
     private static final double kDrivePositionFactor = (2.0 * Math.PI * kWheelRadius * kGearboxRatio);
     private static final int kDriveCurrentLimitAmps = 70;
     private static final int kSteerCurrentLimitAmps = 40; 
-    private static final double kSteerMotorRotationsPerRevolution = 12.75;
+    private static final double kSteerMotorRotationsPerRevolution = 12.8;
 
     // https://github.com/Team364/BaseFalconSwerve/blob/main/src/main/java/frc/robot/SwerveModule.java
     public SwerveModuleCanCoder(int driveMotor, int steerMotor, int steerAbsoluteEncoder, double steerOffset, String name)
@@ -82,6 +82,14 @@ public class SwerveModuleCanCoder {
         m_steerPIDController.setIZone(kSteerIZone);
 
         m_steerEncoder.setPositionConversionFactor(2 * Math.PI / kSteerMotorRotationsPerRevolution);
+
+        // Enable PID wrap around for the turning motor. This will allow the PID
+        // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
+        // to 10 degrees will go through 0 rather than the other direction which is a
+        // longer route.
+        m_steerPIDController.setPositionPIDWrappingEnabled(true);
+        m_steerPIDController.setPositionPIDWrappingMinInput(0);
+        m_steerPIDController.setPositionPIDWrappingMaxInput(2 * Math.PI);
     }
 
     public void smartDashboardInit() {
@@ -116,7 +124,7 @@ public class SwerveModuleCanCoder {
        m_steerPIDController.setFF (SmartDashboard.getNumber(m_name + "/Turn FF", kSteerFF));
     }
 
-    public Rotation2d getCanCoder(){
+    private Rotation2d getCanCoder(){
         return Rotation2d.fromDegrees(m_steerAbsoluteEncoder.getAbsolutePosition());
     }
 
@@ -145,17 +153,7 @@ public class SwerveModuleCanCoder {
 
         setDriveVelocity(state.speedMetersPerSecond);
 
-        // if(Math.abs(state.speedMetersPerSecond - 0) < 0.001)
-        // {
-        //     Leave because we don't want wheel to go back to zero, because we are stopped
-        //     return;
-        // }
-
-        var currentAngleInRadians = m_steerEncoder.getPosition();
-        Rotation2d delta = state.angle.minus(new Rotation2d(currentAngleInRadians));
-        SmartDashboard.putNumber(m_name + "/State Angle", state.angle.getRadians());
-        double angleSetpointInRadians = currentAngleInRadians + delta.getRadians();
-        setSteerAngleInRadians(angleSetpointInRadians);
+        setSteerAngleInRadians(state.angle.getRadians());
     }
 
     private void setDriveVelocity(double targetSpeed)

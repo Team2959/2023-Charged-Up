@@ -124,14 +124,23 @@ public class SwerveModuleCanCoder {
        m_steerPIDController.setFF (SmartDashboard.getNumber(m_name + "/Turn FF", kSteerFF));
     }
 
-    private Rotation2d getCanCoder(){
+    private Rotation2d getCanCoder()
+    {
         return Rotation2d.fromDegrees(m_steerAbsoluteEncoder.getAbsolutePosition());
     }
 
     private double getAbsoluteEncoderPosition()
     {
-        double initalPositionInRadiansScaled = new Rotation2d(getCanCoder().getRadians() - m_steerOffset).getRadians();
-        return initalPositionInRadiansScaled;
+        double startingAngle = m_steerOffset - getCanCoder().getRadians();
+    
+        if (startingAngle < 0)
+        {
+          startingAngle = startingAngle + (2 * Math.PI);
+        }
+
+        startingAngle = 2 * Math.PI - startingAngle;
+
+        return startingAngle;
     }
 
     public double getVelocity()

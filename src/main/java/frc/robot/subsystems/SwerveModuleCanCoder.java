@@ -138,6 +138,8 @@ public class SwerveModuleCanCoder {
           startingAngle = startingAngle + (2 * Math.PI);
         }
 
+        // need to convert from absolute CAN coder turning clockwise as positive to
+        //  relative encoder in assembly turning counter-clockwise as positive
         startingAngle = 2 * Math.PI - startingAngle;
 
         return startingAngle;

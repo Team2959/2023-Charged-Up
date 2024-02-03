@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.SPI.Port;
 import frc.robot.RobotMap;
 
 public class DriveSubsystem extends SubsystemBase {
-    private SwerveModule m_frontLeft;
+    private SwerveModuleCanCoder m_frontLeft;
     private SwerveModule m_frontRight;
     private SwerveModule m_backLeft;
     private SwerveModule m_backRight;
@@ -71,7 +71,7 @@ public class DriveSubsystem extends SubsystemBase {
         m_kinematics = new SwerveDriveKinematics(kFrontLeftLocation, kFrontRightLocation, kBackLeftLocation,
                 kBackRightLocation);
 
-        m_frontLeft = new SwerveModule(RobotMap.kFrontLeftDriveCANSparkMaxMotor,
+        m_frontLeft = new SwerveModuleCanCoder(RobotMap.kFrontLeftDriveCANSparkMaxMotor,
                 RobotMap.kFrontLeftTurnCANSparkMaxMotor, RobotMap.kFrontLeftTurnPulseWidthDigIO,
                 RobotMap.kZeroedFrontLeft, "Front Left");
         m_frontRight = new SwerveModule(RobotMap.kFrontRightDriveCANSparkMaxMotor,
